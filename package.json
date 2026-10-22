@@ -1,0 +1,61 @@
+{
+  "name": "berlinx",
+  "version": "1.0.0",
+  "description": "A powerful semantic CSS library",
+  "license": "MIT",
+  "author": "Southern Utah Software",
+  "homepage": "https://berlinx.southernutahsoftware.com",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/southernutahsoftware/BerlinX.git"
+  },
+  "bugs": {
+    "url": "https://github.com/southernutahsoftware/BerlinX/issues"
+  },
+  "keywords": [
+    "css",
+    "classless",
+    "semantic",
+    "css-library",
+    "css-framework",
+    "html",
+    "no-class",
+    "minimal"
+  ],
+  "main": "dist/berlinx.css",
+  "style": "dist/berlinx.css",
+  "unpkg": "dist/berlinx.min.css",
+  "jsdelivr": "dist/berlinx.min.css",
+  "exports": {
+    ".": "./dist/berlinx.css",
+    "./css": "./dist/berlinx.css",
+    "./min": "./dist/berlinx.min.css",
+    "./dist/*": "./dist/*",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "dist",
+    "css/berlinx.css",
+    "README.md",
+    "CHANGELOG.md",
+    "LICENSE"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
+  "scripts": {
+    "build": "node scripts/build.js",
+    "deploy": "npm run build && wrangler deploy",
+    "prepack": "npm run build"
+  },
+  "devDependencies": {
+    "lightningcss": "1.33.0",
+    "marked": "18.1.1"
+  },
+  "browserslist": [
+    "Chrome >= 114",
+    "Edge >= 114",
+    "Firefox >= 125",
+    "Safari >= 17"
+  ]
+}

@@ -1,0 +1,855 @@
+<!doctype html>
+<!-- Generated from docs/guide.md by npm run build. Edit the Markdown instead. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BerlinX Usage guide</title>
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      try {
+        const theme = localStorage.getItem("berlinx-theme");
+        if (theme === "light" || theme === "dark") document.documentElement.setAttribute("theme", theme);
+      } catch {}
+    </script>
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="dist/berlinx.min.css" />
+    <!-- Lucide SVG paths: https://lucide.dev · license: docs/LUCIDE-LICENSE.txt -->
+    <style>
+      @font-face { font-family: Inter; src: url("assets/fonts/InterVariable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+      body { padding: var(--space-l); }
+      body > header { margin-bottom: var(--space-l); }
+      body > header > a { font-weight: 700; font-size: 1.25rem; text-decoration: none; color: var(--foreground); }
+      body > header nav { margin-left: auto; }
+      body > header nav a[aria-current] { color: var(--foreground); font-weight: 600; }
+      @media (max-width: 600px) { body > header nav { order: 1; width: 100%; } }
+      main :where(p, li, td) a { text-decoration: underline; }
+      [data-theme-toggle][aria-pressed="true"] > [data-icon="moon"],
+      [data-theme-toggle][aria-pressed="false"] > [data-icon="sun"] { display: none; }
+    </style>
+  </head>
+  <body>
+    <header row justify="between" items="center" gap-m>
+      <a href="index.html">Berlin<span primary>X</span></a>
+      <nav aria-label="Documentation" row gap-m><a href="index.html">Components</a><a href="guide.html" aria-current="page">Usage guide</a><a href="cheatsheet.html">Cheatsheet</a></nav>
+      <button data-theme-toggle icon ghost aria-pressed="false" aria-label="Dark theme">
+        <svg data-icon="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
+        <svg data-icon="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>
+      </button>
+    </header>
+    <main>
+<h1 id="berlinx-usage-guide">BerlinX usage guide</h1>
+<details>
+<summary>Contents</summary>
+<nav aria-label="Contents" col gap-xs>
+<a href="#install">Install</a>
+<a href="#attribute-vocabulary">Attribute vocabulary</a>
+<a href="#tags">Tags</a>
+<a href="#responsive-tables">Responsive tables</a>
+<a href="#layout">Layout</a>
+<a href="#control-density-and-feedback">Control density and feedback</a>
+<a href="#popovers">Popovers</a>
+<a href="#row-actions">Row actions</a>
+<a href="#semantic-elements">Semantic elements</a>
+<a href="#more-components">More components</a>
+<a href="#light-and-dark-themes">Light and dark themes</a>
+<a href="#theming">Theming</a>
+<a href="#accessibility">Accessibility</a>
+<a href="#browser-support">Browser support</a>
+<a href="#development">Development</a>
+<a href="#license">License</a>
+</nav>
+</details>
+<p>A powerful semantic CSS library. Write plain HTML; opt into variants with
+attributes. No classes, no build step, no JavaScript.</p>
+<pre><code tabindex="0" class="language-html">&lt;button destructive&gt;Delete&lt;/button&gt;
+&lt;nav breadcrumb&gt;&lt;a href=&quot;/&quot;&gt;Home&lt;/a&gt;&lt;a href=&quot;/docs&quot;&gt;Docs&lt;/a&gt;&lt;/nav&gt;
+&lt;aside&gt;&lt;header&gt;…&lt;/header&gt;&lt;nav&gt;…&lt;/nav&gt;&lt;footer&gt;…&lt;/footer&gt;&lt;/aside&gt;
+</code></pre>
+<h2 id="install">Install</h2>
+<p>Download <code>dist/berlinx.min.css</code>, then link it locally:</p>
+<pre><code tabindex="0" class="language-html">&lt;link
+  rel=&quot;stylesheet&quot;
+  href=&quot;./berlinx.min.css&quot;
+/&gt;
+</code></pre>
+<p>npm:</p>
+<pre><code tabindex="0" class="language-sh">npm install berlinx
+</code></pre>
+<pre><code tabindex="0" class="language-css">@import &quot;berlinx&quot;;               /* readable build */
+@import &quot;berlinx/min&quot;;           /* minified */
+</code></pre>
+<p>Bundlers can also import the files directly, as <code>berlinx/dist/berlinx.min.css</code>.</p>
+<p>From a CDN, pin the exact version so a release can never change under you:</p>
+<pre><code tabindex="0" class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/berlinx@1.0.0/dist/berlinx.min.css&quot; /&gt;
+</code></pre>
+<p>BerlinX asks for <strong>Inter</strong> first and falls back to the system sans stack. It
+does not fetch the font for you — add it yourself if you want it:</p>
+<pre><code tabindex="0" class="language-html">&lt;link rel=&quot;preconnect&quot; href=&quot;https://fonts.gstatic.com&quot; crossorigin /&gt;
+&lt;link
+  rel=&quot;stylesheet&quot;
+  href=&quot;https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;amp;display=swap&quot;
+/&gt;
+</code></pre>
+<h2 id="attribute-vocabulary">Attribute vocabulary</h2>
+<p>Variants are bare attributes. One vocabulary, reused across components. The
+<a href="cheatsheet.html">cheatsheet</a> is the same vocabulary as a lookup table, with every
+value and every theming token on one page.</p>
+<div responsive tabindex="0" role="region" aria-label="Table"><table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Applies to</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>primary</code> <code>secondary</code> <code>outline</code> <code>ghost</code> <code>destructive</code></td>
+<td><code>button</code>, <code>input</code>, <code>[tag]</code></td>
+<td>Button appearance</td>
+</tr>
+<tr>
+<td><code>icon</code></td>
+<td><code>button</code>, <code>input</code>, <code>[tag]</code></td>
+<td>Square icon-only button (pair with <code>aria-label</code>, and <code>tooltip</code> or <code>title</code>)</td>
+</tr>
+<tr>
+<td><code>tag</code></td>
+<td>any element</td>
+<td>Renders as a button; takes every button variant</td>
+</tr>
+<tr>
+<td><code>badge</code></td>
+<td>any inline element</td>
+<td>Badge; combine with <code>secondary</code>/<code>outline</code>/<code>destructive</code></td>
+</tr>
+<tr>
+<td><code>breadcrumb</code></td>
+<td><code>nav</code></td>
+<td>Breadcrumb separators (opt-in); set <code>--separator</code> to change the mark</td>
+</tr>
+<tr>
+<td><code>drawer</code> / <code>drawer=&quot;top|left|right&quot;</code></td>
+<td><code>dialog</code></td>
+<td>Edge-anchored drawer</td>
+</tr>
+<tr>
+<td><code>toast</code></td>
+<td><code>dialog</code></td>
+<td>Fixed corner toast</td>
+</tr>
+<tr>
+<td><code>responsive</code> / <code>responsive=&quot;stack&quot;</code></td>
+<td><code>table</code>, or a wrapper</td>
+<td>Scrolls sideways; <code>stack</code> instead cards each row on phones</td>
+</tr>
+<tr>
+<td><code>toggle</code></td>
+<td><code>label</code></td>
+<td>Icon toggle wrapping a checkbox</td>
+</tr>
+<tr>
+<td><code>stack</code></td>
+<td><code>label</code></td>
+<td>Label above its control instead of beside it</td>
+</tr>
+<tr>
+<td><code>placement=&quot;top|bottom&quot;</code> + <code>-start</code>/<code>-end</code></td>
+<td><code>[popover]</code></td>
+<td>Which side of its anchor the popover opens on</td>
+</tr>
+<tr>
+<td><code>reveal</code></td>
+<td>any container (<code>tr</code>, <code>li</code>, …)</td>
+<td>Hides the buttons and toggles inside until hover or focus; plain links stay</td>
+</tr>
+<tr>
+<td><code>tooltip=&quot;…&quot;</code></td>
+<td>any</td>
+<td>Hover/focus label (visual only — keep <code>aria-label</code>)</td>
+</tr>
+<tr>
+<td><code>loading</code></td>
+<td>any</td>
+<td>Spinner, replacing any icon; pair with <code>aria-busy=&quot;true&quot;</code></td>
+</tr>
+<tr>
+<td><code>skeleton</code></td>
+<td>any</td>
+<td>Shimmering placeholder</td>
+</tr>
+<tr>
+<td><code>xl</code></td>
+<td><code>h1</code>–<code>h6</code></td>
+<td>Larger heading step</td>
+</tr>
+<tr>
+<td><code>subheader</code></td>
+<td>any</td>
+<td>Muted lede directly after a heading</td>
+</tr>
+<tr>
+<td><code>row</code> <code>col</code></td>
+<td>any</td>
+<td>Flex direction</td>
+</tr>
+<tr>
+<td><code>gap-xs</code> <code>gap</code> <code>gap-s</code> <code>gap-m</code> <code>gap-l</code></td>
+<td>any</td>
+<td>2px / 6px / 6px / 12px / 24px (<code>gap</code> is <code>gap-s</code>)</td>
+</tr>
+<tr>
+<td><code>justify=&quot;start|center|end|between&quot;</code></td>
+<td>any flex container</td>
+<td>Placement along the main axis</td>
+</tr>
+<tr>
+<td><code>items=&quot;start|center|end|stretch&quot;</code></td>
+<td>any flex container</td>
+<td>Placement across the axis</td>
+</tr>
+<tr>
+<td><code>full-width</code></td>
+<td>any</td>
+<td><code>width: 100%</code></td>
+</tr>
+<tr>
+<td><code>grid</code> / <code>grid fit</code></td>
+<td>any container</td>
+<td>Responsive columns; <code>fit</code> expands short lists</td>
+</tr>
+<tr>
+<td><code>grow</code> / <code>nowrap</code></td>
+<td>flex children / containers</td>
+<td>Fill remaining space / keep a row on one line</td>
+</tr>
+<tr>
+<td><code>density=&quot;compact|comfortable&quot;</code></td>
+<td>a container or control</td>
+<td>Smaller desktop controls / larger touch-friendly controls</td>
+</tr>
+<tr>
+<td><code>ellipsis</code> / <code>tabular</code></td>
+<td>text</td>
+<td>Single-line truncation / aligned numeric digits</td>
+</tr>
+<tr>
+<td><code>notice</code> / <code>notice=&quot;success|warning|error&quot;</code></td>
+<td>any</td>
+<td>Feedback panel; add an appropriate live-region role</td>
+</tr>
+<tr>
+<td><code>visually-hidden</code></td>
+<td>any</td>
+<td>Visually hide while preserving keyboard and screen-reader access</td>
+</tr>
+<tr>
+<td><code>scroll-x</code> <code>scroll-y</code></td>
+<td>any</td>
+<td>Scroll container</td>
+</tr>
+<tr>
+<td><code>primary</code> <code>accent</code> <code>muted</code></td>
+<td>text elements</td>
+<td>Text colour</td>
+</tr>
+<tr>
+<td><code>vertical</code></td>
+<td><code>hr</code></td>
+<td>Vertical rule</td>
+</tr>
+<tr>
+<td><code>theme=&quot;light|dark&quot;</code></td>
+<td><code>html</code>, or any container</td>
+<td>Pins a theme for the page or a region; otherwise the system setting decides</td>
+</tr>
+</tbody></table></div>
+<blockquote>
+<p><strong>A note on validation.</strong> These are bare custom attributes, not <code>data-*</code>, so
+the W3C validator reports <code>Attribute X not allowed on element Y</code>. Browsers
+handle them correctly — attribute selectors have matched arbitrary attributes
+since CSS2 — but if your CI gates on HTML validation, be aware of it.</p>
+</blockquote>
+<h2 id="tags">Tags</h2>
+<p><code>tag</code> gives any element the button&#39;s exact appearance — same pill, padding,
+type scale and variants — for labels that are not form controls:</p>
+<pre><code tabindex="0" class="language-html">&lt;span tag&gt;Design&lt;/span&gt;
+&lt;span tag secondary&gt;CSS&lt;/span&gt;
+&lt;a href=&quot;/tags/html&quot; tag outline&gt;HTML&lt;/a&gt;
+&lt;span tag destructive&gt;Deprecated&lt;/span&gt;
+</code></pre>
+<p>Tags and buttons share the same rules rather than duplicating them, so they
+cannot drift apart, and <code>--button-bg</code> and friends theme both.</p>
+<p>The one deliberate difference is interactivity. A tag gets the hand cursor and
+the hover, active and focus states when it is an <code>a</code>, <code>button</code>, <code>summary</code> or
+<code>label</code>; a plain <code>&lt;span tag&gt;</code> is inert, so it never pretends to be clickable.
+<code>&lt;a tag&gt;</code> also drops the link colour and hover underline.</p>
+<p>For a file picker, wrap the native control in the tag. Keep it focusable with
+<code>visually-hidden</code>; a <code>hidden</code> input cannot be reached from the keyboard. The
+label receives a visible focus ring when its control is focused:</p>
+<pre><code tabindex="0" class="language-html">&lt;label tag&gt;
+  &lt;input type=&quot;file&quot; visually-hidden /&gt;
+  Choose a file
+&lt;/label&gt;
+</code></pre>
+<h2 id="responsive-tables">Responsive tables</h2>
+<p>A wide table is the one element that reliably breaks a phone layout. <code>responsive</code>
+gives it its own horizontal scrollbar, so it can never stretch the page. Put it
+on a wrapping element:</p>
+<pre><code tabindex="0" class="language-html">&lt;div responsive&gt;&lt;table&gt;…&lt;/table&gt;&lt;/div&gt;
+</code></pre>
+<p>That form is worth preferring, because the attribute on the table itself has to
+change the table&#39;s own <code>display</code> to a block before <code>overflow</code> applies to it at
+all — and a block-displayed table shrink-wraps its columns instead of spreading
+them across the container, as well as dropping the table role:</p>
+<pre><code tabindex="0" class="language-html">&lt;table responsive&gt;…&lt;/table&gt;
+</code></pre>
+<p>Either way the scrollbar only engages once the table genuinely cannot shrink any
+further — a table squeezes itself by wrapping text first, so a few prose columns
+will still cram rather than scroll. If you would rather the columns keep their
+natural width, say so and let <code>responsive</code> catch the overflow:</p>
+<pre><code tabindex="0" class="language-css">table { white-space: nowrap; }
+</code></pre>
+<p>Scrolling keeps the grid intact, which is what you want when readers compare
+rows. When they only ever read one record at a time, <code>responsive=&quot;stack&quot;</code> is
+kinder: under 600px it breaks each row into its own card, printing every cell&#39;s
+<code>data-label</code> beside its value, and above that it stays an ordinary full-width
+table:</p>
+<pre><code tabindex="0" class="language-html">&lt;table responsive=&quot;stack&quot;&gt;
+  &lt;thead&gt;
+    &lt;tr&gt;
+      &lt;th scope=&quot;col&quot;&gt;Name&lt;/th&gt;
+      &lt;th scope=&quot;col&quot;&gt;Email&lt;/th&gt;
+    &lt;/tr&gt;
+  &lt;/thead&gt;
+  &lt;tbody&gt;
+    &lt;tr&gt;
+      &lt;th scope=&quot;row&quot;&gt;Ada Lovelace&lt;/th&gt;
+      &lt;td data-label=&quot;Email&quot;&gt;ada@example.com&lt;/td&gt;
+    &lt;/tr&gt;
+  &lt;/tbody&gt;
+&lt;/table&gt;
+</code></pre>
+<p>The label has to be repeated on each cell because no selector can reach a cell&#39;s
+<code>&lt;th&gt;</code> from the cell — CSS <code>attr()</code> only reads the element it is on, and closing
+that gap would need JavaScript. A cell with no <code>data-label</code> simply prints its
+content, which is what you want for a row&#39;s <code>&lt;th scope=&quot;row&quot;&gt;</code> and for an
+actions cell full of buttons.</p>
+<p>Both <code>&lt;table responsive&gt;</code> and <code>responsive=&quot;stack&quot;</code> change the table&#39;s <code>display</code>
+in the modes described above, and browsers drop the table role when they do. If
+the tabular relationship matters to screen-reader users, put it back explicitly
+with <code>role=&quot;table&quot;</code>, <code>role=&quot;row&quot;</code> and <code>role=&quot;cell&quot;</code> — or wrap the table instead,
+which leaves its semantics alone entirely.</p>
+<h2 id="layout">Layout</h2>
+<p><code>row</code> and <code>col</code> pick the axis, <code>gap</code> sizes the space, <code>justify</code> and <code>items</code>
+place the children. Between them they cover the two shapes every app needs — the
+toolbar and the button row — without a stylesheet of your own:</p>
+<pre><code tabindex="0" class="language-html">&lt;header row justify=&quot;between&quot; items=&quot;center&quot;&gt;
+  &lt;h1 xl&gt;ClientBook&lt;/h1&gt;
+  &lt;button icon secondary aria-label=&quot;Account&quot;&gt;…&lt;/button&gt;
+&lt;/header&gt;
+
+&lt;div row gap-m justify=&quot;end&quot;&gt;
+  &lt;button secondary&gt;Cancel&lt;/button&gt;
+  &lt;button type=&quot;submit&quot;&gt;Save&lt;/button&gt;
+&lt;/div&gt;
+</code></pre>
+<p>Headings, paragraphs and sectioning elements drop their block margins inside a
+<code>row</code>, because a flex container already spaces its children with <code>gap</code> and the
+two would otherwise add up. Prose margins inside a <code>col</code> are left alone.</p>
+<p>The layout attributes are safe on a <code>popover</code> or a <code>dialog</code>: BerlinX restates the
+&quot;hidden while closed&quot; rule at author level, which a bare <code>display: flex</code> from
+<code>row</code>/<code>col</code> would otherwise outrank — leaving the menu on screen permanently.</p>
+<p><code>grid</code> creates responsive columns with a minimum width of 240px. Change
+<code>--grid-min</code> for the content, and add <code>fit</code> to expand a short list into the space
+available. The minimum is capped at the container width, so a phone gets a
+single column rather than an overflowing card:</p>
+<pre><code tabindex="0" class="language-html">&lt;div grid fit gap-m style=&quot;--grid-min: 18rem&quot;&gt;
+  &lt;article&gt;First card&lt;/article&gt;
+  &lt;article&gt;Second card&lt;/article&gt;
+&lt;/div&gt;
+
+&lt;header row nowrap gap-xs items=&quot;center&quot;&gt;
+  &lt;strong grow ellipsis&gt;A long document title&lt;/strong&gt;
+  &lt;button icon secondary aria-label=&quot;More actions&quot;&gt;…&lt;/button&gt;
+&lt;/header&gt;
+</code></pre>
+<p><code>grow</code> lets a flex child expand and shrink; <code>ellipsis</code> truncates its text without
+pushing the adjacent action off screen. <code>tabular</code> gives numbers equal-width
+digits for timers, totals and progress. <code>nowrap</code> keeps a toolbar on one line;
+use shrinking children or a scroll container if its content is wider than the
+available space.</p>
+<p>The default page is a centred document. Apps can remove that constraint without
+replacing the reset:</p>
+<pre><code tabindex="0" class="language-css">body {
+  --content-width: none;
+  --page-padding: 0;
+}
+</code></pre>
+<h2 id="control-density-and-feedback">Control density and feedback</h2>
+<p>Default buttons and text controls have a 2.5rem minimum height (40px at the
+standard text size), with 12px horizontal input padding. Apply <code>density=&quot;compact&quot;</code> to a desktop
+toolbar or <code>density=&quot;comfortable&quot;</code> to a form. The setting inherits through its
+container and can be changed again on a nested container or a single control.
+Comfortable buttons and text controls are at least 44px high with 16px text.
+Checkboxes, radios and switches retain their native or dedicated sizing.</p>
+<pre><code tabindex="0" class="language-html">&lt;form density=&quot;comfortable&quot;&gt;
+  &lt;label stack&gt;Email&lt;input type=&quot;email&quot; autocomplete=&quot;email&quot; required /&gt;&lt;/label&gt;
+  &lt;button type=&quot;submit&quot;&gt;Subscribe&lt;/button&gt;
+&lt;/form&gt;
+
+&lt;p notice role=&quot;status&quot;&gt;Your changes are being synced.&lt;/p&gt;
+&lt;p notice=&quot;success&quot; role=&quot;status&quot;&gt;Changes saved.&lt;/p&gt;
+&lt;p notice=&quot;warning&quot; role=&quot;status&quot;&gt;Your trial ends in 3 days.&lt;/p&gt;
+&lt;p notice=&quot;error&quot; role=&quot;alert&quot;&gt;Could not save. Please try again.&lt;/p&gt;
+</code></pre>
+<p><code>notice</code> supplies appearance. Use <code>role=&quot;status&quot;</code> for routine dynamic updates
+and <code>role=&quot;alert&quot;</code> for urgent errors; CSS alone does not announce messages.
+Text inputs without <code>type</code>, and <code>datetime-local</code>, <code>month</code> and <code>week</code> inputs,
+receive the same styling as the other text fields. Ordinary fieldsets can wrap
+on narrow screens; joined <code>fieldset[role=&quot;group&quot;]</code> controls remain on one line.</p>
+<h2 id="popovers">Popovers</h2>
+<p>A popover opens centred above its anchor. <code>placement</code> moves it — <code>top</code> or
+<code>bottom</code>, on its own or with <code>-start</code>/<code>-end</code> to line its edge up with the
+anchor&#39;s:</p>
+<pre><code tabindex="0" class="language-html">&lt;button popovertarget=&quot;menu&quot; icon aria-label=&quot;Account&quot;&gt;…&lt;/button&gt;
+&lt;div popover id=&quot;menu&quot; placement=&quot;bottom-end&quot; col gap&gt;
+  &lt;p&gt;Signed in as &lt;strong&gt;ada@example.com&lt;/strong&gt;&lt;/p&gt;
+  &lt;button secondary&gt;Sign out&lt;/button&gt;
+&lt;/div&gt;
+</code></pre>
+<p>Anchored placement is progressive enhancement: engines without CSS anchor
+positioning centre the popover in the viewport instead of misplacing it, and
+where the feature exists a popover near an edge flips to the other side rather
+than opening off-screen.</p>
+<p>Anchoring uses CSS <code>position-area</code>, guarded by <code>@supports</code>, to avoid scrolled-page
+coordinate mismatches. Set <code>placement=&quot;center&quot;</code> to keep a popover centred in the
+viewport on every engine. Use that for a popover opened programmatically without
+an invoker; anchored popovers should be opened by their <code>popovertarget</code> button.</p>
+<h2 id="row-actions">Row actions</h2>
+<p><code>reveal</code> hides the controls inside a container until it is hovered — the pattern
+every table of records ends up wanting for its edit and delete buttons:</p>
+<pre><code tabindex="0" class="language-html">&lt;tr reveal&gt;
+  &lt;td&gt;Ada Lovelace&lt;/td&gt;
+  &lt;td row justify=&quot;end&quot; gap&gt;
+    &lt;button icon secondary tooltip=&quot;Edit&quot; aria-label=&quot;Edit&quot;&gt;…&lt;/button&gt;
+    &lt;button icon destructive tooltip=&quot;Delete&quot; aria-label=&quot;Delete&quot;&gt;…&lt;/button&gt;
+  &lt;/td&gt;
+&lt;/tr&gt;
+</code></pre>
+<p>Focus reveals them too, so they stay reachable from the keyboard, and where the
+pointer cannot hover at all they are never hidden in the first place. Only
+controls hide — buttons, button-styled <code>a tag</code> links and <code>label toggle</code>s. A
+plain link, such as the record&#39;s name, is content and always stays visible.</p>
+<p><code>tooltip</code> is a visual affordance only — assistive tech never sees the attribute,
+which is why the <code>aria-label</code> beside it is not optional. Inside a <code>responsive</code>
+scroll container a tooltip can be clipped by the scroll box; use <code>title</code> there.</p>
+<h2 id="semantic-elements">Semantic elements</h2>
+<p>Elements are styled directly. A few carry component meaning:</p>
+<div responsive tabindex="0" role="region" aria-label="Table"><table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Renders as</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>article</code></td>
+<td>Card</td>
+</tr>
+<tr>
+<td><code>aside</code></td>
+<td>Sidebar panel</td>
+</tr>
+<tr>
+<td><code>aside &gt; nav</code></td>
+<td>Sidebar&#39;s scrolling link list</td>
+</tr>
+<tr>
+<td><code>details</code> / <code>summary</code></td>
+<td>Accordion</td>
+</tr>
+<tr>
+<td><code>dialog</code></td>
+<td>Modal</td>
+</tr>
+<tr>
+<td><code>fieldset role=&quot;group&quot;</code></td>
+<td>Joined input + button</td>
+</tr>
+<tr>
+<td><code>kbd</code></td>
+<td>Keycap</td>
+</tr>
+<tr>
+<td><code>menu &gt; li &gt; button</code></td>
+<td>Menubar</td>
+</tr>
+<tr>
+<td><code>nav</code></td>
+<td>Nav bar</td>
+</tr>
+<tr>
+<td><code>table</code></td>
+<td>Data table</td>
+</tr>
+<tr>
+<td><code>input[type=checkbox][role=switch]</code></td>
+<td>Switch</td>
+</tr>
+</tbody></table></div>
+<p>Because <code>aside</code> and <code>menu</code> are claimed by components, use <code>blockquote</code> for pull
+quotes and <code>ul</code> for plain lists.</p>
+<h2 id="more-components">More components</h2>
+<p>The demo includes each of these components. The library remains CSS-only;
+native controls provide selection and validation, and application state supplies
+page numbers, completed steps and notification counts.</p>
+<div responsive tabindex="0" role="region" aria-label="Table"><table>
+<thead>
+<tr>
+<th>Markup</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>[field]</code>, <code>[hint]</code>, <code>[error]</code>, <code>[validation]</code></td>
+<td>Labels, descriptions and validation feedback</td>
+</tr>
+<tr>
+<td><code>&lt;fieldset segmented&gt;</code></td>
+<td>Radio options presented as compact selectable cards</td>
+</tr>
+<tr>
+<td><code>&lt;label choice&gt;</code></td>
+<td>Selectable radio or checkbox card</td>
+</tr>
+<tr>
+<td><code>&lt;ul list&gt;</code> / <code>&lt;ol list&gt;</code></td>
+<td>Rich rows with icons, descriptions and actions</td>
+</tr>
+<tr>
+<td><code>&lt;dl&gt;</code> / <code>&lt;dt&gt;</code> / <code>&lt;dd&gt;</code></td>
+<td>Responsive description list; optional <code>div</code> pair wrappers</td>
+</tr>
+<tr>
+<td><code>&lt;nav pagination&gt;</code></td>
+<td>Page links styled by <code>aria-current=&quot;page&quot;</code></td>
+</tr>
+<tr>
+<td><code>[avatar]</code>, <code>[avatars]</code></td>
+<td>Photo or initials avatar, or an overlapping group</td>
+</tr>
+<tr>
+<td><code>[empty]</code></td>
+<td>Centred explanation and action for an empty collection</td>
+</tr>
+<tr>
+<td><code>&lt;ol steps&gt;</code></td>
+<td>Horizontal progress steps, vertical below 600px</td>
+</tr>
+<tr>
+<td><code>&lt;ol timeline&gt;</code></td>
+<td>A vertical activity timeline</td>
+</tr>
+<tr>
+<td><code>&lt;meter&gt;</code></td>
+<td>A scalar measurement within a known range</td>
+</tr>
+<tr>
+<td><code>&lt;fieldset rating&gt;</code></td>
+<td>A star rating backed by native radio inputs</td>
+</tr>
+<tr>
+<td><code>[indicator]</code> containing <code>[badge]</code> or <code>[status]</code></td>
+<td>Notification count or status dot</td>
+</tr>
+<tr>
+<td><code>&lt;nav tabs&gt;</code></td>
+<td>Navigation links with an active underline</td>
+</tr>
+<tr>
+<td><code>[carousel]</code></td>
+<td>Manual carousel with CSS scroll snapping</td>
+</tr>
+</tbody></table></div>
+<h3 id="descriptions-and-validation">Descriptions and validation</h3>
+<p><code>field</code> groups a label and control with hint/error text. Keep explicit label and
+description relationships in HTML. Inside a <code>validation</code> container, error text
+is initially hidden and revealed when its field contains <code>aria-invalid=&quot;true&quot;</code>
+or, in supported engines, a native <code>:user-invalid</code> control. This avoids showing
+errors on untouched required fields. Without <code>:user-invalid</code>, normal browser
+validation still applies; explicit ARIA error states work in every supported engine.</p>
+<pre><code tabindex="0" class="language-html">&lt;form validation&gt;
+  &lt;div field&gt;
+    &lt;label for=&quot;email&quot;&gt;Email&lt;/label&gt;
+    &lt;input id=&quot;email&quot; type=&quot;email&quot; required aria-describedby=&quot;email-hint email-error&quot; /&gt;
+    &lt;small id=&quot;email-hint&quot; hint&gt;We will send your receipt here.&lt;/small&gt;
+    &lt;small id=&quot;email-error&quot; error&gt;Enter a valid email address.&lt;/small&gt;
+  &lt;/div&gt;
+  &lt;button type=&quot;submit&quot;&gt;Continue&lt;/button&gt;
+&lt;/form&gt;
+</code></pre>
+<p>Set <code>aria-invalid=&quot;true&quot;</code> in server-rendered HTML or application code for errors
+the browser cannot determine, such as an unavailable username. CSS cannot update
+ARIA attributes or validate business rules. Outside a <code>validation</code> container,
+<code>error</code> text is always visible. Do not rely on colour alone or assume CSS visibility
+changes will announce a message automatically.</p>
+<h3 id="native-choices-and-ratings">Native choices and ratings</h3>
+<p>Segmented options use the same outlined, selected-card treatment as choice
+cards, with visible native radios. Both align the control with the first label
+line, even when a description follows. Use a common radio <code>name</code> within a group
+and a different name for each unrelated
+group. The inputs remain focusable and contribute their normal form values.</p>
+<pre><code tabindex="0" class="language-html">&lt;fieldset segmented&gt;
+  &lt;legend&gt;Billing period&lt;/legend&gt;
+  &lt;label&gt;&lt;input type=&quot;radio&quot; name=&quot;billing&quot; value=&quot;monthly&quot; checked /&gt;Monthly&lt;/label&gt;
+  &lt;label&gt;&lt;input type=&quot;radio&quot; name=&quot;billing&quot; value=&quot;yearly&quot; /&gt;Yearly&lt;/label&gt;
+&lt;/fieldset&gt;
+
+&lt;label choice&gt;
+  &lt;input type=&quot;checkbox&quot; name=&quot;backup&quot; /&gt;
+  &lt;span col gap-xs&gt;&lt;strong&gt;Backups&lt;/strong&gt;&lt;small muted&gt;Keep a daily copy.&lt;/small&gt;&lt;/span&gt;
+&lt;/label&gt;
+
+&lt;fieldset rating&gt;
+  &lt;legend&gt;Experience&lt;/legend&gt;
+  &lt;label&gt;&lt;input type=&quot;radio&quot; name=&quot;rating&quot; value=&quot;1&quot; /&gt;&lt;span aria-hidden=&quot;true&quot;&gt;★&lt;/span&gt;&lt;span visually-hidden&gt;1 star&lt;/span&gt;&lt;/label&gt;
+  &lt;label&gt;&lt;input type=&quot;radio&quot; name=&quot;rating&quot; value=&quot;2&quot; /&gt;&lt;span aria-hidden=&quot;true&quot;&gt;★&lt;/span&gt;&lt;span visually-hidden&gt;2 stars&lt;/span&gt;&lt;/label&gt;
+  &lt;label&gt;&lt;input type=&quot;radio&quot; name=&quot;rating&quot; value=&quot;3&quot; /&gt;&lt;span aria-hidden=&quot;true&quot;&gt;★&lt;/span&gt;&lt;span visually-hidden&gt;3 stars&lt;/span&gt;&lt;/label&gt;
+&lt;/fieldset&gt;
+</code></pre>
+<p>Tab into a radio group and use the arrow keys to select. Disabled inputs retain
+their native disabled behavior. A native form reset restores the original rating;
+with no initial <code>checked</code> value it clears the rating.</p>
+<h3 id="lists-identities-and-progress">Lists, identities and progress</h3>
+<p>Rich lists can contain ordinary rows or a single full-row anchor. Include
+<code>role=&quot;list&quot;</code> on lists whose native markers are removed, including <code>list</code>,
+<code>steps</code> and <code>timeline</code>, to preserve list exposure across browser/assistive-tech
+combinations. Do not nest a button inside a full-row anchor.</p>
+<pre><code tabindex="0" class="language-html">&lt;ul list role=&quot;list&quot;&gt;
+  &lt;li&gt;&lt;span avatar aria-hidden=&quot;true&quot;&gt;AL&lt;/span&gt;&lt;div col grow&gt;&lt;strong&gt;Ada Lovelace&lt;/strong&gt;&lt;small muted&gt;Owner&lt;/small&gt;&lt;/div&gt;&lt;button secondary&gt;View&lt;/button&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+&lt;dl&gt;&lt;dt&gt;Client&lt;/dt&gt;&lt;dd&gt;Ada Lovelace&lt;/dd&gt;&lt;dt&gt;Plan&lt;/dt&gt;&lt;dd&gt;Team&lt;/dd&gt;&lt;/dl&gt;
+
+&lt;ol steps role=&quot;list&quot; aria-label=&quot;Setup&quot;&gt;
+  &lt;li complete&gt;&lt;strong&gt;Account &lt;span visually-hidden&gt;completed&lt;/span&gt;&lt;/strong&gt;&lt;/li&gt;
+  &lt;li aria-current=&quot;step&quot;&gt;&lt;strong&gt;Plan&lt;/strong&gt;&lt;/li&gt;
+  &lt;li&gt;&lt;strong&gt;Project&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+
+&lt;ol timeline role=&quot;list&quot;&gt;&lt;li&gt;&lt;time datetime=&quot;2026-10-14&quot;&gt;October 14&lt;/time&gt;&lt;p&gt;Project created.&lt;/p&gt;&lt;/li&gt;&lt;/ol&gt;
+</code></pre>
+<p>Avatars accept <code>avatar=&quot;small&quot;</code>, bare <code>avatar</code>, or <code>avatar=&quot;large&quot;</code>; override
+<code>--avatar-size</code> for another size. Images need <code>alt</code>; initials need accessible text
+or a named <code>role=&quot;img&quot;</code> when their meaning is not already supplied beside them.
+Put avatars in an <code>avatars</code> wrapper for overlap. Initials are supplied in HTML;
+CSS does not extract them or replace failed image downloads.</p>
+<p>Wrap a control or avatar in <code>indicator</code>, then add a <code>badge</code> or <code>status</code> child.
+Supply counts/status in accessible text and optionally set <code>--indicator-color</code>.
+A colour-only status dot does not communicate its meaning to everyone.</p>
+<p>Use <code>meter</code> for quotas, scores and other bounded measurements; its default height
+is <code>1rem</code>. <code>min</code>, <code>max</code>,
+<code>low</code>, <code>high</code>, <code>optimum</code> and <code>value</code> retain their native meanings. Associate it
+with a label and show a textual value. Use <code>progress</code> for task completion.</p>
+<h3 id="navigation-and-carousels">Navigation and carousels</h3>
+<p>Pagination and navigation tabs use real links. Supply current state with
+<code>aria-current=&quot;page&quot;</code> or <code>aria-current=&quot;location&quot;</code>. Use a span or a native
+disabled button for unavailable actions: <code>aria-disabled</code> alone does not stop a link.
+Pagination does not fetch data, and <code>nav tabs</code> is link navigation, not an ARIA
+tablist with hidden panels and a roving keyboard focus model.</p>
+<pre><code tabindex="0" class="language-html">&lt;nav pagination aria-label=&quot;Pages&quot;&gt;&lt;a href=&quot;?page=1&quot; aria-current=&quot;page&quot;&gt;1&lt;/a&gt;&lt;a href=&quot;?page=2&quot;&gt;2&lt;/a&gt;&lt;/nav&gt;
+&lt;nav tabs aria-label=&quot;Project&quot;&gt;&lt;a href=&quot;/overview&quot; aria-current=&quot;page&quot;&gt;Overview&lt;/a&gt;&lt;a href=&quot;/activity&quot;&gt;Activity&lt;/a&gt;&lt;/nav&gt;
+
+&lt;div carousel role=&quot;region&quot; aria-label=&quot;Carousel&quot; tabindex=&quot;0&quot;&gt;
+  &lt;article id=&quot;slide-1&quot; tabindex=&quot;-1&quot;&gt;First slide&lt;/article&gt;
+  &lt;article id=&quot;slide-2&quot; tabindex=&quot;-1&quot;&gt;Second slide&lt;/article&gt;
+&lt;/div&gt;
+&lt;nav aria-label=&quot;Slides&quot;&gt;&lt;a href=&quot;#slide-1&quot;&gt;Slide 1&lt;/a&gt;&lt;a href=&quot;#slide-2&quot;&gt;Slide 2&lt;/a&gt;&lt;/nav&gt;
+</code></pre>
+<p>A carousel supports native touch, trackpad, keyboard and fragment-link navigation.
+Set <code>--slide-size</code> to override the default 85% width. It never autoplays, and
+reduced motion disables its smooth scrolling. Keep slide contents reachable and
+give the focusable scroll region an accessible name.</p>
+<h2 id="light-and-dark-themes">Light and dark themes</h2>
+<p>BerlinX ships both, and follows the reader&#39;s system setting by default. Pin one
+for the whole page on <code>&lt;html&gt;</code>, or theme a single region — a dark sidebar in a
+light app, a light card on a dark page:</p>
+<pre><code tabindex="0" class="language-html">&lt;html theme=&quot;dark&quot;&gt;
+&lt;aside theme=&quot;dark&quot;&gt;…&lt;/aside&gt;
+&lt;article theme=&quot;light&quot;&gt;…&lt;/article&gt;
+</code></pre>
+<p>A themed region paints its own background and text colour, and every component
+inside it follows. Printing always uses the light theme.</p>
+<p>Each colour token holds both values with <code>light-dark()</code>. Override it the same
+way to keep both themes, or give a plain value to use it in both:</p>
+<pre><code tabindex="0" class="language-css">:root {
+  --primary: #7c3aed; /* a fill: works on light and dark */
+  --background: light-dark(#fffdf8, #12100e);
+  --foreground: light-dark(#1c1917, #f5f5f4);
+}
+</code></pre>
+<p>If you replace the surface colours (<code>--background</code>, <code>--card</code>, …) with plain
+light values only, add <code>theme=&quot;light&quot;</code> to <code>&lt;html&gt;</code> so a reader in dark mode does
+not get your light surfaces with dark-theme text. Engines without <code>light-dark()</code>
+(Chrome/Edge before 123, Safari before 17.5) always get the light theme.</p>
+<h2 id="theming">Theming</h2>
+<p>Headings use relative sizes and unitless leading, so they follow the reader&#39;s
+chosen text size. Body leading is <code>--line-height: 1.65</code>. The default page has
+24px padding, reduced to 16px below 600px; <code>--page-padding</code> overrides both.
+Prose has extra space before subsequent headings. Cards, details and overlays
+remove their first and last children&#39;s outer margins so padding stays consistent.</p>
+<p>Every colour, space and radius is a custom property on <code>:root</code>. Override what
+you want:</p>
+<pre><code tabindex="0" class="language-css">:root {
+  --primary: #7c3aed;
+  --radius: 4px;
+}
+</code></pre>
+<p>Base element rules are wrapped in <code>:where()</code>, so they carry <strong>zero
+specificity</strong> — any class or element rule of yours wins without <code>!important</code>:</p>
+<pre><code tabindex="0" class="language-css">.hero-button {
+  background: black;
+} /* just works */
+</code></pre>
+<p>A single button can be themed through the same properties the variants use:</p>
+<pre><code tabindex="0" class="language-css">.brand-button {
+  --button-bg: rebeccapurple;
+  --button-fg: white;
+  --button-bg-hover: #5b2d91;
+}
+</code></pre>
+<p>A fill and text in the same colour cannot both reach 4.5:1 on a dark page, so
+colours that appear as text have their own token:</p>
+<div responsive tabindex="0" role="region" aria-label="Table"><table>
+<thead>
+<tr>
+<th>Fill</th>
+<th>Text in that colour</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>--primary</code></td>
+<td><code>--primary-text</code></td>
+<td>links, <code>[primary]</code> text, current tab and step</td>
+</tr>
+<tr>
+<td><code>--destructive</code></td>
+<td><code>--destructive-text</code></td>
+<td><code>[error]</code> messages</td>
+</tr>
+<tr>
+<td><code>--accent</code></td>
+<td><code>--accent-text</code></td>
+<td><code>[accent]</code> text, filled rating stars</td>
+</tr>
+</tbody></table></div>
+<p><code>--primary-text</code> and <code>--destructive-text</code> are derived from their fills, so
+setting <code>--primary</code> alone recolours links in both themes. <code>--accent</code> is a
+<strong>fill</strong> colour: <code>#ffbf00</code> as text on white is 1.65:1. <code>--success</code> and
+<code>--warning</code> colour the edge of <code>notice=&quot;success|warning&quot;</code> and the meter&#39;s
+levels; <code>--input</code> is the background of text fields.</p>
+<h2 id="accessibility">Accessibility</h2>
+<ul>
+<li>Every default text and fill pairing meets WCAG AA in both themes — 4.5:1 for
+text, 3:1 for fills and focus rings — including hover states.
+Check custom themes separately.</li>
+<li>Logical properties throughout: in a <code>dir=&quot;rtl&quot;</code> document switches, steps,
+timelines, toasts, joined groups, breadcrumbs and select arrows mirror.</li>
+<li>Badge and tooltip text is sized in <code>rem</code>, so it follows the reader&#39;s font size.</li>
+<li><code>aria-busy=&quot;true&quot;</code> is a real ARIA state, not a styling hook. Use <code>loading</code>
+for the spinner and <code>aria-busy=&quot;true&quot;</code> for the semantics. Add <code>disabled</code> to
+busy native buttons to prevent both pointer and keyboard activation;
+<code>loading</code> alone cannot block keyboard events or duplicate submissions.</li>
+<li>Icon-only buttons and unlabelled controls need an <code>aria-label</code>. <code>tooltip</code> does
+not count: it is drawn with CSS and never reaches assistive tech.</li>
+<li>Focus is visible on every interactive element via <code>:focus-visible</code>.</li>
+<li>Text controls use an outline that survives forced-colour modes. Custom switches
+also use system colours in that mode, and selects get the system arrow back. A named <code>tabindex=&quot;0&quot;</code> scroll region
+keeps overflowing examples accessible to keyboard users.</li>
+<li><code>reveal</code> hides controls from the eye, never from the keyboard: focus brings
+them back, and a pointer that cannot hover never triggers the hiding at all.</li>
+<li><code>prefers-reduced-motion: reduce</code> stops decorative animation, including view
+transitions. A loading spinner keeps turning at a slower 1.4 seconds per
+revolution so ongoing work does not look frozen.</li>
+</ul>
+<h2 id="browser-support">Browser support</h2>
+<div responsive tabindex="0" role="region" aria-label="Table"><table>
+<thead>
+<tr>
+<th>Feature</th>
+<th>Requirement</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Core and native popovers</td>
+<td>Chrome/Edge 114+, Firefox 125+, Safari 17+</td>
+</tr>
+<tr>
+<td><code>:has()</code>, <code>:where()</code></td>
+<td>Required</td>
+</tr>
+<tr>
+<td><code>color-mix()</code>, <code>oklch()</code></td>
+<td>Required</td>
+</tr>
+<tr>
+<td>Dark theme, <code>theme</code> attribute</td>
+<td><code>light-dark()</code>: Chrome/Edge 123+, Firefox 120+, Safari 17.5+. Older engines keep the light theme.</td>
+</tr>
+<tr>
+<td>RTL select arrow and breadcrumb chevron</td>
+<td><code>:dir()</code>: Chrome/Edge 120+. Everything else mirrors through logical properties.</td>
+</tr>
+<tr>
+<td>Anchored popovers</td>
+<td>Progressive enhancement — guarded by <code>@supports (position-area: top)</code>. Without support a popover is centred in the viewport and directional <code>placement</code> values do nothing. Edge flipping (<code>position-try-fallbacks</code>) is a further enhancement on top.</td>
+</tr>
+</tbody></table></div>
+<p>Native control appearance can vary by engine.</p>
+<h3 id="breadcrumb-separators">Breadcrumb separators</h3>
+<p><code>&lt;nav breadcrumb&gt;</code> gives <code>›</code>. To change it, set <code>--separator</code> — it inherits from
+the <code>nav</code> down to the links that draw it:</p>
+<pre><code tabindex="0" class="language-css">nav[breadcrumb] {
+  --separator: &quot;/&quot;;
+}
+</code></pre>
+<pre><code tabindex="0" class="language-html">&lt;nav breadcrumb style=&quot;--separator: &#39;/&#39;&quot;&gt;…&lt;/nav&gt;
+</code></pre>
+<p>This is a custom property rather than <code>breadcrumb=&quot;/&quot;</code> on purpose. The separator
+is drawn by an <code>::after</code> on each <code>&lt;a&gt;</code>, so <code>attr(breadcrumb)</code> would read the
+<em>link&#39;s</em> attribute, not the nav&#39;s — it returns an empty string. The newer
+<code>attr()</code> syntax that can cross that boundary is not portable yet, and it cannot
+be feature-detected either, because <code>CSS.supports()</code> reports <code>true</code> for any
+custom-property value. An inherited custom property works everywhere.</p>
+<h2 id="development">Development</h2>
+<pre><code tabindex="0" class="language-sh">npm install
+npm run build    # dist/ stylesheets, guide.html and cheatsheet.html
+npm run deploy   # build, then publish the demo site to Cloudflare
+</code></pre>
+<p>Edit <code>css/berlinx.css</code>; <code>dist/</code> is generated from it. <code>dist/berlinx.min.css</code> is
+minified with Lightning CSS. This guide and the cheatsheet are written in
+<code>docs/*.md</code> and rendered to <code>guide.html</code> and <code>cheatsheet.html</code> by the same build.
+<code>index.html</code> is the demo — open it directly, no server needed.</p>
+<h2 id="license">License</h2>
+<p><a href="https://github.com/southernutahsoftware/BerlinX/blob/main/LICENSE">MIT</a> © Southern Utah Software</p>
+
+    </main>
+    <footer><small muted>BerlinX v1.0.0 · MIT License</small></footer>
+    <script>
+      const toggle = document.querySelector("[data-theme-toggle]");
+      const systemDark = matchMedia("(prefers-color-scheme: dark)");
+      const isDark = () => (document.documentElement.getAttribute("theme") || (systemDark.matches ? "dark" : "light")) === "dark";
+      const sync = () => toggle.setAttribute("aria-pressed", String(isDark()));
+      toggle.addEventListener("click", () => {
+        const theme = isDark() ? "light" : "dark";
+        document.documentElement.setAttribute("theme", theme);
+        try { localStorage.setItem("berlinx-theme", theme); } catch {}
+        sync();
+      });
+      systemDark.addEventListener("change", sync);
+      sync();
+    </script>
+  </body>
+</html>

@@ -1,0 +1,6 @@
+# Keep LF everywhere so dist/ builds byte-for-byte the same on every OS.
+* text=auto eol=lf
+
+*.woff2 binary
+*.png binary
+*.ico binary

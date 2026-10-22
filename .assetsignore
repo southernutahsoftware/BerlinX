@@ -1,0 +1,9 @@
+# Repository files that are not part of the demo site.
+.*
+node_modules
+scripts
+*.md
+*.json
+*.jsonc
+icon.png
+docs/screenshot-*.png

@@ -1,0 +1,1490 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BerlinX — Semantic CSS, thoughtfully composed</title>
+    <meta name="description" content="A minimal, classless CSS library for professional interfaces. Explore typography, forms, layouts and native HTML components." />
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      // Apply a saved theme before first paint, so a dark page never flashes light.
+      try {
+        const theme = localStorage.getItem("berlinx-theme");
+        if (theme === "light" || theme === "dark") document.documentElement.setAttribute("theme", theme);
+      } catch {}
+    </script>
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="icon.ico" sizes="any" />
+    <link rel="stylesheet" href="dist/berlinx.min.css" />
+    <link rel="stylesheet" href="css/demo-style.css" />
+    <!-- Lucide SVG paths: https://lucide.dev · license: docs/LUCIDE-LICENSE.txt -->
+  </head>
+
+  <body>
+    <a id="skipLink" href="#main" tabindex="0">Skip to content</a>
+    <header id="demoToolbar" row nowrap gap-m items="center">
+    <button id="menuToggle" icon secondary popovertarget="menu" aria-label="Open menu" aria-controls="menu">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h16" /></svg>
+    </button>
+      <a href="#introduction">Berlin<span primary>X</span></a>
+      <small muted>Component guide</small>
+      <button data-theme-toggle icon ghost aria-pressed="false" aria-label="Dark theme">
+        <svg data-icon="moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
+        <svg data-icon="sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
+      </button>
+    </header>
+
+    <aside id="menu" aria-label="Documentation">
+      <header row nowrap justify="between" items="center" gap>
+        <a id="menuBrand" href="#introduction" aria-label="BerlinX home">Berlin<span primary>X</span></a>
+        <div row nowrap gap-xs items="center">
+          <button data-theme-toggle icon ghost aria-pressed="false" aria-label="Dark theme">
+            <svg data-icon="moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
+            <svg data-icon="sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
+          </button>
+        <button id="menuClose" icon ghost popovertarget="menu" popovertargetaction="hide" aria-label="Close menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+        </button>
+        </div>
+      </header>
+        <nav aria-label="Components">
+          <small>Getting started</small>
+          <a href="#introduction">Introduction</a>
+          <a href="#installation">Installation</a>
+          <a href="#preview">Preview</a>
+          <a href="#typography">Typography</a>
+
+          <hr />
+
+          <small>Components</small>
+          <a href="#accordion">Accordion</a>
+          <a href="#badge">Badge</a>
+          <a href="#breadcrumb">Breadcrumb</a>
+          <a href="#button">Button</a>
+          <a href="#card">Card</a>
+          <a href="#checkbox">Checkbox</a>
+          <a href="#dialog">Dialog</a>
+          <a href="#drawer">Drawer</a>
+          <a href="#form">Form</a>
+          <a href="#group">Group</a>
+          <a href="#input">Input</a>
+          <a href="#label">Label</a>
+          <a href="#layout">Layout</a>
+          <a href="#feedback">Feedback</a>
+          <a href="#density">Control density</a>
+          <a href="#loading">Loading</a>
+          <a href="#menubar">Menubar</a>
+          <a href="#navigationmenu">Navigation Menu</a>
+          <a href="#popover">Popover</a>
+          <a href="#progress">Progress</a>
+          <a href="#radio">Radio Group</a>
+          <a href="#scrollarea">Scroll Area</a>
+          <a href="#select">Select</a>
+          <a href="#separator">Separator</a>
+          <a href="#sidebar">Sidebar</a>
+          <a href="#slider">Slider</a>
+          <a href="#switch">Switch</a>
+          <a href="#table">Table</a>
+          <a href="#tag">Tag</a>
+          <a href="#textarea">Textarea</a>
+          <a href="#toast">Toast</a>
+          <a href="#toggles">Toggles</a>
+          <hr />
+          <small>More components</small>
+          <a href="#validation">Field validation</a>
+          <a href="#segmented">Segmented controls</a>
+          <a href="#choices">Selectable cards</a>
+          <a href="#lists">Rich lists</a>
+          <a href="#descriptions">Description lists</a>
+          <a href="#pagination">Pagination</a>
+          <a href="#avatars">Avatars</a>
+          <a href="#empty">Empty states</a>
+          <a href="#steps">Steps</a>
+          <a href="#timeline">Timeline</a>
+          <a href="#meter">Meters</a>
+          <a href="#rating">Ratings</a>
+          <a href="#indicators">Notification indicators</a>
+          <a href="#tabs">Navigation tabs</a>
+          <a href="#carousel">Carousel</a>
+        </nav>
+      <footer row gap-m><a href="guide.html">Usage guide</a><a href="cheatsheet.html">Cheatsheet</a></footer>
+    </aside>
+
+    <main id="main" tabindex="-1">
+      <section id="introduction">
+        <div id="introMeta" row gap-m items="center"><span>Semantic CSS</span><span badge outline>v1.0.0</span></div>
+        <h1 xl>Berlin<span primary>X</span></h1>
+        <p id="introSubtitle">Thoughtful defaults.<br />Beautifully simple.</p>
+        <p id="introDescription">Build clear, considered interfaces with the HTML you already know. One stylesheet, native components, and room for your own design.</p>
+        <nav id="introActions" aria-label="Getting started" row gap-m>
+          <a tag href="#installation">Get started <span aria-hidden="true">↗</span></a>
+          <a tag outline href="#layout">Explore an interface</a>
+        </nav>
+        <p id="introFootnote">Classless · CSS only · Light and dark · MIT licensed</p>
+      </section>
+
+      <hr />
+
+      <section id="installation">
+        <h2>Installation</h2>
+        <p>
+          Add the stylesheet to your page. Semantic elements get considered
+          defaults; attributes give you variants when you need them.
+        </p>
+        <div id="code" full-width>
+          <code tabindex="0" role="region" aria-label="Stylesheet installation markup">&lt;link rel="stylesheet" href="./berlinx.min.css" /&gt;</code>
+          <button mini-button onclick="copyCode('code', this)" aria-label="Copy to clipboard">Copy</button>
+        </div>
+        <p id="copyStatus" role="status" visually-hidden></p>
+        <p><small><a href="dist/berlinx.min.css" download>Download the stylesheet</a> · <a href="guide.html">Installation &amp; theming guide</a></small></p>
+        <p>
+          Light and dark themes follow the reader&rsquo;s system setting. Add
+          <code>theme="light"</code> or <code>theme="dark"</code> to
+          <code>&lt;html&gt;</code> to choose one, or to any container to theme
+          just that region. Try the moon button to switch this page.
+        </p>
+      </section>
+
+      <hr />
+
+      <section id="preview">
+        <h2>Preview</h2>
+
+        <article>
+          <h3>A little inspiration, occasionally.</h3>
+          <p>
+            Design notes, useful patterns, and new releases. A quiet corner of
+            your inbox, with something worth opening.
+          </p>
+          <form id="newsletterForm" density="comfortable">
+            <input type="text" name="firstname" placeholder="First name" aria-label="First name" required />
+            <input type="email" name="email" placeholder="Email address" aria-label="Email address" autocomplete="email" required />
+            <label for="terms">
+              <input type="checkbox" role="switch" id="terms" name="terms" />
+              Send me occasional updates
+            </label>
+            <div row justify="end">
+              <button type="submit">
+                Subscribe
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z" /><path d="m21.854 2.147-10.94 10.939" /></svg>
+              </button>
+            </div>
+          </form>
+          <p id="newsletterStatus" role="status" hidden></p>
+        </article>
+      </section>
+
+      <hr />
+
+      <section id="typography">
+        <h2>Typography</h2>
+        <p>
+          Good typography makes an interface feel effortless. A restrained scale,
+          comfortable line lengths, and deliberate spacing help people find what
+          matters and read without distraction.
+        </p>
+
+        <blockquote>
+          The details should support the content. Give every element enough
+          space to be understood, and every page a clear place to begin.
+          <footer>
+            A principle behind BerlinX
+          </footer>
+        </blockquote>
+
+        <h3>Lists</h3>
+        <ul>
+          <li>Start with a meaningful document structure.</li>
+          <li>Use a consistent hierarchy for headings and supporting text.</li>
+          <li>Keep related information close together.</li>
+          <li>Leave room for the content to breathe.</li>
+        </ul>
+
+        <h3>Inline text elements</h3>
+        <div id="inlineType" grid fit gap-m>
+        <p><a href="#" onclick="event.preventDefault()">Link</a></p>
+        <p><strong>Bold</strong></p>
+        <p><em>Italic</em></p>
+        <p><u>Underline</u></p>
+        <p><del>Deleted</del></p>
+        <p><ins>Inserted</ins></p>
+        <p><s>Strikethrough</s></p>
+        <p><small>Small</small></p>
+        <p>Text <sub>Sub</sub></p>
+        <p>Text <sup>Sup</sup></p>
+        <p><abbr title="Abbreviation">Abbr.</abbr></p>
+        <p><code>inline code</code></p>
+        <p><kbd>Ctrl</kbd> + <kbd>C</kbd></p>
+        <p><mark>Highlighted</mark></p>
+        <p><span primary>Primary</span> and <span accent>accent</span> text</p>
+        </div>
+
+        <h3>Heading 3</h3>
+        <p>
+          Integer bibendum malesuada libero vel eleifend. Fusce iaculis turpis
+          ipsum, at efficitur sem scelerisque vel. Aliquam auctor diam ut purus
+          cursus fringilla. Class aptent taciti sociosqu ad litora torquent per
+          conubia nostra, per inceptos himenaeos.
+        </p>
+        <h4>Heading 4</h4>
+        <p>
+          Cras fermentum velit vitae auctor aliquet. Nunc non congue urna, at
+          blandit nibh. Donec ac fermentum felis. Vivamus tincidunt arcu ut lacus
+          hendrerit, eget mattis dui finibus.
+        </p>
+        <h5>Heading 5</h5>
+        <p>
+          Donec nec egestas nulla. Sed varius placerat felis eu suscipit. Mauris
+          maximus ante in consequat luctus. Morbi euismod sagittis efficitur.
+          Aenean non eros orci. Vivamus ut diam sem.
+        </p>
+        <h6>Heading 6</h6>
+        <p>
+          Ut sed quam non mauris placerat consequat vitae id risus. Vestibulum
+          tincidunt nulla ut tortor posuere, vitae malesuada tortor molestie. Sed
+          nec interdum dolor. Vestibulum id auctor nisi, a efficitur sem. Aliquam
+          sollicitudin efficitur turpis, sollicitudin hendrerit ligula semper id.
+          Nunc risus felis, egestas eu tristique eget, convallis in velit.
+        </p>
+      </section>
+
+      <hr />
+
+      <section id="accordion">
+        <h2>Accordions</h2>
+        <details>
+          <summary>Terms &amp; Conditions</summary>
+          <p>
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque
+            urna diam, tincidunt nec porta sed, auctor id velit. Etiam venenatis
+            nisl ut orci consequat, vitae tempus quam commodo. Nulla non mauris
+            ipsum. Aliquam eu posuere orci. Nulla convallis lectus rutrum quam
+            hendrerit, in facilisis elit sollicitudin. Mauris pulvinar pulvinar
+            mi, dictum tristique elit auctor quis. Maecenas ac ipsum ultrices,
+            porta turpis sit amet, congue turpis.
+          </p>
+        </details>
+      </section>
+
+      <hr />
+
+      <section id="badge">
+        <h2>Badge</h2>
+        <div row gap>
+          <span badge>Primary</span>
+          <span badge secondary>Secondary</span>
+          <span badge outline>Outline</span>
+          <span badge destructive>Destructive</span>
+          <a href="#" badge onclick="event.preventDefault()">Link</a>
+        </div>
+        <p>
+          <small>
+            <code>badge</code> works on any inline element. <code>kbd</code> is a
+            keycap, not a badge.
+          </small>
+        </p>
+      </section>
+
+      <hr />
+
+      <section id="breadcrumb">
+        <h2>Breadcrumb</h2>
+        <nav breadcrumb>
+          <a href="#">Home</a>
+          <a href="#">...</a>
+          <a href="#">Components</a>
+          <a href="#">Breadcrumb</a>
+        </nav>
+
+        <nav breadcrumb style="--separator: '/'">
+          <a href="#">Home</a>
+          <a href="#">...</a>
+          <a href="#">Components</a>
+          <a href="#">Breadcrumb</a>
+        </nav>
+        <p>
+          <small>
+            Breadcrumbs are opt-in: <code>nav breadcrumb</code> gives
+            <code>›</code>. Change it with <code>--separator</code>, which
+            inherits, so it works in every engine. A plain <code>nav</code> is
+            just a nav bar.
+          </small>
+        </p>
+      </section>
+
+      <hr />
+
+      <section id="button">
+        <h2>Buttons</h2>
+        <div row gap>
+          <button>Primary</button>
+          <button secondary>Secondary</button>
+          <button outline>Outline</button>
+          <button ghost>Ghost</button>
+          <button destructive>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+            Delete
+          </button>
+          <button icon secondary aria-label="Delete">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+          </button>
+        </div>
+        <p>
+          <small>
+            Variants are attributes rather than input types, so they compose
+            freely with behaviour &mdash;
+            <code>&lt;button type="submit" destructive&gt;</code> both submits
+            and reads as dangerous, and any variant can hold an icon.
+          </small>
+        </p>
+      </section>
+
+      <hr />
+
+      <section id="card">
+        <h2>Card</h2>
+        <article>
+          <h3>A place for your next idea</h3>
+          <p>
+            Bring the brief, the details, and the next step together. A simple
+            card gives related content a clear home without competing for attention.
+          </p>
+          <footer>
+            <small>A semantic <code>article</code>, styled automatically.</small>
+          </footer>
+        </article>
+      </section>
+
+      <hr />
+
+      <section id="checkbox">
+        <h2>Checkbox</h2>
+        <div row gap>
+          <input type="checkbox" aria-label="Checked checkbox" checked />
+          <input type="checkbox" aria-label="Unchecked checkbox" />
+        </div>
+      </section>
+
+      <hr />
+
+      <section id="dialog">
+        <h2>Dialog</h2>
+        <button onclick="openDialog('modalExample', this)">
+          Open dialog
+        </button>
+
+        <dialog id="modalExample" aria-labelledby="modalTitle">
+          <header>
+            <h3 id="modalTitle">Confirm your action</h3>
+          </header>
+          <p>
+            Cras sit amet maximus risus. Pellentesque sodales odio sit amet augue
+            finibus pellentesque. Nullam finibus risus non semper euismod.
+          </p>
+          <button secondary onclick="document.getElementById('modalExample').close()">
+            Close
+          </button>
+        </dialog>
+      </section>
+
+      <hr />
+
+      <section id="drawer">
+        <h2>Drawer</h2>
+        <div row gap>
+          <button onclick="openDialog('drawerBottom', this)">
+            Bottom
+          </button>
+          <button secondary onclick="openDialog('drawerRight', this)">
+            Right
+          </button>
+        </div>
+
+        <dialog drawer id="drawerBottom" aria-label="Bottom drawer example">
+          <header>
+            <h3>Confirm your action!</h3>
+          </header>
+          <p>
+            Cras sit amet maximus risus. Pellentesque sodales odio sit amet augue
+            finibus pellentesque. Nullam finibus risus non semper euismod.
+          </p>
+          <button secondary onclick="document.getElementById('drawerBottom').close()">
+            Close
+          </button>
+        </dialog>
+
+        <dialog drawer="right" id="drawerRight" aria-label="Right drawer example">
+          <header>
+            <h3>Confirm your action!</h3>
+          </header>
+          <p>
+            Cras sit amet maximus risus. Pellentesque sodales odio sit amet augue
+            finibus pellentesque.
+          </p>
+          <button secondary onclick="document.getElementById('drawerRight').close()">
+            Close
+          </button>
+        </dialog>
+        <p>
+          <small>
+            <code>drawer</code> anchors to the bottom;
+            <code>drawer="top|left|right"</code> anchors to any other edge.
+          </small>
+        </p>
+      </section>
+
+      <hr />
+
+      <section id="form">
+        <h2>Form</h2>
+        <form id="sampleForm" density="comfortable">
+          <div grid fit gap-l>
+          <label stack>
+            Search
+            <input type="search" name="search" placeholder="Search" />
+          </label>
+
+          <label stack>
+            Textarea
+            <textarea></textarea>
+          </label>
+
+          <label stack>
+            Text
+            <input type="text" name="text" placeholder="Project name" aria-describedby="sampleTextHint" />
+            <small id="sampleTextHint" hint>Choose a name your team will recognise.</small>
+          </label>
+
+          <label stack>
+            Select
+            <select name="select" required>
+              <option value="" selected>Select…</option>
+              <option>Design</option>
+              <option>Development</option>
+              <option>Operations</option>
+            </select>
+          </label>
+
+          <label stack>
+            File browser
+            <input type="file" name="file" />
+          </label>
+
+          <label stack>
+            Range slider
+            <input type="range" min="0" max="100" value="50" name="range" />
+          </label>
+
+          <label stack>
+            Disabled
+            <input type="text" name="disabled" placeholder="Disabled" disabled />
+          </label>
+
+          <label stack>
+            Date
+            <input type="date" name="date" />
+          </label>
+
+          <label stack>
+            Time
+            <input type="time" name="time" />
+          </label>
+
+          <label stack>
+            Color
+            <input type="color" name="color" value="#0eaaaa" />
+          </label>
+          </div>
+          <div row gap>
+            <input type="submit" value="Submit" />
+            <input type="reset" value="Reset" />
+          </div>
+          <p id="sampleFormStatus" role="status" hidden></p>
+        </form>
+        <p>
+          <small>
+            Submit defaults to primary and reset to outline, from the element's
+            own semantics. A reset button no longer looks like a delete button.
+          </small>
+        </p>
+      </section>
+
+      <hr />
+
+      <section id="group">
+        <h2>Group</h2>
+        <div col gap-l>
+          <fieldset>
+            <input name="email" type="email" placeholder="Enter your email" autocomplete="email" />
+            <input type="submit" value="Subscribe" />
+          </fieldset>
+          <fieldset>
+            <legend><strong>Checkboxes</strong></legend>
+            <label>
+              <input type="checkbox" name="checkbox-1" checked />
+              Checkbox
+            </label>
+            <label>
+              <input type="checkbox" name="checkbox-2" />
+              Checkbox
+            </label>
+          </fieldset>
+          <fieldset role="group">
+            <input name="email-group" type="email" placeholder="Enter your email" autocomplete="email" />
+            <input type="submit" value="Subscribe" />
+          </fieldset>
+        </div>
+      </section>
+
+      <hr />
+
+      <section id="input">
+        <h2>Input</h2>
+        <div col gap-l>
+          <input type="search" name="search" placeholder="Search" />
+          <textarea aria-label="Textarea"></textarea>
+          <input type="text" name="text" placeholder="Text" />
+          <input type="password" name="password" placeholder="Password" />
+          <select name="select" aria-label="Select" required>
+            <option value="" selected>Select…</option>
+            <option>…</option>
+          </select>
+          <input type="file" name="file" aria-label="File" />
+          <input type="text" name="disabled" placeholder="Disabled" disabled />
+        </div>
+      </section>
+
+      <hr />
+
+      <section id="label">
+        <h2>Labels</h2>
+        <label>
+          <input type="checkbox" checked />
+          Label
+        </label>
+        <label>
+          <input type="checkbox" />
+          Another label
+        </label>
+        <label stack>
+          Name
+          <input type="text" name="name" />
+        </label>
+        <p>
+          <small>
+            A label is a row: its text sits beside the control, and a text
+            control takes the rest of the line. <code>stack</code> turns it into
+            a field instead, with the label above a full-width control.
+          </small>
+        </p>
+      </section>
+
+      <hr />
+
+      <section id="layout">
+        <h2>Layout</h2>
+        <article id="layoutExample" col gap-l items="stretch">
+          <header row nowrap justify="between" items="center" gap-m>
+            <div grow>
+              <h3>ClientBook</h3>
+              <p muted>Edit client details</p>
+            </div>
+            <button icon secondary popovertarget="clientAccount" aria-label="Account">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M17.925 20.056a6 6 0 0 0-11.851.001" /><circle cx="12" cy="11" r="4" /><circle cx="12" cy="12" r="10" /></svg>
+            </button>
+            <div popover id="clientAccount" placement="bottom-end" col gap>
+              <strong>Ada Lovelace</strong>
+              <small muted>ada@example.com</small>
+            </div>
+          </header>
+          <form id="clientForm">
+            <div grid fit gap-m style="--grid-min: max(14rem, 40%)">
+              <label stack>Full name<input name="clientName" autocomplete="name" value="Ada Lovelace" required /></label>
+              <label stack>Email address<input type="email" name="clientEmail" autocomplete="email" value="ada@example.com" required /></label>
+              <label stack>Company<input name="company" autocomplete="organization" value="Analytical Engines" /></label>
+              <label stack>Status<select name="status"><option>Active</option><option>Prospect</option><option>Archived</option></select></label>
+            </div>
+            <label stack>Notes<textarea name="notes" placeholder="Add a note about this client"></textarea></label>
+            <footer row justify="between" items="center" gap-m>
+              <small id="clientStatus" role="status">All changes saved</small>
+              <div row gap>
+                <button type="reset" secondary>Cancel</button>
+                <button type="submit">Save changes</button>
+              </div>
+            </footer>
+          </form>
+        </article>
+        <p>
+          <small>
+            <code>row</code> and <code>col</code> pick the axis,
+            <code>gap-xs</code> / <code>gap-s</code> / <code>gap-m</code> / <code>gap-l</code> size the
+            space between children, and <code>justify</code> and
+            <code>items</code> place them along the axis and across it. Headings
+            and paragraphs drop their block margins inside a <code>row</code>,
+            since the container is already spacing its children with
+            <code>gap</code>. <code>grid fit</code> makes the form two columns
+            when there is room and one on a phone. <code>grow</code> gives the
+            title the space left beside the account button; <code>nowrap</code>
+            keeps that header on one line. Use <code>full-width</code> when a
+            button should fill its container.
+          </small>
+        </p>
+      </section>
+
+      <hr />
+
+      <section id="feedback">
+        <h2>Feedback</h2>
+        <div col gap-m items="stretch">
+          <p notice role="status">Your changes are being synced.</p>
+          <p notice="success" role="status">The client was saved successfully.</p>
+          <p notice="warning" role="status">Your trial ends in 3 days. Add a payment method to keep your projects.</p>
+          <p notice="error" role="alert">The connection was interrupted. Please try again.</p>
+        </div>
+        <p><small><code>notice</code> styles the message; <code>notice="success"</code>, <code>"warning"</code> and <code>"error"</code> add a coloured edge. Choose <code>role="status"</code> for updates or <code>role="alert"</code> for urgent errors when adding messages dynamically.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="density">
+        <h2>Control density</h2>
+        <div col gap-l items="stretch">
+          <div col gap-s items="stretch" density="compact">
+            <small>Compact &mdash; toolbars and desktop apps</small>
+            <div row gap items="center"><label grow><span visually-hidden>Filter files</span><input placeholder="Filter files" /></label><button secondary>Filter</button></div>
+          </div>
+          <div col gap-s items="stretch" density="comfortable">
+            <small>Comfortable &mdash; forms and touch screens</small>
+            <label stack>Email address<input type="email" placeholder="you@example.com" autocomplete="email" /></label>
+            <button>Get in touch</button>
+          </div>
+          <label tag><input type="file" visually-hidden />Choose a file</label>
+        </div>
+        <p><small>Set <code>density="compact"</code> or <code>density="comfortable"</code> on a container to size its controls together. A <code>label tag</code> wraps a real, keyboard-accessible file input; <code>visually-hidden</code> keeps it available to assistive technology.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="loading">
+        <h2>Loading</h2>
+        <article loading aria-busy="true"></article>
+        <div row gap>
+          <button loading aria-busy="true" disabled>Saving…</button>
+          <button secondary loading aria-busy="true" disabled>Please wait…</button>
+          <button loading aria-busy="true" disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg>
+            Save
+          </button>
+          <button icon secondary loading aria-busy="true" aria-label="Saving" disabled>
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15.2 3a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2z" /><path d="M17 21v-7a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg>
+          </button>
+        </div>
+        <p>
+          <small>
+            <code>loading</code> draws the spinner;
+            <code>aria-busy="true"</code> carries the meaning. Use both.
+            <code>aria-busy</code> is a true/false state, so it cannot be a
+            styling hook on its own. On a button, link or
+            <code>summary</code> the spinner replaces the icon rather than
+            sitting next to it. With reduced motion enabled, the spinner keeps
+            turning gently while decorative animations stop. Add
+            <code>disabled</code> to a busy button to prevent keyboard activation.
+          </small>
+        </p>
+      </section>
+
+      <hr />
+
+      <section id="menubar">
+        <h2>Menubar</h2>
+        <menu>
+          <li><button ghost>File</button></li>
+          <li><button ghost>Edit</button></li>
+          <li><button ghost>View</button></li>
+          <li><button ghost>Profiles</button></li>
+        </menu>
+      </section>
+
+      <hr />
+
+      <section id="navigationmenu">
+        <h2>Navigation Menu</h2>
+        <nav>
+          <button ghost>Getting started</button>
+          <button ghost>Components</button>
+          <button ghost>Documentation</button>
+        </nav>
+      </section>
+
+      <hr />
+
+      <section id="popover">
+        <h2>Popover</h2>
+        <div col gap>
+          <button outline popovertarget="popover1">Open simple popover</button>
+          <div popover id="popover1">Simple popover</div>
+
+          <button outline popovertarget="popover2">Open more complex popover</button>
+          <div popover id="popover2">
+            <h3>Dimensions</h3>
+            <p subheader>
+              <small>Set the dimensions for the layer.</small>
+            </p>
+
+            <div col gap>
+              <label>
+                <span style="min-width: 55px">Width</span>
+                <input type="text" aria-label="Width" />
+              </label>
+
+              <label>
+                <span style="min-width: 55px">Height</span>
+                <input type="text" aria-label="Height" />
+              </label>
+            </div>
+          </div>
+
+          <button outline popovertarget="popover3">
+            Open dropdown (placement="bottom-end")
+          </button>
+          <div popover id="popover3" placement="bottom-end" col gap>
+            <p>Signed in as <strong>ada@example.com</strong></p>
+            <button secondary>Sign out</button>
+          </div>
+        </div>
+        <p>
+          <small>
+            A popover opens centred above its anchor.
+            <code>placement</code> moves it: <code>top</code> or
+            <code>bottom</code>, on their own or with <code>-start</code> /
+            <code>-end</code> to line its edge up with the anchor's. Anchored
+            placement is progressive enhancement &mdash; engines without CSS
+            anchor positioning centre the popover in the viewport instead, and
+            where it is supported a popover near an edge flips to the other side
+            rather than opening off-screen. The layout attributes work inside one:
+            this menu is a <code>col gap</code>.
+            Use <code>placement="center"</code> for a viewport-centred popover.
+          </small>
+        </p>
+      </section>
+
+      <hr />
+
+      <section id="progress">
+        <h2>Progress bar</h2>
+        <progress aria-label="Loading"></progress>
+      </section>
+
+      <hr />
+
+      <section id="radio">
+        <h2>Radio Group</h2>
+        <label>
+          <input type="radio" name="radio2" value="radio-3" checked />
+          Radio button
+        </label>
+        <label>
+          <input type="radio" name="radio2" value="radio-4" />
+          Radio button
+        </label>
+      </section>
+
+      <hr />
+
+      <section id="scrollarea">
+        <h2>Scroll Area</h2>
+        <div grid fit gap-m>
+          <div scroll-x tabindex="0" role="region" aria-label="Horizontal scrolling example" scroll-example>
+            <div row nowrap gap-m style="width: 36rem; height: 100%"><span>Scroll horizontally →</span><span>Room for wider content</span></div>
+          </div>
+          <div scroll-y tabindex="0" role="region" aria-label="Vertical scrolling example" scroll-example>
+            <div col justify="between" style="min-height: 28rem"><span>Scroll vertically ↓</span><span>You have reached the end.</span></div>
+          </div>
+        </div>
+        <p><small>Focus either region to scroll with the keyboard, or use a trackpad or touch gesture.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="select">
+        <h2>Select</h2>
+        <select aria-label="Select an option">
+          <option value="" selected>Select…</option>
+          <option>option 1</option>
+          <option>option 2</option>
+          <option>option 3</option>
+          <option>option 4</option>
+        </select>
+      </section>
+
+      <hr />
+
+      <section id="separator">
+        <h2>Separator</h2>
+        <p>Radix Primitives An open-source UI component library.</p>
+        <hr />
+        <div style="display: flex">
+          <a href="#">Blog</a>
+          <hr vertical />
+          <a href="#">Docs</a>
+          <hr vertical />
+          <a href="#">Source</a>
+        </div>
+      </section>
+
+      <hr />
+
+      <section id="sidebar">
+        <h2>Sidebar</h2>
+        <div style="display: flex">
+          <aside style="width: 250px">
+            <header>
+              <div>
+                <h6 style="margin-bottom: 0">Southern Utah Software</h6>
+                <small>Enterprise</small>
+              </div>
+            </header>
+
+            <nav>
+              <small>Platform</small>
+              <a href="#">Database</a>
+              <a href="#">Subscriptions</a>
+              <a href="#">Documentation</a>
+              <a href="#">Settings</a>
+            </nav>
+
+            <footer>
+              <h6 style="margin-bottom: 0">v1.0.0</h6>
+              <small>©copyright 2026</small>
+            </footer>
+          </aside>
+
+          <div style="margin-left: 24px">
+            <nav>
+              <a href="#">Database</a>
+              <a href="#">Queries</a>
+            </nav>
+          </div>
+        </div>
+        <p>
+          <small>
+            The scrolling region is <code>aside &gt; nav</code>. It used to be
+            <code>aside &gt; main</code>, which is invalid &mdash;
+            <code>main</code> may not descend from <code>aside</code>, and a
+            document may only have one.
+          </small>
+        </p>
+      </section>
+
+      <hr />
+
+      <section id="slider">
+        <h2>Slider</h2>
+        <input type="range" min="0" max="100" value="50" name="range" aria-label="Range slider" />
+      </section>
+
+      <hr />
+
+      <section id="switch">
+        <h2>Switch</h2>
+        <input type="checkbox" role="switch" aria-label="Toggle setting" />
+      </section>
+
+      <hr />
+
+      <section id="table">
+        <h2>Table</h2>
+        <table>
+          <caption>
+            Table caption
+          </caption>
+          <thead>
+            <tr>
+              <th scope="col">Person</th>
+              <th scope="col">Most interest in</th>
+              <th scope="col">Age</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Chris</th>
+              <td>HTML tables</td>
+              <td>22</td>
+            </tr>
+            <tr>
+              <th scope="row">Dennis</th>
+              <td>Web accessibility</td>
+              <td>45</td>
+            </tr>
+            <tr>
+              <th scope="row">Sarah</th>
+              <td>JavaScript frameworks</td>
+              <td>29</td>
+            </tr>
+            <tr>
+              <th scope="row">Karen</th>
+              <td>Web performance</td>
+              <td>36</td>
+            </tr>
+          </tbody>
+          <tfoot>
+            <tr>
+              <th scope="row" colspan="2">Average age</th>
+              <td>33</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <h3>Responsive</h3>
+        <table responsive="stack">
+          <thead>
+            <tr>
+              <th scope="col">Person</th>
+              <th scope="col">Most interest in</th>
+              <th scope="col">Age</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <th scope="row">Chris</th>
+              <td data-label="Most interest in">HTML tables</td>
+              <td data-label="Age">22</td>
+            </tr>
+            <tr>
+              <th scope="row">Dennis</th>
+              <td data-label="Most interest in">Web accessibility</td>
+              <td data-label="Age">45</td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <small>
+            <code>responsive</code> gives a too-wide table its own horizontal
+            scrollbar so it can never stretch the page; pair it with
+            <code>white-space: nowrap</code> if you want the columns to keep
+            their natural width instead of cramming. Prefer it on a wrapper
+            &mdash; <code>&lt;div responsive&gt;</code> &mdash; because on the
+            table itself it has to switch the table to a block box, which makes
+            the columns shrink to their content.
+            <code>responsive="stack"</code> instead breaks each row into its own
+            card under 600px, printing every cell's <code>data-label</code>
+            beside its value &mdash; narrow the window to see it. Both drop the
+            table role where they change <code>display</code>; put
+            <code>role="table"</code>, <code>role="row"</code> and
+            <code>role="cell"</code> back if screen-reader users need the grid.
+          </small>
+        </p>
+
+        <h3>Row actions</h3>
+        <table>
+          <thead>
+            <tr>
+              <th scope="col">Person</th>
+              <th scope="col">Most interest in</th>
+              <th scope="col"></th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr reveal>
+              <th scope="row">Chris</th>
+              <td>HTML tables</td>
+              <td row justify="end" gap>
+                <button icon secondary tooltip="Edit" aria-label="Edit">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></svg>
+                </button>
+                <button icon secondary tooltip="Delete" aria-label="Delete">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+                </button>
+              </td>
+            </tr>
+            <tr reveal>
+              <th scope="row">Dennis</th>
+              <td>Web accessibility</td>
+              <td row justify="end" gap>
+                <button icon secondary tooltip="Edit" aria-label="Edit">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z" /><path d="m15 5 4 4" /></svg>
+                </button>
+                <button icon secondary tooltip="Delete" aria-label="Delete">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p>
+          <small>
+            <code>reveal</code> on the row keeps its controls out of the way
+            until you point at it &mdash; hover a row, or tab into one, and they
+            appear. Where the pointer cannot hover they are never hidden.
+            <code>tooltip</code> names an icon-only button on hover and focus,
+            but it is drawn in CSS and assistive tech never sees it, so the
+            <code>aria-label</code> beside it is doing the real work.
+          </small>
+        </p>
+      </section>
+
+      <hr />
+
+      <section id="tag">
+        <h2>Tag</h2>
+        <div row gap>
+          <span tag>Primary</span>
+          <span tag secondary>Secondary</span>
+          <span tag outline>Outline</span>
+          <span tag ghost>Ghost</span>
+          <span tag destructive>Destructive</span>
+          <a href="#tag" tag outline>Link</a>
+        </div>
+        <p>
+          <small>
+            <code>tag</code> gives any element the button's exact appearance and
+            every button variant &mdash; they share the same rules, so they
+            cannot drift apart. Only a tag that is an <code>a</code>,
+            <code>button</code>, <code>summary</code> or <code>label</code> gets the hand cursor and
+            the hover, active and focus states; a plain
+            <code>&lt;span tag&gt;</code> never pretends to be clickable.
+          </small>
+        </p>
+      </section>
+
+      <hr />
+
+      <section id="textarea">
+        <h2>Textarea</h2>
+        <textarea aria-label="Textarea"></textarea>
+      </section>
+
+      <hr />
+
+      <section id="toast">
+        <h2>Toast</h2>
+        <button outline onclick="toastDialog.show()">Add to calendar</button>
+
+        <dialog id="toastDialog" toast aria-label="Notification preview">
+          <div row gap-l>
+            <div>
+              <h6>Scheduled: Catch up</h6>
+              <small>Friday, February 10, 2023 at 5:57 PM</small>
+            </div>
+            <button secondary onclick="toastDialog.close()">Undo</button>
+          </div>
+        </dialog>
+      </section>
+
+      <hr />
+
+      <section id="toggles">
+        <h2>Toggles</h2>
+        <div row gap>
+          <label toggle>
+            <input type="checkbox" aria-label="Save" checked />
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.5 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h10.2a2 2 0 0 1 1.4.6l3.8 3.8a2 2 0 0 1 .6 1.4v4.35" /><path d="m16 19 2 2 4-4" /><path d="M17 15.13V14a1 1 0 0 0-1-1H8a1 1 0 0 0-1 1v7" /><path d="M7 3v4a1 1 0 0 0 1 1h7" /></svg>
+          </label>
+
+          <label toggle>
+            <input type="checkbox" aria-label="Delete" />
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 11v6" /><path d="M14 11v6" /><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" /><path d="M3 6h18" /><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg>
+          </label>
+        </div>
+        <p>
+          <small>
+            The wrapping <code>label toggle</code> makes the icon clickable and
+            keyboard-operable natively &mdash; no JavaScript.
+          </small>
+        </p>
+      </section>
+
+      <hr />
+
+      <section id="validation">
+        <h2>Field validation</h2>
+        <form id="validationForm" validation>
+          <div field>
+            <label for="validationEmail">Email address</label>
+            <input id="validationEmail" type="email" name="email" autocomplete="email" required aria-describedby="emailHint emailError" placeholder="you@example.com" />
+            <small id="emailHint" hint>We will send your receipt here.</small>
+            <small id="emailError" error>Enter an email address, such as name@example.com.</small>
+          </div>
+          <div row gap><button type="submit">Check email</button><button type="reset" secondary>Reset</button></div>
+          <p id="validationResult" notice="success" role="status" hidden>Email looks good.</p>
+        </form>
+        <div field validation>
+          <label for="usernameExample">An explicit error state</label>
+          <input id="usernameExample" value="ada" readonly aria-invalid="true" aria-describedby="usernameError" />
+          <small id="usernameError" error>This username is already taken.</small>
+        </div>
+        <p><small><code>field</code> groups a label, control and descriptions. In a <code>validation</code> form, native <code>:user-invalid</code> reveals the error after interaction; <code>aria-invalid="true"</code> supports errors supplied by your application. Keep descriptions connected with <code>aria-describedby</code>.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="segmented">
+        <h2>Segmented controls</h2>
+        <fieldset segmented>
+          <legend>Billing period</legend>
+          <label><input type="radio" name="billing" value="monthly" checked /><span col gap-xs><strong>Monthly</strong><small muted>Flexible billing</small></span></label>
+          <label><input type="radio" name="billing" value="yearly" /><span col gap-xs><strong>Yearly</strong><small muted>Save with annual billing</small></span></label>
+          <label><input type="radio" name="billing" value="custom" disabled /><span col gap-xs><strong>Custom</strong><small muted>Coming soon</small></span></label>
+        </fieldset>
+        <p><small><code>fieldset segmented</code> styles real radio buttons. Tab into the group and use the arrow keys to change selection.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="choices">
+        <h2>Selectable cards</h2>
+        <div col gap-l items="stretch">
+        <fieldset grid fit gap-m style="--grid-min: 16rem">
+          <legend>Choose a plan</legend>
+          <label choice><input type="radio" name="plan" value="starter" checked /><span col gap-xs grow><strong>Starter</strong><small muted>For personal projects and small teams.</small><span tabular>$9 / month</span></span></label>
+          <label choice><input type="radio" name="plan" value="team" /><span col gap-xs grow><strong>Team</strong><small muted>Shared projects with room to grow.</small><span tabular>$29 / month</span></span></label>
+        </fieldset>
+        <label choice><input type="checkbox" name="backup" /><span col gap-xs><strong>Automatic backups</strong><small muted>Keep a daily copy of your work.</small></span></label>
+        </div>
+        <p><small><code>label choice</code> highlights its native checked or focused input. Radio cards select one option; checkbox cards allow independent choices.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="lists">
+        <h2>Rich lists</h2>
+        <ul list role="list">
+          <li><span avatar aria-hidden="true">AL</span><div col grow gap-xs><strong>Ada Lovelace</strong><small muted>ada@example.com</small></div><span badge secondary>Owner</span></li>
+          <li><span avatar aria-hidden="true">GH</span><div col grow gap-xs><strong>Grace Hopper</strong><small muted>grace@example.com</small></div><button icon ghost aria-label="More actions for Grace Hopper"><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="1" /><circle cx="19" cy="12" r="1" /><circle cx="5" cy="12" r="1" /></svg></button></li>
+          <li><a href="#descriptions"><span avatar aria-hidden="true">KJ</span><div col grow gap-xs><strong>Katherine Johnson</strong><small muted>View client details</small></div><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m9 18 6-6-6-6" /></svg></a></li>
+        </ul>
+        <p><small><code>ul list</code> or <code>ol list</code> aligns row content and actions. A single anchor can make a whole row a link. Keep <code>role="list"</code> when removing native list markers.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="descriptions">
+        <h2>Description lists</h2>
+        <article>
+          <dl>
+            <dt>Client</dt><dd>Katherine Johnson</dd>
+            <dt>Email</dt><dd>katherine@example.com</dd>
+            <dt>Plan</dt><dd>Team <span badge secondary>Monthly</span></dd>
+            <dt>Notes</dt><dd>Prefers email updates. Next review is scheduled for November.</dd>
+          </dl>
+        </article>
+        <p><small>Plain <code>dl</code>, <code>dt</code> and <code>dd</code> create a responsive label/value layout. Optional <code>div</code> wrappers can group each pair. On phones the values sit below their labels.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="pagination">
+        <h2>Pagination</h2>
+        <article><p id="pageExample" role="status">Page 1 of 3 · Ada Lovelace</p></article>
+        <nav pagination id="paginationExample" aria-label="Client pages">
+          <button type="button" id="previousPage" data-page="0" disabled aria-label="Previous page">‹</button>
+          <a href="#pagination" data-page="1" aria-current="page" aria-label="Page 1">1</a>
+          <a href="#pagination" data-page="2" aria-label="Page 2">2</a>
+          <a href="#pagination" data-page="3" aria-label="Page 3">3</a>
+        </nav>
+        <p><small><code>nav pagination</code> styles page links and <code>aria-current="page"</code>. Your application supplies page URLs and current state; this preview changes the sample record locally. An unavailable page is a span or a disabled button, rather than a clickable disabled-looking link.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="avatars">
+        <h2>Avatars</h2>
+        <div row gap-l items="center">
+          <span avatar="small" role="img" aria-label="Ada Lovelace">AL</span>
+          <span avatar role="img" aria-label="Grace Hopper">GH</span>
+          <span avatar="large" role="img" aria-label="Katherine Johnson">KJ</span>
+          <div avatars aria-label="Project team"><span avatar role="img" aria-label="Ada Lovelace">AL</span><span avatar role="img" aria-label="Grace Hopper">GH</span><span avatar role="img" aria-label="Katherine Johnson">KJ</span></div>
+        </div>
+        <p><small><code>avatar</code> works on an image or an element containing initials. Use <code>small</code>, <code>large</code> or <code>--avatar-size</code> to change its size. <code>avatars</code> overlaps a group. Supply image alt text or an accessible name for initials.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="empty">
+        <h2>Empty states</h2>
+        <div empty>
+          <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2" /></svg>
+          <h3>No projects yet</h3>
+          <p muted>Choose a plan and give your next idea a place to grow.</p>
+          <a tag href="#choices">Explore plans</a>
+        </div>
+        <p><small><code>empty</code> groups an illustration, heading, explanation and action. Your application decides when to show it.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="steps">
+        <h2>Steps</h2>
+        <ol steps role="list" aria-label="Project setup">
+          <li complete><strong>Account <span visually-hidden>completed</span></strong><small muted>Your profile is ready</small></li>
+          <li aria-current="step"><strong>Choose a plan</strong><small muted>Find the right fit</small></li>
+          <li><strong>Start a project</strong><small muted>Invite your team</small></li>
+        </ol>
+        <p><small><code>ol steps</code> presents progress supplied in the markup. Mark finished steps with <code>complete</code> and the current one with <code>aria-current="step"</code>. It stacks vertically on phones.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="timeline">
+        <h2>Timeline</h2>
+        <ol timeline role="list" aria-label="Project activity">
+          <li><time datetime="2026-10-14T09:00">Today, 9:00 AM</time><strong>Project created</strong><p>Ada opened the autumn planning workspace.</p></li>
+          <li><time datetime="2026-10-14T09:15">Today, 9:15 AM</time><strong>Team invited</strong><p>Grace and Katherine joined the project.</p></li>
+          <li><time datetime="2026-10-14T10:00">Today, 10:00 AM</time><strong>First milestone reached</strong><p>The project brief is ready for review.</p></li>
+        </ol>
+      </section>
+
+      <hr />
+
+      <section id="meter">
+        <h2>Meters</h2>
+        <div col gap-m items="stretch">
+          <label stack>Personal storage · 24%<meter min="0" max="100" low="60" high="85" optimum="20" value="24">24%</meter></label>
+          <label stack>Team storage · 74%<meter min="0" max="100" low="60" high="85" optimum="20" value="74">74%</meter></label>
+          <label stack>Archive storage · 95%<meter min="0" max="100" low="60" high="85" optimum="20" value="95">95%</meter></label>
+        </div>
+        <p><small>Use a native <code>meter</code> for a measurement within a known range, such as a quota. Use <code>progress</code> for work being completed. Native <code>low</code>, <code>high</code> and <code>optimum</code> define the value ranges.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="rating">
+        <h2>Ratings</h2>
+        <form>
+          <fieldset rating>
+            <legend>How was your experience?</legend>
+            <label><input type="radio" name="rating" value="1" /><span aria-hidden="true">★</span><span visually-hidden>1 star</span></label>
+            <label><input type="radio" name="rating" value="2" /><span aria-hidden="true">★</span><span visually-hidden>2 stars</span></label>
+            <label><input type="radio" name="rating" value="3" /><span aria-hidden="true">★</span><span visually-hidden>3 stars</span></label>
+            <label><input type="radio" name="rating" value="4" /><span aria-hidden="true">★</span><span visually-hidden>4 stars</span></label>
+            <label><input type="radio" name="rating" value="5" /><span aria-hidden="true">★</span><span visually-hidden>5 stars</span></label>
+          </fieldset>
+          <button type="reset" secondary>Clear rating</button>
+        </form>
+        <p><small><code>fieldset rating</code> keeps native radio semantics, arrow-key navigation and form values. The stars up to the selected value are filled using CSS.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="indicators">
+        <h2>Notification indicators</h2>
+        <div row gap-l items="center">
+          <span indicator><button secondary popovertarget="notificationPreview" aria-label="Notifications, 3 unread">Notifications</button><span badge aria-hidden="true">3</span></span>
+          <span indicator><span avatar role="img" aria-label="Ada Lovelace">AL</span><span status><span visually-hidden>Available</span></span></span>
+        </div>
+        <div popover id="notificationPreview" placement="bottom-start"><strong>3 unread notifications</strong><ul><li>Grace joined your team</li><li>Your weekly report is ready</li><li>Project brief approved</li></ul></div>
+        <p><small><code>indicator</code> positions a badge or <code>status</code> dot on a control or avatar. Include the count or status in accessible text, not just the dot's colour.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="tabs">
+        <h2>Navigation tabs</h2>
+        <nav tabs id="navigationTabs" aria-label="Project sections"><a href="#tab-overview" aria-current="location">Overview</a><a href="#tab-activity">Activity</a><a href="#tab-settings">Settings</a></nav>
+        <div id="tab-overview" tabindex="-1"><h3>Overview</h3><p>A shared workspace for the autumn launch.</p></div>
+        <div id="tab-activity" tabindex="-1"><h3>Activity</h3><p>The team has completed the project brief.</p></div>
+        <div id="tab-settings" tabindex="-1"><h3>Settings</h3><p>Team plan · Monthly billing · Email notifications enabled.</p></div>
+        <p><small><code>nav tabs</code> styles ordinary navigation links and <code>aria-current</code>. These links jump to sections; they retain link semantics. Content-switching ARIA tabs require additional focus and keyboard handling.</small></p>
+      </section>
+
+      <hr />
+
+      <section id="carousel">
+        <h2>Carousel</h2>
+        <div carousel role="region" aria-label="Project carousel" tabindex="0">
+          <article id="carousel-1" tabindex="-1">
+            <div carousel-art="design" aria-hidden="true"><span><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="m18 13-.654-4.736a4 4 0 00-2.756-3.266l-9.163-2.9a2 2 0 00-2.017.493l-.82.819a2 2 0 00-.492 2.017l2.9 9.163a4 4 0 003.266 2.756L13 18" /><path d="M18.648 12.352a1.205 1.205 0 011.704 0l1.296 1.296a1.205 1.205 0 010 1.704l-6.296 6.296a1.205 1.205 0 01-1.704 0l-1.296-1.296a1.205 1.205 0 010-1.704z" /><path d="m3 3 6.586 6.586" /><circle cx="11" cy="11" r="2" /></svg></span></div>
+            <div carousel-body><span badge secondary>Design</span><h3>Start with a clear vision</h3><p>Bring your team's goals, audience and direction together in a thoughtful project brief.</p><footer row justify="between" items="center" gap><small muted>01 / 03</small><a href="#descriptions">View brief <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m9 18 6-6-6-6" /></svg></a></footer></div>
+          </article>
+          <article id="carousel-2" tabindex="-1">
+            <div carousel-art="build" aria-hidden="true"><span><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><rect width="18" height="18" x="3" y="3" rx="2" /><path d="M3 9h18" /><path d="M9 21V9" /></svg></span></div>
+            <div carousel-body><span badge secondary>Build</span><h3>Make the idea tangible</h3><p>Turn your first sketches into a useful prototype, ready for feedback from the whole team.</p><footer row justify="between" items="center" gap><small muted>02 / 03</small><a href="#choices">Explore options <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m9 18 6-6-6-6" /></svg></a></footer></div>
+          </article>
+          <article id="carousel-3" tabindex="-1">
+            <div carousel-art="launch" aria-hidden="true"><span><svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" focusable="false"><path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" /><path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09" /><path d="M9 12a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.4 22.4 0 0 1-4 2z" /><path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 .05 5 .05" /></svg></span></div>
+            <div carousel-body><span badge secondary>Launch</span><h3>Share something great</h3><p>Make the final checks, celebrate the progress and welcome your first customers.</p><footer row justify="between" items="center" gap><small muted>03 / 03</small><a href="#steps">Review steps <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m9 18 6-6-6-6" /></svg></a></footer></div>
+          </article>
+        </div>
+        <nav aria-label="Carousel slides"><a href="#carousel-1">Slide 1</a><a href="#carousel-2">Slide 2</a><a href="#carousel-3">Slide 3</a></nav>
+        <p><small><code>carousel</code> provides native scrolling and CSS scroll snapping. Swipe, focus the carousel and use arrow keys, or follow the slide links. Set <code>--slide-size</code> to change the slide width. There is no autoplay.</small></p>
+      </section>
+
+      <hr />
+
+      <footer>
+        <small>
+          Inspired by <a href="https://ui.shadcn.com/">shadcn/ui</a> and
+          <a href="https://picocss.com">Pico</a>
+          · Icons by <a href="https://lucide.dev">Lucide</a> (<a href="docs/LUCIDE-LICENSE.txt">license</a>)
+        </small>
+      </footer>
+    </main>
+
+    <script>
+      // Safari does not focus buttons on pointer clicks. Establish an invoker
+      // so native dialog dismissal restores focus consistently in every engine.
+      function openDialog(id, invoker) {
+        invoker.focus({ preventScroll: true });
+        document.getElementById(id).showModal();
+      }
+
+      // Copy code to clipboard
+      async function copyCode(id, btn) {
+        const el = document.getElementById(id);
+        const text = (
+          el.querySelector("code")?.textContent || el.textContent
+        ).trim();
+        const status = document.getElementById("copyStatus");
+        try {
+          await navigator.clipboard.writeText(text);
+          btn.textContent = "Copied!";
+          btn.classList.add("copied");
+          status.textContent = "Stylesheet markup copied to clipboard.";
+          setTimeout(() => {
+            btn.textContent = "Copy";
+            btn.classList.remove("copied");
+          }, 1500);
+        } catch {
+          const selection = getSelection();
+          const range = document.createRange();
+          range.selectNodeContents(el.querySelector("code"));
+          selection.removeAllRanges();
+          selection.addRange(range);
+          status.removeAttribute("visually-hidden");
+          status.textContent = "Clipboard unavailable. The markup is selected; use your device’s copy command.";
+        }
+      }
+
+      // Samples stay local; native validation and reset still work normally.
+      document.querySelectorAll("form").forEach(form => {
+        form.addEventListener("submit", event => event.preventDefault());
+      });
+      const newsletterForm = document.getElementById("newsletterForm");
+      const newsletterStatus = document.getElementById("newsletterStatus");
+      newsletterForm.addEventListener("submit", () => {
+        newsletterStatus.hidden = false;
+        newsletterStatus.textContent = "Thanks for trying the preview. No subscription has been created.";
+      });
+      newsletterForm.addEventListener("input", () => { newsletterStatus.hidden = true; });
+      const sampleForm = document.getElementById("sampleForm");
+      const sampleFormStatus = document.getElementById("sampleFormStatus");
+      sampleForm.addEventListener("submit", () => {
+        sampleFormStatus.hidden = false;
+        sampleFormStatus.textContent = "Form validated. This preview does not send or store your data.";
+      });
+      sampleForm.addEventListener("input", () => { sampleFormStatus.hidden = true; });
+      sampleForm.addEventListener("reset", () => { sampleFormStatus.hidden = true; });
+
+      // A regular sidebar on desktop; a native, dismissible popover on mobile.
+      const menu = document.getElementById("menu");
+      const mobileMenu = matchMedia("(max-width: 800px)");
+      function syncMenu() {
+        if (menu.matches(":popover-open")) menu.hidePopover();
+        if (mobileMenu.matches) menu.setAttribute("popover", "auto");
+        else menu.removeAttribute("popover");
+      }
+      mobileMenu.addEventListener("change", syncMenu);
+      syncMenu();
+
+      // The library follows the system theme; this pins one with theme="…".
+      const themeToggles = document.querySelectorAll("[data-theme-toggle]");
+      const systemDark = matchMedia("(prefers-color-scheme: dark)");
+      function isDark() {
+        const theme = document.documentElement.getAttribute("theme");
+        return theme ? theme === "dark" : systemDark.matches;
+      }
+      function syncThemeToggles() {
+        themeToggles.forEach(button => button.setAttribute("aria-pressed", String(isDark())));
+      }
+      themeToggles.forEach(button => button.addEventListener("click", () => {
+        const theme = isDark() ? "light" : "dark";
+        document.documentElement.setAttribute("theme", theme);
+        try { localStorage.setItem("berlinx-theme", theme); } catch {}
+        syncThemeToggles();
+      }));
+      systemDark.addEventListener("change", syncThemeToggles);
+      syncThemeToggles();
+
+      function markCurrentSection() {
+        const target = document.getElementById(location.hash.slice(1));
+        const section = target?.closest("main > section");
+        const hash = section ? `#${section.id}` : "#introduction";
+        setCurrentSection(hash);
+      }
+      function setCurrentSection(hash) {
+        menu.querySelectorAll("nav > a").forEach((link) => {
+          if (link.getAttribute("href") === hash) link.setAttribute("aria-current", "location");
+          else link.removeAttribute("aria-current");
+        });
+      }
+      addEventListener("hashchange", markCurrentSection);
+      markCurrentSection();
+
+      const sections = [...document.querySelectorAll("main > section[id]")];
+      let scrollPending = false;
+      addEventListener("scroll", () => {
+        if (scrollPending) return;
+        scrollPending = true;
+        requestAnimationFrame(() => {
+          const threshold = mobileMenu.matches ? 100 : 48;
+          const current = sections.filter(section => section.getBoundingClientRect().top <= threshold).at(-1);
+          if (current) setCurrentSection(`#${current.id}`);
+          scrollPending = false;
+        });
+      }, { passive: true });
+
+      menu.addEventListener("click", (e) => {
+        if (e.target.closest("a") && menu.matches(":popover-open")) {
+          menu.hidePopover();
+        }
+      });
+
+      const clientForm = document.getElementById("clientForm");
+      const clientStatus = document.getElementById("clientStatus");
+      clientForm.addEventListener("input", () => { clientStatus.textContent = "Unsaved changes"; });
+      clientForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        clientStatus.textContent = "Changes saved for this preview";
+      });
+      clientForm.addEventListener("reset", () => { clientStatus.textContent = "All changes saved"; });
+
+      const validationForm = document.getElementById("validationForm");
+      const validationResult = document.getElementById("validationResult");
+      validationForm.addEventListener("submit", (e) => {
+        e.preventDefault();
+        validationResult.hidden = false;
+      });
+      validationForm.addEventListener("input", () => { validationResult.hidden = true; });
+      validationForm.addEventListener("reset", () => { validationResult.hidden = true; });
+
+      // Only the preview's sample data needs scripting; pagination itself is CSS.
+      const pageNames = ["Ada Lovelace", "Grace Hopper", "Katherine Johnson"];
+      document.getElementById("paginationExample").addEventListener("click", (e) => {
+        const link = e.target.closest("a[data-page], button[data-page]");
+        if (!link) return;
+        e.preventDefault();
+        const page = Number(link.dataset.page);
+        if (page < 1 || page > pageNames.length) return;
+        document.querySelectorAll("#paginationExample a").forEach((item) => {
+          if (Number(item.dataset.page) === page) item.setAttribute("aria-current", "page");
+          else item.removeAttribute("aria-current");
+        });
+        const previous = document.getElementById("previousPage");
+        previous.disabled = page === 1;
+        previous.dataset.page = String(page - 1);
+        document.getElementById("pageExample").textContent = `Page ${page} of 3 · ${pageNames[page - 1]}`;
+      });
+
+      function markNavigationTab() {
+        const links = [...document.querySelectorAll("#navigationTabs a")];
+        if (!links.some(link => link.hash === location.hash)) return;
+        links.forEach(link => {
+          if (link.hash === location.hash) link.setAttribute("aria-current", "location");
+          else link.removeAttribute("aria-current");
+        });
+      }
+      addEventListener("hashchange", markNavigationTab);
+      markNavigationTab();
+    </script>
+  </body>
+</html>

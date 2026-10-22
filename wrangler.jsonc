@@ -1,0 +1,15 @@
+// The demo site at https://berlinx.southernutahsoftware.com, served as static
+// assets from Cloudflare. `npm run deploy` builds and publishes the repository
+// root, minus what .assetsignore leaves out.
+{
+  "$schema": "https://unpkg.com/wrangler@4/config-schema.json",
+  "name": "berlinx",
+  "compatibility_date": "2026-10-01",
+  "assets": {
+    "directory": "."
+  },
+  "routes": [
+    { "pattern": "berlinx.southernutahsoftware.com", "custom_domain": true }
+  ],
+  "workers_dev": false
+}

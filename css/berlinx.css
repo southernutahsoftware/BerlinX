@@ -1,0 +1,2495 @@
+/*! BerlinX v1.0.0 | MIT License | github.com/southernutahsoftware/BerlinX */
+
+/* ==========================================================================
+   BerlinX — a classless semantic CSS library.
+
+   Write semantic HTML; opt into variants with attributes.
+   Base element rules are wrapped in :where() so they carry zero specificity —
+   any class or element rule of yours overrides them without !important.
+
+     1. Tokens ............. custom properties
+     2. Reset .............. box model, scrollbars
+     3. Base elements ...... links, lists, media, separators
+     4. Typography ......... headings, prose, quotes, code
+     5. Forms .............. inputs, select, textarea, fieldset, label
+     6. Buttons & tags ..... button + input variants, tag attribute
+     7. Layout attributes .. row, col, gap, full-width
+     8. Components ......... alphabetical
+     9. State & queries .... disabled, loading, media queries
+
+   Themes: light and dark follow the reader's system setting. Set theme="light"
+   or theme="dark" on <html> to fix one, or on any container to theme a region.
+
+   Fonts: BerlinX asks for Inter first, then falls back to the system stack.
+   To use Inter, add to your <head> (BerlinX does not fetch it for you):
+     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap">
+   ========================================================================== */
+
+/* ==========================================================================
+   1. TOKENS
+   ========================================================================== */
+
+:root {
+  /* Radius */
+  --radius: 8px;
+  --radius-pill: 9999px;
+
+  /* Spacing scale */
+  --space-xs: 2px;
+  --space-s: 6px;
+  --space-m: 12px;
+  --space-l: 24px;
+
+  /* Layout and control density. Override per page or on a container. */
+  --content-width: 1000px;
+  --grid-min: 240px;
+  --control-font-size: 0.875rem;
+  --control-line-height: 1.5rem;
+  --control-padding-block: var(--space-s);
+  --control-padding-inline: var(--space-m);
+  --button-padding-inline: var(--space-l);
+  --control-min-height: 2.5rem;
+
+  /* Type */
+  --font-sans:
+    Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen,
+    Ubuntu, Cantarell, sans-serif;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --line-height: 1.65;
+
+  /* Colours are light-dark(light value, dark value). Override a token the same
+     way to keep both themes: --primary-text: light-dark(#5b21b6, #c4b5fd).
+     A plain value applies to both themes. */
+
+  /* Surfaces */
+  --background: light-dark(#fff, #09090b);
+  --foreground: light-dark(#09090b, #fafafa);
+  --header-foreground: light-dark(#3c3c43, #e4e4e7);
+  --card: light-dark(#f6f6f7, #18181b);
+  --card-foreground: light-dark(#67676c, #a1a1aa);
+  --muted: light-dark(#f6f6f7, #18181b);
+  --muted-foreground: light-dark(#67676c, #a1a1aa);
+  --popover: light-dark(oklch(98.5% 0 0deg), #18181b);
+  --popover-foreground: light-dark(#09090b, #fafafa);
+  --sidebar: light-dark(oklch(98.5% 0 0deg), #111113);
+  --sidebar-foreground: light-dark(#09090b, #fafafa);
+
+  /* Actions — all foreground/background pairs meet WCAG AA (4.5:1) in both
+     themes. A fill and the text drawn in that colour cannot be the same value on
+     a dark page, so the *-text tokens colour links, labels and messages, and
+     follow --primary and --destructive unless you set them. */
+  --primary: #4f6ac6;
+  --primary-foreground: #fff;
+  --primary-variant: #3451b2;
+  --primary-text: light-dark(
+    var(--primary),
+    color-mix(in oklab, var(--primary) 55%, #fff)
+  );
+  --secondary: light-dark(#ebebef, #27272a);
+  --secondary-foreground: light-dark(#3c3c43, #e4e4e7);
+  --secondary-variant: light-dark(#dddde3, #3f3f46);
+  --destructive: #d5393e;
+  --destructive-foreground: #fff;
+  --destructive-variant: #b92a2f;
+  --destructive-text: light-dark(
+    color-mix(in oklab, var(--destructive) 88%, #000),
+    color-mix(in oklab, var(--destructive) 60%, #fff)
+  );
+
+  /* Status fills: notice borders and meter levels. */
+  --success: light-dark(#15803d, #22c55e);
+  --warning: light-dark(#b45309, #f59e0b);
+
+  /* Accent. --accent is a fill; use --accent-text when colouring text,
+     because #ffbf00 on a light background is only 1.65:1. */
+  --accent: #ffbf00;
+  --accent-foreground: #09090b;
+  --accent-text: light-dark(#8a6500, #ffbf00);
+
+  /* Borders & focus */
+  --border-color: light-dark(oklch(92% 0.004 286.32deg), #27272a);
+  --border: 1px solid var(--border-color);
+  --input: light-dark(#fff, #09090b);
+  --ring: light-dark(var(--primary-variant), var(--primary-text));
+  --shadow:
+    0 10px 15px -3px light-dark(rgb(0 0 0 / 0.1), rgb(0 0 0 / 0.5)),
+    0 4px 6px -2px light-dark(rgb(0 0 0 / 0.05), rgb(0 0 0 / 0.3));
+
+  /* Thin, visible scrollbars everywhere (inherits). */
+  scrollbar-color: var(--muted-foreground) transparent;
+  scrollbar-width: thin;
+}
+
+@supports (color: light-dark(#000, #fff)) {
+  :root {
+    color-scheme: light dark;
+  }
+
+  [theme="light"] {
+    color-scheme: light;
+  }
+
+  [theme="dark"] {
+    color-scheme: dark;
+  }
+
+  /* A themed region inside the page paints its own surface. Colours resolve
+     against the nearest color-scheme, so every token inside it follows. */
+  :where([theme]:not(:root)) {
+    background-color: var(--background);
+    color: var(--foreground);
+    scrollbar-color: var(--muted-foreground) transparent;
+  }
+
+  /* Paper is white: print the light theme whatever the screen is showing. */
+  @media print {
+    :root,
+    [theme] {
+      color-scheme: light;
+    }
+  }
+}
+
+/* Engines without light-dark() (Chrome/Edge < 123, Safari < 17.5) keep the
+   light theme rather than losing their colours. */
+@supports not (color: light-dark(#000, #fff)) {
+  :root {
+    --background: #fff;
+    --foreground: #09090b;
+    --header-foreground: #3c3c43;
+    --card: #f6f6f7;
+    --card-foreground: #67676c;
+    --muted: #f6f6f7;
+    --muted-foreground: #67676c;
+    --popover: oklch(98.5% 0 0deg);
+    --popover-foreground: #09090b;
+    --sidebar: oklch(98.5% 0 0deg);
+    --sidebar-foreground: #09090b;
+    --primary-text: var(--primary);
+    --secondary: #ebebef;
+    --secondary-foreground: #3c3c43;
+    --secondary-variant: #dddde3;
+    --destructive-text: color-mix(in oklab, var(--destructive) 88%, #000);
+    --success: #15803d;
+    --warning: #b45309;
+    --accent-text: #8a6500;
+    --border-color: oklch(92% 0.004 286.32deg);
+    --input: #fff;
+    --ring: var(--primary-variant);
+    --shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -2px rgb(0 0 0 / 0.05);
+  }
+}
+
+/* ==========================================================================
+   2. RESET
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* Stop phones inflating text after an orientation change. */
+:where(html) {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+:where(body) {
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: var(--line-height);
+  overflow-wrap: break-word;
+  background-color: var(--background);
+  color: var(--foreground);
+  max-width: var(--content-width);
+  margin: 0 auto;
+  padding: var(--page-padding, var(--space-l));
+}
+
+/* ==========================================================================
+   3. BASE ELEMENTS
+   ========================================================================== */
+
+:where(:focus-visible) {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+
+:where(a) {
+  color: var(--primary-text);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+/* Toward the text colour: darker on a light page, lighter on a dark one, so
+   hovering never lowers the contrast. */
+:where(a):hover {
+  color: color-mix(in srgb, var(--primary-text) 80%, var(--foreground));
+  text-decoration: underline;
+}
+
+:where(a):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+:where(ul, ol) {
+  margin-bottom: 1em;
+  padding-inline-start: 1.5em;
+}
+
+:where(img) {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius);
+}
+
+:where(figure) {
+  margin-bottom: var(--space-m);
+  overflow: hidden;
+}
+
+:where(figcaption) {
+  font-size: 0.875rem;
+  margin-top: var(--space-s);
+  color: var(--muted-foreground);
+}
+
+:where(small) {
+  font-size: 0.875em;
+  color: var(--muted-foreground);
+}
+
+:where(header) {
+  margin-bottom: var(--space-l);
+}
+
+:where(footer) {
+  margin-top: var(--space-l);
+}
+
+:where(section) {
+  margin-bottom: var(--space-l);
+}
+
+:where(hr) {
+  border: 0;
+  height: 1px;
+  margin: var(--space-l) 0;
+  background-color: var(--border-color);
+  flex-shrink: 0;
+}
+
+hr[vertical] {
+  width: 1px;
+  height: auto;
+  margin: 0 var(--space-l);
+  align-self: stretch;
+}
+
+/* ==========================================================================
+   4. TYPOGRAPHY
+   ========================================================================== */
+
+:where(h1, h2, h3, h4, h5, h6) {
+  color: var(--header-foreground);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  margin-bottom: var(--space-m);
+  text-wrap: balance;
+}
+
+:where(h1) {
+  font-size: 2rem;
+  line-height: 1.25;
+}
+
+:where(h2) {
+  font-size: 1.5rem;
+  line-height: 1.3333;
+}
+
+:where(h3) {
+  font-size: 1.25rem;
+  line-height: 1.4;
+}
+
+:where(h4) {
+  font-size: 1rem;
+  line-height: 1.5;
+}
+
+:where(h5) {
+  font-size: 0.9375rem;
+  line-height: 1.6;
+}
+
+:where(h6) {
+  font-size: 0.875rem;
+  line-height: 1.4286;
+}
+
+h1[xl] {
+  font-size: 2.5rem;
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+h2[xl] {
+  font-size: 2rem;
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+h3[xl] {
+  font-size: 1.75rem;
+  line-height: 1.2857;
+  font-weight: 700;
+}
+
+h4[xl] {
+  font-size: 1.25rem;
+  line-height: 1.4;
+  font-weight: 700;
+}
+
+h5[xl] {
+  font-size: 1.125rem;
+  line-height: 1.4444;
+  font-weight: 700;
+}
+
+h6[xl] {
+  font-size: 1rem;
+  line-height: 1.5;
+  font-weight: 700;
+}
+
+:where(p) {
+  margin: var(--space-m) 0;
+  text-wrap: pretty;
+}
+
+/* A new heading opens a new topic, whatever came before it — prose, a table, a
+   grid of cards or a form. A heading directly under another heading stays close,
+   as a subtitle does. */
+:where(:not(h1, h2, h3, h4, h5, h6) + :is(h2, h3, h4, h5, h6)) {
+  margin-top: var(--space-l);
+}
+
+:where(li > ul, li > ol) {
+  margin-block: var(--space-s) 0;
+}
+
+:where(:is(h1, h2, h3, h4, h5, h6) + p) {
+  margin-top: 0;
+}
+
+/* A lede line directly after a heading: <h1>Title</h1><p subheader>…</p> */
+:where(:is(h1, h2, h3, h4, h5, h6):has(+ [subheader])) {
+  margin-bottom: 0;
+}
+
+[subheader] {
+  color: var(--muted-foreground);
+  margin-top: 0;
+}
+
+:where(mark) {
+  background-color: var(--accent);
+  color: var(--accent-foreground);
+  border-radius: 2px;
+  padding: 0 0.2em;
+}
+
+:where(blockquote) {
+  border-inline-start: 3px solid var(--border-color);
+  margin-block: var(--space-l);
+  padding-inline-start: var(--space-l);
+  color: var(--header-foreground);
+}
+
+:where(blockquote > footer) {
+  margin-top: var(--space-m);
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+
+:where(code, kbd, samp, pre) {
+  font-family: var(--font-mono);
+}
+
+:where(code) {
+  font-size: 0.875em;
+  padding: 0.1em 0.35em;
+  border: var(--border);
+  border-radius: var(--radius);
+  background-color: var(--muted);
+  color: var(--foreground);
+}
+
+:where(pre) {
+  max-width: 100%;
+  min-width: 0;
+  margin-block: var(--space-m);
+  overflow-x: auto;
+  border-radius: var(--radius);
+  font-size: 0.875rem;
+  line-height: 1.6;
+}
+
+:where(pre > code) {
+  display: block;
+  overflow-x: auto;
+  padding: var(--space-m);
+  font-size: inherit;
+  overflow-wrap: normal;
+}
+
+/* ==========================================================================
+   5. FORMS
+   ========================================================================== */
+
+:where(form) {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-m);
+}
+
+:where(label) {
+  display: flex;
+  align-items: center;
+  gap: var(--space-m);
+}
+
+/* <label stack>Name<input></label> — the label above its control rather than beside
+   it, which is the shape most forms want. */
+label[stack] {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-s);
+}
+
+:where(fieldset) {
+  min-inline-size: 0;
+  max-width: 100%;
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-m);
+  display: flex;
+  flex-wrap: wrap;
+
+  /* Wider across than down, so a row of checkbox labels reads as separate
+     options rather than one run of text. */
+  gap: var(--space-s) var(--space-m);
+}
+
+:where(legend) {
+  padding: 0 var(--space-s);
+}
+
+/* Joined control group: <fieldset role="group"><input><button></fieldset> */
+fieldset[role="group"] {
+  border: 0;
+  padding: 0;
+  gap: 0;
+  flex-wrap: nowrap;
+}
+
+fieldset[role="group"] > * {
+  border-radius: 0;
+}
+
+fieldset[role="group"] > :not(:last-child) {
+  flex: 1;
+  border-inline-end: 0;
+}
+
+fieldset[role="group"] > :first-child {
+  border-start-start-radius: var(--radius);
+  border-end-start-radius: var(--radius);
+}
+
+fieldset[role="group"] > :last-child {
+  border-start-end-radius: var(--radius);
+  border-end-end-radius: var(--radius);
+}
+
+:where(
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="email"],
+  input[type="file"],
+  input[type="number"],
+  input[type="month"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="text"],
+  input[type="time"],
+  input[type="url"],
+  input[type="week"],
+  input:not([type]),
+  select,
+  textarea
+) {
+  font: inherit;
+  font-size: var(--control-font-size);
+  line-height: var(--control-line-height);
+  min-height: var(--control-min-height);
+  min-width: 0;
+  max-width: 100%;
+  padding: var(--control-padding-block) var(--control-padding-inline);
+  border: var(--border);
+  border-radius: var(--radius);
+  background-color: var(--input);
+  color: var(--foreground);
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+/* Engines disagree on placeholder colour and Firefox fades it further with
+   opacity; this keeps it legible (4.5:1) and identical everywhere. */
+:where(input, textarea)::placeholder {
+  color: var(--muted-foreground);
+  opacity: 1;
+}
+
+/* A drawn chevron instead of the native arrow, so the value lines up with the
+   other fields' text and the arrow sits inside the same padding. The stroke is a
+   mid grey that holds 3:1 on light and dark fields alike. List boxes (multiple,
+   or a size above 1) keep their native rendering. */
+:where(select:not([multiple], [size]:not([size="1"]))) {
+  appearance: none;
+  padding-inline-end: calc(var(--control-padding-inline) + 1.5em);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E");
+  background-position: right var(--control-padding-inline) center;
+  background-repeat: no-repeat;
+  background-size: 1em;
+}
+
+:where(select:not([multiple], [size]:not([size="1"]))):dir(rtl) {
+  background-position: left var(--control-padding-inline) center;
+}
+
+:where(
+  input[type="date"],
+  input[type="datetime-local"],
+  input[type="email"],
+  input[type="file"],
+  input[type="number"],
+  input[type="month"],
+  input[type="password"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="text"],
+  input[type="time"],
+  input[type="url"],
+  input[type="week"],
+  input:not([type]),
+  select,
+  textarea
+):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-color: var(--ring);
+}
+
+/* A label wrapping a text control is a field, so the control takes the rest of the
+   row. Checkboxes, radios and colour swatches keep their intrinsic size. A stacked
+   label is excluded: down a column, flex-grow would stretch the control's height. */
+:where(label:not([stack]))
+  > :where(
+    input[type="date"],
+    input[type="datetime-local"],
+    input[type="email"],
+    input[type="file"],
+    input[type="number"],
+    input[type="month"],
+    input[type="password"],
+    input[type="search"],
+    input[type="tel"],
+    input[type="text"],
+    input[type="time"],
+    input[type="url"],
+    input[type="week"],
+    input:not([type]),
+    select,
+    textarea
+  ) {
+  flex: 1;
+}
+
+:where(textarea) {
+  min-height: 5rem;
+  resize: vertical;
+}
+
+:where(input[type="file"])::file-selector-button {
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  border: 0;
+  border-radius: var(--radius);
+  padding: 0 var(--space-s);
+  margin-inline-end: var(--space-s);
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+:where(input[type="file"])::file-selector-button:hover {
+  background-color: var(--secondary-variant);
+}
+
+:where(input[type="color"]) {
+  appearance: none;
+  cursor: pointer;
+  border: 0;
+  border-radius: var(--radius);
+  padding: 0;
+  width: 3rem;
+  height: 2rem;
+}
+
+:where(input[type="color"])::-webkit-color-swatch {
+  border: 0;
+  border-radius: var(--radius);
+}
+
+:where(input[type="color"])::-moz-color-swatch {
+  border: 0;
+  border-radius: var(--radius);
+}
+
+:where(input[type="checkbox"], input[type="radio"], input[type="range"]) {
+  accent-color: var(--primary);
+  background-color: var(--background);
+}
+
+:where(input[type="checkbox"], input[type="radio"]) {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+}
+
+/* Switch: <input type="checkbox" role="switch"> */
+input[type="checkbox"][role="switch"] {
+  appearance: none;
+  position: relative;
+  cursor: pointer;
+  width: 2.8rem;
+  height: 1.5rem;
+  min-height: unset;
+  border-radius: var(--radius-pill);
+  background-color: var(--secondary-variant);
+  transition: background-color 0.2s ease;
+}
+
+/* The thumb travels along the inline axis, so it starts on the right and slides
+   left in a right-to-left document. It is the colour drawn on --primary, which
+   also keeps it light against the dark theme's track. */
+input[type="checkbox"][role="switch"]::before {
+  content: "";
+  position: absolute;
+  top: 0.1875rem;
+  inset-inline-start: 0.1875rem;
+  width: 1.125rem;
+  height: 1.125rem;
+  border-radius: var(--radius-pill);
+  background-color: var(--primary-foreground);
+  box-shadow: 0 0.0625rem 0.125rem rgb(0 0 0 / 0.2);
+  transition: inset-inline-start 0.2s ease;
+}
+
+input[type="checkbox"][role="switch"]:checked {
+  background-color: var(--primary);
+}
+
+input[type="checkbox"][role="switch"]:checked::before {
+  inset-inline-start: calc(100% - 1.125rem - 0.1875rem);
+}
+
+input[type="checkbox"][role="switch"]:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* ==========================================================================
+   6. BUTTONS & TAGS
+
+   Appearance is decoupled from the input type, so a destructive button can
+   hold an icon and a submit button can be destructive:
+
+     <button>                        primary
+     <button secondary>              secondary
+     <button outline>                outline
+     <button ghost>                  ghost
+     <button destructive>            destructive
+     <button icon aria-label="…">    square, icon only
+     <button type="submit" destructive>  both, which used to be impossible
+
+   Each variant only reassigns the five --button-* properties below; the
+   hover, active and focus rules are written once and read them. Consumers
+   can theme a one-off button by setting the same properties.
+
+   Elements get a sensible default from their semantics — submit is primary,
+   button is secondary, reset is outline — and any attribute overrides it.
+
+   [tag] renders any element with that same appearance and the same variants,
+   for labels that are not form controls — topic tags, chips, filters, a
+   call-to-action link. It shares the rules below rather than copying them, so
+   a tag and a button can never drift apart:
+
+     <span tag>Design</span>              static label
+     <a href="/tags/css" tag outline>CSS</a>   navigates
+   ========================================================================== */
+
+:where(button, input[type="button"], input[type="submit"], input[type="reset"]),
+[tag] {
+  --button-bg: var(--primary);
+  --button-fg: var(--primary-foreground);
+  --button-border: transparent;
+  --button-bg-hover: color-mix(in srgb, var(--primary) 90%, #000);
+  --button-bg-active: var(--primary-variant);
+
+  font: inherit;
+  font-size: var(--control-font-size);
+  line-height: var(--control-line-height);
+  font-weight: 600;
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-s);
+  min-height: var(--control-min-height);
+  padding: var(--control-padding-block) var(--button-padding-inline);
+  border-radius: var(--radius-pill);
+
+  /* Always a 1px border so [outline] is not a different size to the rest. */
+  border: 1px solid var(--button-border);
+  background-color: var(--button-bg);
+  color: var(--button-fg);
+  transition:
+    background-color 0.2s ease-in-out,
+    border-color 0.2s ease-in-out;
+}
+
+/* Tag-only, so buttons keep their own wrapping: a tag is a single label and
+   should never break across two lines. */
+[tag] {
+  white-space: nowrap;
+}
+
+/* The hand cursor is a promise that something happens. Buttons always keep it;
+   a tag only earns it when it is a link or a button itself, so <span tag> does
+   not lie about being clickable. */
+:where(button, input[type="button"], input[type="submit"], input[type="reset"]),
+:is(a, button, summary, label)[tag] {
+  cursor: pointer;
+}
+
+/* Likewise the interactive states: a <span tag> has none. */
+:where(
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"]
+):hover,
+:is(a, button, summary, label)[tag]:hover {
+  background-color: var(--button-bg-hover);
+}
+
+:where(
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"]
+):active,
+:is(a, button, summary, label)[tag]:active {
+  background-color: var(--button-bg-active);
+}
+
+:where(
+  button,
+  input[type="button"],
+  input[type="submit"],
+  input[type="reset"]
+):focus-visible,
+:is(a, button, summary)[tag]:focus-visible,
+label[tag]:has(:focus-visible) {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* <a tag> is a tag first and a link second: no link colour, no hover
+   underline. */
+a[tag],
+a[tag]:hover {
+  color: var(--button-fg);
+  text-decoration: none;
+}
+
+/* Defaults by semantics. Lower specificity than the attributes below. */
+:where(input[type="button"]) {
+  --button-bg: var(--secondary);
+  --button-fg: var(--secondary-foreground);
+  --button-bg-hover: var(--secondary-variant);
+  --button-bg-active: color-mix(
+    in srgb,
+    var(--secondary-variant) 92%,
+    var(--foreground)
+  );
+}
+
+:where(input[type="reset"]) {
+  --button-bg: transparent;
+  --button-fg: var(--foreground);
+  --button-border: var(--border-color);
+  --button-bg-hover: var(--secondary);
+  --button-bg-active: var(--secondary-variant);
+}
+
+/* Variants. Scoped to the elements that consume them, so a bare [secondary]
+   on a wrapper cannot repaint the buttons inside it. A tag can have children,
+   unlike a void <input>, but a nested button re-declares all five --button-*
+   properties itself, so nothing inherits through. */
+:is(button, input, [tag])[primary] {
+  --button-bg: var(--primary);
+  --button-fg: var(--primary-foreground);
+  --button-border: transparent;
+  --button-bg-hover: color-mix(in srgb, var(--primary) 90%, #000);
+  --button-bg-active: var(--primary-variant);
+
+  /* Beats the [primary] text-colour utility in section 7. */
+  color: var(--primary-foreground);
+}
+
+:is(button, input, [tag])[secondary] {
+  --button-bg: var(--secondary);
+  --button-fg: var(--secondary-foreground);
+  --button-border: transparent;
+  --button-bg-hover: var(--secondary-variant);
+  --button-bg-active: color-mix(
+    in srgb,
+    var(--secondary-variant) 92%,
+    var(--foreground)
+  );
+}
+
+:is(button, input, [tag])[outline] {
+  --button-bg: transparent;
+  --button-fg: var(--foreground);
+  --button-border: var(--border-color);
+  --button-bg-hover: var(--secondary);
+  --button-bg-active: var(--secondary-variant);
+}
+
+:is(button, input, [tag])[ghost] {
+  --button-bg: transparent;
+  --button-fg: var(--foreground);
+  --button-border: transparent;
+  --button-bg-hover: var(--secondary);
+  --button-bg-active: var(--secondary-variant);
+}
+
+:is(button, input, [tag])[destructive] {
+  --button-bg: var(--destructive);
+  --button-fg: var(--destructive-foreground);
+  --button-border: transparent;
+  --button-bg-hover: color-mix(in srgb, var(--destructive) 90%, #000);
+  --button-bg-active: var(--destructive-variant);
+}
+
+/* Icon-only: square, no text. Always pair with aria-label. */
+:is(button, input, [tag])[icon] {
+  padding: var(--control-padding-block);
+  width: max(var(--control-min-height), calc(var(--control-line-height) + 2 * var(--control-padding-block) + 2px));
+  aspect-ratio: 1;
+}
+
+/* Density inherits, so a toolbar or form can size all its controls together. */
+[density="compact"] {
+  --control-font-size: 0.75rem;
+  --control-line-height: 1.25rem;
+  --control-padding-block: 2px;
+  --control-padding-inline: var(--space-s);
+  --button-padding-inline: var(--space-m);
+  --control-min-height: 0px;
+}
+
+[density="comfortable"] {
+  --control-font-size: 1rem;
+  --control-line-height: 1.5rem;
+  --control-padding-block: 9px;
+  --control-padding-inline: var(--space-m);
+  --button-padding-inline: var(--space-l);
+  --control-min-height: 44px;
+}
+
+/* ==========================================================================
+   7. LAYOUT ATTRIBUTES
+   ========================================================================== */
+
+/* Rows wrap. Without this, any group of buttons overflows a narrow viewport
+   and there is no classless way for the author to opt in. */
+[row] {
+  display: flex;
+  flex-flow: row wrap;
+  align-items: start;
+}
+
+[col] {
+  display: flex;
+  flex-direction: column;
+  align-items: start;
+}
+
+/* Shared by card lists and marketing sections. The minimum can never exceed
+   the container, so a grid remains usable on a narrow phone. */
+[grid] {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, var(--grid-min)), 1fr));
+  gap: var(--space-l);
+}
+
+[grid][fit] {
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, var(--grid-min)), 1fr));
+}
+
+[grid] > * {
+  min-width: 0;
+}
+
+[grid] > :where(article, section, header, footer, p) {
+  margin-block: 0;
+}
+
+[grow] {
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+}
+
+[nowrap] {
+  flex-wrap: nowrap;
+}
+
+[gap-xs] {
+  gap: var(--space-xs);
+}
+
+/* Gap steps mirror the spacing scale: gap-s/m/l are --space-s/m/l. Bare [gap] is
+   the small step, which is what a row of controls almost always wants. */
+[gap],
+[gap-s] {
+  gap: var(--space-s);
+}
+
+[gap-m] {
+  gap: var(--space-m);
+}
+
+[gap-l] {
+  gap: var(--space-l);
+}
+
+/* Placement. [row] and [col] give the axis; these give the position along it and
+   across it. Values are the CSS keywords minus the flex- prefix, so there is
+   nothing new to remember.
+
+   Not [align]: the HTML rendering spec puts div[align=center i] { text-align:
+   center } in the UA sheet, so that name would quietly set text alignment too. */
+[justify="start"] {
+  justify-content: flex-start;
+}
+
+[justify="center"] {
+  justify-content: center;
+}
+
+[justify="end"] {
+  justify-content: flex-end;
+}
+
+[justify="between"] {
+  justify-content: space-between;
+}
+
+[items="start"] {
+  align-items: flex-start;
+}
+
+[items="center"] {
+  align-items: center;
+}
+
+[items="end"] {
+  align-items: flex-end;
+}
+
+[items="stretch"] {
+  align-items: stretch;
+}
+
+/* Spacing inside a flex container comes from its gap, and a child's own block
+   margin would add to it. Prose margins inside a [col] are left alone: a gapless
+   column of paragraphs has to keep its rhythm from somewhere. */
+:where([row]) > :where(h1, h2, h3, h4, h5, h6, p) {
+  margin-block: 0;
+}
+
+:where([row], [col]) > :where(header, footer, section) {
+  margin-block: 0;
+}
+
+/* A closed popover and a closed dialog are hidden by a UA rule, and any author
+   display declaration outranks a UA one — including the two above. Restating it
+   here at attribute specificity is what makes <div popover col gap> safe: without
+   it the menu renders permanently, open or not. */
+[popover]:not(:popover-open),
+dialog:not([open]) {
+  display: none;
+}
+
+[full-width] {
+  width: 100%;
+}
+
+[primary] {
+  color: var(--primary-text);
+}
+
+[accent] {
+  color: var(--accent-text);
+}
+
+[muted] {
+  color: var(--muted-foreground);
+}
+
+[ellipsis] {
+  display: block;
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+[tabular] {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Keep native controls and labels available to keyboard and assistive tech. */
+[visually-hidden] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+[scroll-x] {
+  overflow-x: auto;
+}
+
+[scroll-y] {
+  overflow-y: auto;
+}
+
+/* ==========================================================================
+   8. COMPONENTS
+   ========================================================================== */
+
+/* --- Accordion ----------------------------------------------------------- */
+:where(details) {
+  background-color: var(--card);
+  color: var(--card-foreground);
+  border-radius: var(--radius);
+  padding: var(--space-m);
+  margin-bottom: var(--space-m);
+}
+
+:where(summary) {
+  cursor: pointer;
+  font-weight: 700;
+  color: var(--foreground);
+}
+
+/* --- Avatars and notification indicators --------------------------------- */
+[avatar] {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--avatar-size, 2.5rem);
+  height: var(--avatar-size, 2.5rem);
+  max-width: none;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--secondary);
+  color: var(--secondary-foreground);
+  object-fit: cover;
+  font-weight: 600;
+  line-height: 1;
+}
+
+[avatar="small"] {
+  --avatar-size: 1.75rem;
+}
+
+[avatar="large"] {
+  --avatar-size: 3.5rem;
+}
+
+[avatar] > img {
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+  object-fit: cover;
+}
+
+[avatars] {
+  display: inline-flex;
+  align-items: center;
+  padding-inline-start: var(--space-s);
+}
+
+[avatars] > [avatar] {
+  margin-inline-start: calc(-1 * var(--space-s));
+  border: 2px solid var(--background);
+}
+
+[indicator] {
+  position: relative;
+  display: inline-flex;
+  width: fit-content;
+}
+
+[indicator] > :is([badge], [status]) {
+  position: absolute;
+  inset: 0 0 auto auto;
+  translate: 35% -35%;
+  pointer-events: none;
+}
+
+[indicator] > [status] {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--background);
+  border-radius: 50%;
+  background: var(--indicator-color, var(--primary));
+}
+
+/* --- Badge --------------------------------------------------------------- */
+
+/* <span badge>, <a badge secondary>. <kbd> is a keycap, not a badge. */
+[badge] {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-xs);
+  padding: 0 var(--space-s);
+  font-size: 0.75rem;
+  font-weight: 700;
+  line-height: 1.25rem;
+  white-space: nowrap;
+  text-decoration: none;
+  border: 1px solid transparent;
+  border-radius: var(--radius);
+  background-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+[badge][secondary] {
+  background-color: var(--secondary);
+  color: var(--secondary-foreground);
+}
+
+[badge][outline] {
+  background-color: transparent;
+  color: var(--foreground);
+  border-color: var(--border-color);
+}
+
+[badge][destructive] {
+  background-color: var(--destructive);
+  color: var(--destructive-foreground);
+}
+
+/* --- Breadcrumb ---------------------------------------------------------- */
+
+/* Opt in with <nav breadcrumb>. Change the mark with --separator:
+     <nav breadcrumb style="--separator: '/'">
+     nav[breadcrumb] { --separator: "/"; }
+
+   The separator has to come from an inherited custom property rather than
+   attr(): the ::after belongs to the <a>, so attr(breadcrumb) would read the
+   link's own attribute, not the nav's. The wider attr() syntax that can cross
+   that boundary is not portable yet, and it cannot be feature-detected either
+   — CSS.supports() reports true for any custom-property value. */
+nav[breadcrumb] {
+  gap: 0;
+}
+
+/* Defaults only, at zero specificity, so any --separator of yours wins. The
+   chevron points the way the trail reads. */
+:where(nav[breadcrumb]) {
+  --separator: "›";
+}
+
+:where(nav[breadcrumb]:dir(rtl)) {
+  --separator: "‹";
+}
+
+nav[breadcrumb] > a {
+  padding-inline-end: var(--space-m);
+  color: var(--muted-foreground);
+}
+
+nav[breadcrumb] > a:last-child {
+  color: var(--foreground);
+}
+
+nav[breadcrumb] > a:not(:last-child)::after {
+  content: var(--separator);
+
+  /* inline-block keeps the separator out of the link's hover underline */
+  display: inline-block;
+  padding-inline-start: var(--space-m);
+  color: var(--muted-foreground);
+}
+
+/* --- Card ---------------------------------------------------------------- */
+:where(article) {
+  display: flex;
+  flex-direction: column;
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-l);
+  margin-bottom: var(--space-l);
+  background: var(--card);
+  color: var(--card-foreground);
+}
+
+/* Container padding owns the outer space; prose keeps its internal rhythm. */
+:where(article, details, dialog, [popover]) > :where(:first-child) {
+  margin-block-start: 0;
+}
+
+:where(article, details, dialog, [popover]) > :where(:last-child) {
+  margin-block-end: 0;
+}
+
+/* --- Description lists --------------------------------------------------- */
+:where(dl, dl > div) {
+  display: grid;
+  grid-template-columns: fit-content(12rem) minmax(0, 1fr);
+  gap: var(--space-s) var(--space-m);
+}
+
+:where(dl > div) {
+  grid-column: 1 / -1;
+}
+
+:where(dt) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--header-foreground);
+  font-weight: 600;
+}
+
+:where(dd) {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+/* --- Dialog, drawer, toast ---------------------------------------------- */
+:where(dialog) {
+  background-color: var(--background);
+  color: var(--foreground);
+  border: var(--border);
+  border-radius: var(--radius);
+  padding: var(--space-l);
+  margin: auto;
+}
+
+/* A modal has no author-sized parent to fill, so left alone it shrink-wraps its
+   content and a form of empty inputs collapses to nothing. Scoped to :modal, which
+   leaves a toast — or any other dialog opened with show() — sizing itself. */
+:where(dialog:modal) {
+  width: min(32rem, calc(100% - var(--space-l)));
+}
+
+:where(dialog)::backdrop {
+  background-color: rgb(0 0 0 / 0.8);
+}
+
+:where(dialog > header) {
+  margin: 0;
+}
+
+/* Drawer, anchored to an edge. Default bottom; also "top" | "left" | "right". */
+dialog[drawer] {
+  inset: auto 0 0;
+  margin: 0;
+  width: 100%;
+  max-width: none;
+  max-height: 50vh;
+  border-radius: var(--radius) var(--radius) 0 0;
+}
+
+dialog[drawer][open] {
+  animation: berlinx-slide-up 0.2s ease-out forwards;
+}
+
+dialog[drawer="top"] {
+  inset: 0 0 auto;
+  border-radius: 0 0 var(--radius) var(--radius);
+}
+
+dialog[drawer="top"][open] {
+  animation: berlinx-slide-down 0.2s ease-out forwards;
+}
+
+dialog[drawer="left"],
+dialog[drawer="right"] {
+  width: min(20rem, 100%);
+  height: 100%;
+  max-height: none;
+}
+
+dialog[drawer="left"] {
+  inset: 0 auto 0 0;
+  border-radius: 0 var(--radius) var(--radius) 0;
+}
+
+dialog[drawer="left"][open] {
+  animation: berlinx-slide-right 0.2s ease-out forwards;
+}
+
+dialog[drawer="right"] {
+  inset: 0 0 0 auto;
+  border-radius: var(--radius) 0 0 var(--radius);
+}
+
+dialog[drawer="right"][open] {
+  animation: berlinx-slide-left 0.2s ease-out forwards;
+}
+
+/* Toast. position: fixed, or a non-modal dialog scrolls away with the page. It
+   sits in the end corner: bottom right, or bottom left in a right-to-left page. */
+dialog[toast] {
+  position: fixed;
+  inset: auto;
+  inset-block-end: var(--space-m);
+  inset-inline-end: var(--space-m);
+  margin: 0;
+  padding: var(--space-m);
+  box-shadow: var(--shadow);
+}
+
+dialog[toast]::backdrop {
+  opacity: 0;
+}
+
+dialog[toast][open] {
+  animation:
+    berlinx-slide-up 0.2s ease-out forwards,
+    berlinx-fade-in 0.2s ease-out forwards;
+}
+
+/* --- Empty state and rich lists ------------------------------------------ */
+[empty] {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-m);
+  padding: calc(2 * var(--space-l)) var(--space-l);
+  border: 1px dashed var(--border-color);
+  border-radius: var(--radius);
+  background: var(--card);
+  text-align: center;
+}
+
+[empty] > :where(h1, h2, h3, h4, p) {
+  margin: 0;
+}
+
+:is(ul, ol)[list] {
+  margin: 0;
+  padding: 0;
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+  list-style: none;
+}
+
+[list] > li,
+[list] > li > a:only-child {
+  display: flex;
+  align-items: center;
+  gap: var(--space-m);
+  min-width: 0;
+  padding: var(--space-m);
+  overflow-wrap: anywhere;
+}
+
+[list] > li + li {
+  border-top: var(--border);
+}
+
+[list] > li:has(> a:only-child) {
+  padding: 0;
+}
+
+[list] > li > a:only-child {
+  flex: 1;
+  border-radius: var(--radius);
+  color: inherit;
+  text-decoration: none;
+}
+
+[list] > li > a:only-child:hover,
+[list] > li:has(:checked) {
+  background: var(--muted);
+}
+
+/* --- Field descriptions and validation ----------------------------------- */
+[field] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 0;
+}
+
+[hint],
+[error] {
+  display: block;
+  font-size: 0.875rem;
+  line-height: 1.5;
+}
+
+[hint] {
+  color: var(--muted-foreground);
+}
+
+[error] {
+  color: var(--destructive-text);
+}
+
+:where(input, select, textarea)[aria-invalid="true"] {
+  border-color: var(--destructive);
+}
+
+:is([validation] [field], [field][validation]) > [error] {
+  display: none;
+}
+
+:is([validation] [field], [field][validation]):has(> [aria-invalid="true"]) > [error] {
+  display: block;
+}
+
+/* Unsupported engines keep native constraint validation and explicit ARIA states. */
+@supports selector(:user-invalid) {
+  [validation] :where(input, select, textarea):user-invalid {
+    border-color: var(--destructive);
+  }
+
+  :is([validation] [field], [field][validation]):has(> :user-invalid) > [error] {
+    display: block;
+  }
+}
+
+/* --- Menubar ------------------------------------------------------------- */
+
+/* <menu><li><button ghost>File</button></li></menu> */
+:where(menu) {
+  display: flex;
+  flex-flow: row wrap;
+  width: fit-content;
+  max-width: 100%;
+  gap: var(--space-xs);
+  padding: var(--space-xs);
+  border: var(--border);
+  border-radius: var(--radius);
+}
+
+:where(menu > li) {
+  list-style: none;
+  display: flex;
+}
+
+:where(menu > li > button) {
+  border-radius: calc(var(--radius) - var(--space-xs));
+  padding: 0 var(--space-m);
+  font-weight: 500;
+}
+
+/* --- Nav ----------------------------------------------------------------- */
+:where(nav) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-m);
+}
+
+/* Feedback is opt-in, so a paragraph is still ordinary prose by default.
+   Choose role="status" or role="alert" in HTML to announce dynamic messages. */
+[notice] {
+  margin: 0;
+  padding: var(--space-m) var(--space-l);
+  border: var(--border);
+  border-radius: var(--radius);
+  background-color: var(--card);
+  color: var(--foreground);
+}
+
+/* The coloured edge marks the kind of message; the text itself stays at full
+   contrast. Say what happened in words, too: colour alone is not enough. */
+[notice="error"] {
+  border-inline-start: 3px solid var(--destructive);
+}
+
+[notice="warning"] {
+  border-inline-start: 3px solid var(--warning);
+}
+
+[notice="success"] {
+  border-inline-start: 3px solid var(--success);
+}
+
+/* --- Popover ------------------------------------------------------------- */
+
+/* Anchor positioning is progressive enhancement. Without it a popover is
+   centred in the viewport rather than mispositioned off-screen. */
+:where([popover]) {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  padding: var(--space-m);
+  border: var(--border);
+  border-radius: calc(var(--radius) * 2);
+  background-color: var(--popover);
+  color: var(--popover-foreground);
+  box-shadow: var(--shadow);
+  max-width: calc(100vw - var(--space-l));
+  max-height: calc(100dvh - var(--space-l));
+  overflow: auto;
+  overflow-wrap: anywhere;
+}
+
+@supports (position-area: top) {
+  :where([popover]:not([placement="center"])) {
+    /* A position area keeps the implicit invoker anchor and the top layer in
+       the same coordinate system, including after the document has scrolled. */
+    inset: auto;
+    margin: var(--space-s) 0;
+    position-area: top;
+
+    /* Flip to the other side rather than off the screen. Engines that do not know
+       the property drop this line and keep the fixed placement. */
+    position-try-fallbacks: flip-block, flip-inline, flip-block flip-inline;
+  }
+
+  /* <div popover placement="bottom-end">. The first word picks the side, the second
+     the edge the popover lines up with: top | bottom, each on its own or with
+     -start | -end. Without a placement it stays centred above, as it always was. */
+  [popover][placement^="top"] {
+    position-area: top;
+  }
+
+  [popover][placement^="bottom"] {
+    position-area: bottom;
+  }
+
+  [popover][placement="top-start"] {
+    position-area: top span-right;
+    justify-self: start;
+  }
+
+  [popover][placement="top-end"] {
+    position-area: top span-left;
+    justify-self: end;
+  }
+
+  [popover][placement="bottom-start"] {
+    position-area: bottom span-right;
+    justify-self: start;
+  }
+
+  [popover][placement="bottom-end"] {
+    position-area: bottom span-left;
+    justify-self: end;
+  }
+}
+
+/* --- Pagination and navigation tabs -------------------------------------- */
+nav[pagination] {
+  gap: var(--space-s);
+}
+
+nav[pagination] > :where(a, button, span) {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  min-height: 2.25rem;
+  padding: var(--space-xs) var(--space-m);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+  color: var(--foreground);
+  font: inherit;
+  text-decoration: none;
+}
+
+nav[pagination] > :where(a, button):hover {
+  background: var(--muted);
+}
+
+nav[pagination] > [aria-current="page"] {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+nav[pagination] > [aria-disabled="true"] {
+  color: var(--muted-foreground);
+  cursor: not-allowed;
+}
+
+nav[tabs] {
+  gap: 0;
+  margin-bottom: var(--space-l);
+  border-bottom: var(--border);
+}
+
+nav[tabs] > :where(a, span) {
+  padding: var(--space-s) var(--space-m);
+  border-bottom: 2px solid transparent;
+  color: var(--muted-foreground);
+  text-decoration: none;
+}
+
+nav[tabs] > a:hover {
+  color: var(--foreground);
+}
+
+nav[tabs] > [aria-current]:not([aria-current="false"]) {
+  border-bottom-color: var(--primary);
+  color: var(--primary-text);
+}
+
+/* --- Meter --------------------------------------------------------------- */
+:where(meter) {
+  appearance: none;
+  width: 100%;
+  height: 1rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--muted);
+}
+
+:where(meter)::-webkit-meter-bar {
+  border: 0;
+  border-radius: var(--radius-pill);
+  background: var(--muted);
+}
+
+:where(meter)::-webkit-meter-optimum-value {
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+}
+
+:where(meter)::-webkit-meter-suboptimum-value {
+  border-radius: var(--radius-pill);
+  background: var(--warning);
+}
+
+:where(meter)::-webkit-meter-even-less-good-value {
+  border-radius: var(--radius-pill);
+  background: var(--destructive);
+}
+
+:where(meter)::-moz-meter-bar {
+  border-radius: var(--radius-pill);
+  background: var(--primary);
+}
+
+:where(meter):-moz-meter-sub-optimum::-moz-meter-bar {
+  background: var(--warning);
+}
+
+:where(meter):-moz-meter-sub-sub-optimum::-moz-meter-bar {
+  background: var(--destructive);
+}
+
+/* --- Progress ------------------------------------------------------------ */
+:where(progress) {
+  appearance: none;
+  width: 100%;
+  height: 0.5rem;
+  border: 0;
+  border-radius: var(--radius-pill);
+  background-color: var(--muted);
+}
+
+:where(progress)::-webkit-progress-bar {
+  border-radius: var(--radius-pill);
+  background-color: var(--muted);
+}
+
+:where(progress)::-webkit-progress-value {
+  border-radius: var(--radius-pill);
+  background-color: var(--primary);
+}
+
+:where(progress)::-moz-progress-bar {
+  border-radius: var(--radius-pill);
+  background-color: var(--primary);
+}
+
+:where(progress):indeterminate {
+  background: var(--muted)
+    linear-gradient(to right, var(--primary) 35%, var(--muted) 35%) top left /
+    150% 150% no-repeat;
+  animation: berlinx-progress 1.5s linear infinite;
+}
+
+:where(progress):indeterminate::-webkit-progress-bar {
+  background-color: transparent;
+}
+
+:where(progress):indeterminate::-moz-progress-bar {
+  background-color: transparent;
+}
+
+/* --- Segmented controls, choice cards and ratings ------------------------ */
+fieldset[segmented] {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 9rem), 1fr));
+  width: 100%;
+  gap: var(--space-m);
+  padding: 0;
+  border: 0;
+}
+
+fieldset[segmented] > legend {
+  margin-bottom: var(--space-s);
+  padding: 0;
+  font-weight: 600;
+}
+
+fieldset[segmented] > label,
+fieldset[rating] > label {
+  position: relative;
+  border-radius: var(--radius);
+  cursor: pointer;
+}
+
+/* Retain the real radio's focus, arrow-key navigation and form value. */
+fieldset[rating] > label > input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+}
+
+fieldset[segmented] > label {
+  align-items: flex-start;
+  padding: var(--space-m);
+  border: var(--border);
+  background: var(--background);
+}
+
+label[choice] {
+  align-items: flex-start;
+  padding: var(--space-l);
+  border: var(--border);
+  border-radius: var(--radius);
+  background: var(--background);
+  cursor: pointer;
+}
+
+label[choice] > input,
+fieldset[segmented] > label > input {
+  flex: none;
+  width: 1em;
+  height: 1em;
+  margin: 0;
+  margin-block-start: calc((1lh - 1em) / 2);
+  font: inherit;
+}
+
+label[choice]:hover,
+fieldset[segmented] > label:hover {
+  background: var(--card);
+}
+
+label[choice]:has(:checked),
+fieldset[segmented] > label:has(:checked) {
+  border-color: var(--primary);
+  box-shadow: 0 0 0 1px var(--primary);
+}
+
+:is(fieldset[segmented] > label, fieldset[rating] > label, label[choice]):focus-within {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+:is(fieldset[segmented] > label, fieldset[rating] > label, label[choice]):has(:disabled) {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+fieldset[rating] {
+  width: fit-content;
+  gap: var(--space-xs);
+  padding: 3px;
+  border: 0;
+  background: transparent;
+}
+
+fieldset[rating] > label {
+  padding: var(--space-xs);
+  color: var(--muted-foreground);
+  font-size: 2rem;
+  line-height: 1;
+}
+
+fieldset[rating] > label:has(:checked),
+fieldset[rating] > label:has(~ label :checked) {
+  color: var(--accent-text);
+}
+
+/* --- Carousel ------------------------------------------------------------ */
+[carousel] {
+  display: flex;
+  gap: var(--space-m);
+  max-width: 100%;
+  padding: var(--space-xs);
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+}
+
+[carousel] > * {
+  flex: 0 0 var(--slide-size, 85%);
+  min-width: 0;
+  margin: 0;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* --- Sidebar ------------------------------------------------------------- */
+
+/* <aside><header>…</header><nav>…</nav><footer>…</footer></aside>
+   The scroll region is <nav>, not <main>: <main> may not descend from
+   <aside>, and a document may only have one. */
+:where(aside) {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  padding: var(--space-m) var(--space-l);
+  border-radius: var(--radius);
+  background-color: var(--sidebar);
+  color: var(--sidebar-foreground);
+}
+
+:where(aside > nav) {
+  flex: 1;
+  flex-flow: column nowrap;
+  min-height: 0;
+  align-items: stretch;
+  gap: var(--space-xs);
+  overflow-y: auto;
+}
+
+/* --- Skeleton ------------------------------------------------------------ */
+
+/* --secondary, not --muted: a placeholder has to show on a card as well as on
+   the page, and --muted is the card colour. */
+[skeleton] {
+  background-color: var(--secondary);
+  border-radius: var(--radius);
+  animation: berlinx-shimmer 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+[skeleton] * {
+  visibility: hidden;
+}
+
+/* --- Table --------------------------------------------------------------- */
+:where(table) {
+  width: 100%;
+  caption-side: bottom;
+  border-collapse: collapse;
+}
+
+:where(caption) {
+  color: var(--muted-foreground);
+  margin-top: var(--space-m);
+}
+
+:where(th) {
+  color: var(--muted-foreground);
+  font-weight: 600;
+}
+
+/* A row header names its record — the cell a reader scans for — so it keeps
+   full contrast. Column headers and footers stay muted. */
+:where(tbody th) {
+  color: var(--foreground);
+}
+
+:where(td, th) {
+  vertical-align: middle;
+  padding: var(--space-s);
+  text-align: start;
+}
+
+:where(tr) {
+  border-bottom: var(--border);
+}
+
+:where(tfoot) {
+  background-color: var(--muted);
+}
+
+/* Responsive table. `responsive` gives a too-wide table its own horizontal
+   scrollbar so it cannot stretch the page; pair it with white-space: nowrap to keep
+   columns at their natural width. `responsive="stack"` instead breaks each row into
+   a card below the phone breakpoint.
+
+   On a wrapping element the scrollbar is all it takes. On the table itself it costs
+   two things, which is why wrapping is the better form: overflow does not apply to
+   a table box at all, so the table has to become a block — and a block-displayed
+   table shrink-wraps its columns instead of spreading them, as well as dropping the
+   table role (add role="table"/"row"/"cell" back where the tabular relationship
+   matters to assistive tech). `stack` pays neither price: it stays a real table and
+   is already turning into cards by the width where scrolling would matter. */
+[responsive] {
+  max-width: 100%;
+  overflow-x: auto;
+}
+
+table[responsive]:not([responsive="stack"]) {
+  display: block;
+}
+
+@media (max-width: 600px) {
+  table[responsive="stack"] :where(thead) {
+    display: none;
+  }
+
+  table[responsive="stack"] :where(tbody, tfoot, tr) {
+    display: block;
+  }
+
+  table[responsive="stack"] :where(tr) {
+    border-radius: var(--radius);
+    background-color: var(--card);
+    color: var(--card-foreground);
+    border: none;
+    padding: var(--space-m);
+    margin-bottom: var(--space-m);
+  }
+
+  table[responsive="stack"] :where(tr + tr) {
+    margin-top: var(--space-s);
+  }
+
+  /* Label left, value right. No selector can reach a cell's <th> from the cell,
+     so the label rides along on the cell itself: <td data-label="Email">. A
+     cell without one — a row's <th scope="row">, an actions cell — just prints
+     its content, which reads as the card's title.
+
+     A cell the author marked [row] is left alone: an actions cell asked for its
+     buttons side by side, and the card layout has no business overriding that. */
+  table[responsive="stack"] :where(td, th):not([row]) {
+    display: flex;
+    flex-direction: column;
+  }
+
+  table[responsive="stack"] :where(tfoot th) {
+    color: var(--foreground);
+  }
+
+  table[responsive="stack"] :where([data-label])::before {
+    content: attr(data-label);
+    color: var(--muted-foreground);
+    font-weight: 600;
+    text-align: start;
+  }
+}
+
+/* --- Steps and timelines ------------------------------------------------- */
+ol[steps] {
+  display: flex;
+  gap: var(--space-l);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  counter-reset: step;
+}
+
+ol[steps] > li {
+  position: relative;
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-s);
+  min-width: 0;
+  text-align: center;
+  counter-increment: step;
+}
+
+ol[steps] > li::before {
+  content: counter(step);
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  border: 2px solid var(--border-color);
+  border-radius: 50%;
+  background: var(--background);
+  color: var(--muted-foreground);
+  font-weight: 600;
+  z-index: 1;
+}
+
+/* The connector runs toward the next step, which is leftward in a right-to-left
+   document. */
+ol[steps] > li:not(:last-child)::after {
+  content: "";
+  position: absolute;
+  top: 1rem;
+  inset-inline:
+    calc(50% + 1rem + var(--space-s))
+    calc(-50% - var(--space-l) + 1rem + var(--space-s));
+  height: 2px;
+  background: var(--border-color);
+}
+
+ol[steps] > li[complete]::before {
+  content: "✓";
+  border-color: var(--primary);
+  background: var(--primary);
+  color: var(--primary-foreground);
+}
+
+ol[steps] > li[aria-current="step"]::before {
+  border-color: var(--primary);
+  color: var(--primary-text);
+}
+
+ol[timeline] {
+  margin: 0;
+  padding: 0;
+  padding-inline-start: var(--space-s);
+  list-style: none;
+}
+
+ol[timeline] > li {
+  position: relative;
+  padding-block: 0 var(--space-l);
+  padding-inline: var(--space-l) 0;
+  border-inline-start: 2px solid var(--border-color);
+}
+
+ol[timeline] > li::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: -6px;
+  top: 0.6em;
+  width: 10px;
+  height: 10px;
+  border: 2px solid var(--background);
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+ol[timeline] > li:last-child {
+  padding-block-end: 0;
+  border-color: transparent;
+}
+
+ol[timeline] > li > :where(p, h3, h4) {
+  margin: 0;
+}
+
+ol[timeline] time {
+  display: block;
+  color: var(--muted-foreground);
+  font-size: 0.875rem;
+}
+
+/* --- Toggle -------------------------------------------------------------- */
+
+/* <label toggle><input type="checkbox" aria-label="Save"><svg …/></label>
+   The wrapping label makes the icon clickable natively — no JavaScript. */
+label[toggle] {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0;
+  width: 2rem;
+  height: 2rem;
+  padding: var(--space-s);
+  border-radius: var(--radius);
+  cursor: pointer;
+  color: var(--foreground);
+  transition: background-color 0.2s ease;
+}
+
+label[toggle] > input[type="checkbox"] {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  clip-path: inset(50%);
+}
+
+label[toggle] > svg {
+  width: 100%;
+  height: 100%;
+}
+
+label[toggle]:hover {
+  background-color: var(--secondary);
+  color: var(--muted-foreground);
+}
+
+label[toggle]:has(> :checked) {
+  background-color: var(--secondary-variant);
+  color: var(--foreground);
+}
+
+label[toggle]:has(> :focus-visible) {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+/* --- Tooltip ------------------------------------------------------------- */
+
+/* <button icon tooltip="Delete" aria-label="Delete">. This is CSS, so it is a
+   visual affordance and nothing more: assistive tech never sees the attribute,
+   which is why the aria-label beside it is not optional. Inside a [responsive]
+   scroller a tooltip can be clipped by the scroll box — use title there. */
+[tooltip] {
+  position: relative;
+}
+
+[tooltip]::after {
+  content: attr(tooltip);
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  z-index: 1;
+  translate: -50% calc(-1 * var(--space-xs));
+  padding: var(--space-xs) var(--space-s);
+  border-radius: var(--radius);
+  background-color: var(--foreground);
+  color: var(--background);
+  font-size: 0.75rem;
+  font-weight: 400;
+  line-height: 1.25rem;
+  white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+[tooltip]:hover::after,
+[tooltip]:focus-visible::after {
+  opacity: 1;
+}
+
+/* --- Keycap -------------------------------------------------------------- */
+:where(kbd) {
+  font-size: 0.85em;
+  padding: 1px var(--space-s);
+  border: var(--border);
+  border-bottom-width: 2px;
+  border-radius: var(--radius);
+  background-color: var(--muted);
+  color: var(--foreground);
+  white-space: nowrap;
+}
+
+/* ==========================================================================
+   9. STATE & MEDIA QUERIES
+   ========================================================================== */
+
+/* No pointer-events: none here — it suppresses the not-allowed cursor.
+   Native disabled controls already ignore clicks. */
+:where(:disabled, [disabled]) {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Opacity multiplies down the tree. A disabled fieldset is dimmed once, as a
+   whole; the controls it disables inside it are not dimmed a second time. */
+:where(fieldset:disabled :disabled) {
+  opacity: 1;
+}
+
+/* aria-busy is a true/false state, so it cannot double as a style hook.
+   Use [loading] for the spinner and aria-busy="true" for the semantics:
+   <button loading aria-busy="true">Saving…</button> */
+:where([aria-busy="true"]) {
+  cursor: progress;
+  opacity: 0.7;
+}
+
+[loading] {
+  pointer-events: none;
+  opacity: 0.7;
+}
+
+[loading]::before {
+  content: "";
+  display: inline-block;
+  flex: none;
+  align-self: center;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: var(--radius-pill);
+  animation: berlinx-spin 0.7s linear infinite;
+}
+
+/* The spinner takes the icon's place instead of crowding in beside it: a
+   button showing both its glyph and a spinner reads as two separate things,
+   and on an icon-only button there is no room for the pair at all. Restricted
+   to controls, because [loading] on a region should not blank out the content
+   it is loading over, and to direct children, so an icon nested deeper in the
+   label is left alone. */
+:where(button, a, summary, [role="button"])[loading] > :where(svg, img) {
+  display: none;
+}
+
+/* Controls that stay out of the way until their row — or card, or list item — is
+   pointed at: <tr reveal>. Keyboard users get them from :focus-within, and where
+   there is no hover to reveal them with they are simply never hidden.
+
+   Only controls hide: buttons, button-styled links and toggles. A plain link is
+   content — the record's name, an email address — and stays visible.
+
+   No pointer-events: none. You have to be over the container to reach a control
+   inside it, and hiding them from the keyboard is the bug this avoids. The hiding
+   is a filter rather than opacity, so a disabled or loading control still shows
+   dimmed once revealed instead of being forced back to full strength. */
+@media (hover: hover) and (pointer: fine) {
+  [reveal]
+    :where(
+      button,
+      input:is([type="button"], [type="submit"], [type="reset"]),
+      [role="button"],
+      :is(a, label, summary)[tag],
+      label[toggle]
+    ) {
+    filter: opacity(0);
+
+    /* Restates the button transitions this declaration would otherwise replace. */
+    transition:
+      filter 0.2s ease,
+      background-color 0.2s ease-in-out,
+      border-color 0.2s ease-in-out;
+  }
+
+  [reveal]:is(:hover, :focus-within)
+    :where(
+      button,
+      input:is([type="button"], [type="submit"], [type="reset"]),
+      [role="button"],
+      :is(a, label, summary)[tag],
+      label[toggle]
+    ) {
+    filter: none;
+  }
+}
+
+@keyframes berlinx-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes berlinx-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes berlinx-shimmer {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes berlinx-progress {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes berlinx-slide-up {
+  from {
+    transform: translateY(100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes berlinx-slide-down {
+  from {
+    transform: translateY(-100%);
+  }
+
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes berlinx-slide-left {
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes berlinx-slide-right {
+  from {
+    transform: translateX(-100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  /* `*` cannot reach a view transition: those pseudo-elements live in their own
+     tree. This has to stay a rule of its own — an unknown pseudo-element
+     invalidates the whole selector list it appears in, so grouping it above would
+     silently drop the entire block in engines without view transitions. */
+
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none;
+  }
+
+  /* A slower, continuous status indicator still communicates work in progress
+     when Windows/browser animation effects are disabled. */
+  [loading]::before {
+    animation-duration: 1.4s !important;
+    animation-iteration-count: infinite !important;
+  }
+
+  [carousel] {
+    scroll-behavior: auto;
+  }
+}
+
+@media (forced-colors: active) {
+  :where(:focus-visible) {
+    outline-color: Highlight;
+  }
+
+  input[type="checkbox"][role="switch"] {
+    border: 1px solid ButtonText;
+    background: Canvas;
+  }
+
+  input[type="checkbox"][role="switch"]::before {
+    background: ButtonText;
+  }
+
+  input[type="checkbox"][role="switch"]:checked {
+    background: Highlight;
+  }
+
+  input[type="checkbox"][role="switch"]:checked::before {
+    background: HighlightText;
+  }
+
+  /* The drawn chevron is a background image, which forced colours can drop:
+     hand the arrow back to the system. */
+  :where(select:not([multiple], [size]:not([size="1"]))) {
+    appearance: auto;
+    background-image: none;
+    padding-inline-end: var(--control-padding-inline);
+  }
+}
+
+/* Author-level flex/grid display must not override HTML's hidden state. */
+[hidden]:not([hidden="until-found"]) {
+  display: none !important;
+}
+
+@media (max-width: 600px) {
+  :where(dl, dl > div) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  :where(dd) {
+    margin-bottom: var(--space-m);
+  }
+
+  ol[steps] {
+    flex-direction: column;
+  }
+
+  ol[steps] > li:not(:last-child)::after {
+    inset: calc(100% + var(--space-s)) auto calc(-1 * var(--space-l) + var(--space-s)) calc(50% - 1px);
+    width: 2px;
+    height: auto;
+  }
+
+  :where(body) {
+    padding: var(--page-padding, 1rem);
+  }
+}
