@@ -41,6 +41,7 @@ function dropdown() {
       if (!open) return unfollow?.();
       prepareMenu(menu);
       requestAnimationFrame(() => {
+        if (!menu.matches(":popover-open")) return;
         unfollow = follow(menu, trigger, options);
         focusItem(menu, focusLast ? "last" : "first");
         focusLast = false;

@@ -70,8 +70,17 @@ const modules = buildSync({
 for (const file of [...runtime.outputFiles, ...modules.outputFiles]) {
   write(path.relative(root, file.path), file.text.replace(/(from|import)\s*"atomico(\/jsx-runtime)?"/g, '$1"./atomico.js"'));
 }
-for (const file of fs.readdirSync(path.join(root, "elements")).filter(file => file.endsWith(".d.ts"))) {
-  write(`dist/elements/${file}`, read(`elements/${file}`));
+// Hand-written declarations are copied; every other entry point gets one that
+// re-exports its element class from index.d.ts, so each subpath has types.
+const declared = fs.readdirSync(path.join(root, "elements")).filter(file => file.endsWith(".d.ts"));
+for (const file of declared) write(`dist/elements/${file}`, read(`elements/${file}`));
+const index = read("elements/index.d.ts");
+for (const file of elements) {
+  const name = file.replace(/\.jsx?$/, "");
+  if (declared.includes(`${name}.d.ts`)) continue;
+  const className = name.replace(/(^|-)(\w)/g, (_, dash, letter) => letter.toUpperCase());
+  const exports = index.includes(`class ${className} `) ? `export { ${className} } from "./index.js";` : "export {};";
+  write(`dist/elements/${name}.d.ts`, `${exports}\n`);
 }
 // --- Guides ------------------------------------------------------------------
 

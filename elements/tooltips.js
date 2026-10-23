@@ -13,6 +13,7 @@
 import { idOf, place } from "./shared.js";
 
 const SHOW_DELAY = 300;
+const PLACEMENT = { side: "top", align: "center" };
 const HIDE_DELAY = 100;
 
 let tip;
@@ -59,7 +60,7 @@ function show(el) {
   }
 
   tooltip.showPopover();
-  place(tooltip, el, { side: "top", align: "center" });
+  place(tooltip, el, PLACEMENT);
 }
 
 function hide() {
@@ -114,6 +115,10 @@ function start() {
 
   // Pressing or clicking means the person has moved on from reading.
   document.addEventListener("pointerdown", hide);
+
+  // Scrolling, including the scroll that focusing a control can cause, carries
+  // the tooltip along with its control.
+  addEventListener("scroll", () => anchor && place(tip, anchor, PLACEMENT), { capture: true, passive: true });
 
   document.addEventListener("keydown", event => {
     if (event.key === "Escape" && anchor) hide();

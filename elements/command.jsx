@@ -113,7 +113,8 @@ function command({ shortcut = "k" }) {
       if (el && !el.hasAttribute("active")) activate(el);
     };
 
-    // Runs after the command's own click handlers; a link then navigates.
+    // The palette closes before the command runs (this listens in the capture
+    // phase), so a command that opens a dialog of its own keeps the focus.
     const onClick = event => {
       if (event.target.closest("[role=option]")) dialog.close();
     };
@@ -135,14 +136,14 @@ function command({ shortcut = "k" }) {
     input.addEventListener("input", filter);
     input.addEventListener("keydown", onKey);
     listbox.addEventListener("pointermove", onPointer);
-    listbox.addEventListener("click", onClick);
+    listbox.addEventListener("click", onClick, true);
     dialog.addEventListener("close", onClose);
     document.addEventListener("keydown", onShortcut);
     return () => {
       input.removeEventListener("input", filter);
       input.removeEventListener("keydown", onKey);
       listbox.removeEventListener("pointermove", onPointer);
-      listbox.removeEventListener("click", onClick);
+      listbox.removeEventListener("click", onClick, true);
       dialog.removeEventListener("close", onClose);
       document.removeEventListener("keydown", onShortcut);
     };

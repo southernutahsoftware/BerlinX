@@ -1,4 +1,5 @@
-// Helpers shared by the elements: popover placement and menu keyboard support.
+// Helpers shared by the elements: ids, text, stand-ins for hidden controls,
+// popover placement and menu keyboard support.
 
 let uid = 0;
 
@@ -46,8 +47,9 @@ const GAP = 6; // --space-s, the same gap BerlinX leaves under an anchored popov
 
 /** Position an open popover against an anchor: below it, or above when below has
  *  no room, and always inside the viewport. The anchor is an element or a point
- *  ({ x, y }); align is "start", "center" or "end". Done in script rather than with CSS anchor positioning so it is the
- *  same in every engine, including ones without position-area. */
+ *  ({ x, y }); side is "bottom" or "top", align "start", "center" or "end". Done
+ *  in script rather than with CSS anchor positioning so it is the same in every
+ *  engine, including ones without position-area. */
 export function place(popover, anchor, { align = "start", side = "bottom" } = {}) {
   const box = anchor.getBoundingClientRect?.() ?? { left: anchor.x, right: anchor.x, top: anchor.y, bottom: anchor.y };
   const gap = anchor.getBoundingClientRect ? GAP : 0;

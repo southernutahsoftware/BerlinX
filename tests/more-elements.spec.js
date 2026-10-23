@@ -195,6 +195,19 @@ test.describe("bx-command", () => {
     await expect(dialog(page)).toBeHidden();
   });
 
+  test("a command that opens a dialog of its own keeps the focus there", async ({ page }) => {
+    await page.evaluate(() =>
+      document.querySelector("#exportCommand").addEventListener("click", async () => {
+        const { confirm } = await import("/dist/elements/index.js");
+        confirm({ title: "Export everything?", confirm: "Export" });
+      }),
+    );
+    await page.keyboard.press("Control+k");
+    await dialog(page).getByRole("combobox").fill("csv");
+    await page.keyboard.press("Enter");
+    await expect(page.getByRole("dialog", { name: "Export everything?" }).getByRole("button", { name: "Export" })).toBeFocused();
+  });
+
   test("arrow keys move, links navigate, and it opens fresh each time", async ({ page }) => {
     await page.evaluate(() => document.querySelector("#command").show());
     const search = dialog(page).getByRole("combobox");

@@ -137,26 +137,27 @@ function multiSelect({ placeholder }) {
 
   return (
     <host>
-      <div bx-field="" ref={field} onclick={event => event.target === field.current && search.current.focus()}>
+      <div bx-field="" ref={field} onclick={event => !event.target.closest("button, input") && search.current.focus()}>
         {/* Chips have a wrapper of their own, so adding or removing one never
             replaces the text field after them (and the focus in it). */}
         <span bx-chips="">
           {chosen.map(option => (
-          <span badge="" secondary="">
-            {option.label}
-            {!option.disabled && (
-              <button
-                type="button"
-                aria-label={labels.remove(option.label)}
-                onclick={() => {
-                  toggle(option, false);
-                  search.current.focus();
-                }}
-              >
-                {crossIcon()}
-              </button>
-            )}
-          </span>
+            <span badge="" secondary="">
+              {option.label}
+              {!option.disabled && (
+                <button
+                  type="button"
+                  aria-label={labels.remove(option.label)}
+                  disabled={select.disabled}
+                  onclick={() => {
+                    toggle(option, false);
+                    search.current.focus();
+                  }}
+                >
+                  {crossIcon()}
+                </button>
+              )}
+            </span>
           ))}
         </span>
         <input

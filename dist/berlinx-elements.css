@@ -9,7 +9,7 @@
    The menu and listbox rules key off ARIA roles, so a menu written by hand with
    those roles looks the same.
 
-   Sections, in the order of the elements' names:
+   Sections:
      menus, listboxes, date picker, data table, toasts, multi-select, command
      palette, sidebar, tabs, tooltips, tree, confirm dialog
    ========================================================================== */
@@ -666,6 +666,10 @@ bx-sidebar > aside nav > :is(a, button) > :is(svg, img):first-child {
   flex: none;
   width: var(--sidebar-icon);
   height: var(--sidebar-icon);
+}
+
+bx-sidebar[bx-still] > aside {
+  transition: none;
 }
 
 bx-sidebar[collapsed] > aside {

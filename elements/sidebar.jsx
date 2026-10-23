@@ -53,10 +53,14 @@ function sidebar({ collapsed, persist, shortcut }) {
     host.current.dispatchEvent(new Event("toggle"));
   };
 
-  // A remembered choice wins over the markup.
+  // A remembered choice wins over the markup, and is put back at once rather
+  // than animated as the page loads.
   useEffect(() => {
     const saved = persist && read(persist);
-    if (saved) host.current.collapsed = saved === "collapsed";
+    if (!saved) return;
+    host.current.setAttribute("bx-still", "");
+    host.current.collapsed = saved === "collapsed";
+    requestAnimationFrame(() => requestAnimationFrame(() => host.current.removeAttribute("bx-still")));
   }, []);
 
   // Collapsed, the links' names are only in their tooltips; the ones added here
