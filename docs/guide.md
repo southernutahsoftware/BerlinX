@@ -597,6 +597,19 @@ levels; `--input` is the background of text fields.
   transitions. A loading spinner keeps turning at a slower 1.4 seconds per
   revolution so ongoing work does not look frozen.
 
+## Elements
+
+A few controls have no HTML element: a combobox, dropdown and context menus, a
+data table, a date picker, toasts and a confirm dialog. BerlinX Elements adds
+them as optional custom elements, styled by this same stylesheet and rendered in
+the light DOM, so your theme reaches them like anything else:
+
+```js
+import "berlinx/elements";
+```
+
+See [the Elements guide](elements.md) for each one.
+
 ## Browser support
 
 | Feature                | Requirement                                    |
@@ -636,13 +649,15 @@ custom-property value. An inherited custom property works everywhere.
 
 ```sh
 npm install
-npm run build    # dist/ stylesheets, guide.html and cheatsheet.html
+npm run build    # dist/ stylesheets and elements, and the HTML guides
+npm test         # element tests in Chromium, Firefox and WebKit
 npm run deploy   # build, then publish the demo site to Cloudflare
 ```
 
-Edit `css/berlinx.css`; `dist/` is generated from it. `dist/berlinx.min.css` is
-minified with Lightning CSS. This guide and the cheatsheet are written in
-`docs/*.md` and rendered to `guide.html` and `cheatsheet.html` by the same build.
+Edit `css/berlinx.css` and `elements/`; `dist/` is generated from them.
+`dist/berlinx.min.css` is minified with Lightning CSS and `dist/elements/` is
+bundled with esbuild. The guides are written in `docs/*.md` and rendered to
+`guide.html`, `elements.html` and `cheatsheet.html` by the same build.
 `index.html` is the demo — open it directly, no server needed.
 
 ## License

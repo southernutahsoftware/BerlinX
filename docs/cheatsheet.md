@@ -263,6 +263,24 @@ No attribute required.
 `aside` and `menu` are claimed by components — use `blockquote` for pull quotes
 and `ul` for plain lists.
 
+## Elements
+
+Optional custom elements: `import "berlinx/elements"`. Details in the
+[Elements guide](elements.md).
+
+| Markup | Effect |
+| --- | --- |
+| `<bx-combobox>` around `<input list>` + `<datalist>` | Filtering listbox; `strict` rejects other values; `.options` from script |
+| `<bx-dropdown>` around a button + `[popover]` | Menu with arrow keys and type-ahead; `placement` on the popover |
+| `<bx-context-menu>` around content + `[popover]` | The same menu on right-click or <kbd>Shift</kbd>+<kbd>F10</kbd> |
+| `<bx-data-table>` around a `<table>` | `sortable` (`th[nosort]`, `td[data-value]`), `filter`, `page-size`, `selectable` |
+| `<bx-date-picker>` around `<input type="date">` | Calendar; `placeholder`, `week-start`; `min`/`max` on the input |
+| `toast(message \| { message, title, variant, duration, action })` | Stacked, self-dismissing messages |
+| `await confirm(message \| { title, message, confirm, cancel, destructive })` | `true` or `false` |
+
+Menus and listboxes are styled by role, so `[popover][role="menu"]` with
+`role="menuitem"` buttons looks the same without the elements.
+
 ## Theming tokens
 
 Every one is a custom property on `:root`. Override the ones you want; the rest

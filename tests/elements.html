@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BerlinX Elements test page</title>
+    <link rel="stylesheet" href="/dist/berlinx.css" />
+    <script type="module" src="/dist/elements/index.js"></script>
+  </head>
+  <body>
+    <h1>Elements</h1>
+
+    <section id="dropdown">
+      <bx-dropdown>
+        <button popovertarget="actions" outline>Actions</button>
+        <div popover id="actions" placement="bottom-start">
+          <small>Invoice</small>
+          <button id="edit">Edit</button>
+          <button>Duplicate <kbd>⌘D</kbd></button>
+          <button disabled>Archive</button>
+          <hr />
+          <a href="#download">Download</a>
+          <button destructive>Delete</button>
+        </div>
+      </bx-dropdown>
+      <output id="dropdownLog"></output>
+    </section>
+
+    <section id="context">
+      <bx-context-menu>
+        <article id="contextArea" tabindex="0">Right-click this card.</article>
+        <div popover>
+          <button>Rename</button>
+          <button>Share</button>
+          <button destructive>Delete</button>
+        </div>
+      </bx-context-menu>
+    </section>
+
+    <form id="form" validation>
+      <label stack>
+        Country
+        <bx-combobox strict>
+          <input id="country" name="country" list="countries" />
+          <datalist id="countries">
+            <option value="Austria"></option>
+            <option value="Belgium"></option>
+            <option value="Germany"></option>
+            <option value="Côte d'Ivoire"></option>
+          </datalist>
+        </bx-combobox>
+      </label>
+
+      <label stack>
+        Due date
+        <bx-date-picker>
+          <input id="due" type="date" name="due" value="2026-10-22" min="2026-10-05" max="2026-12-20" />
+        </bx-date-picker>
+      </label>
+
+      <label stack>
+        Start date
+        <bx-date-picker week-start="1" placeholder="Choose a start">
+          <input id="start" type="date" name="start" required />
+        </bx-date-picker>
+      </label>
+
+      <button type="submit">Save</button>
+    </form>
+
+    <bx-data-table id="table" sortable filter page-size="3" selectable>
+      <table>
+        <thead>
+          <tr><th scope="col">Name</th><th scope="col">Total</th><th scope="col" nosort>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><th scope="row">Ada</th><td data-value="1200">$1,200</td><td>alpha</td></tr>
+          <tr><th scope="row">Grace</th><td data-value="300">$300</td><td>beta</td></tr>
+          <tr><th scope="row">Émile</th><td data-value="45">$45</td><td>gamma</td></tr>
+          <tr><th scope="row">Linus</th><td data-value="9000">$9,000</td><td>delta</td></tr>
+          <tr><th scope="row">Barbara</th><td data-value="10">$10</td><td>alpha</td></tr>
+        </tbody>
+      </table>
+    </bx-data-table>
+  </body>
+</html>

@@ -75,7 +75,32 @@ Prefer to self-host? Download [`dist/berlinx.min.css`](dist/berlinx.min.css).
 </article>
 ```
 
-Make it yours:
+## Elements, when you need them
+
+HTML has no element for a combobox, a data table or a date picker, so BerlinX
+Elements adds them as optional custom elements. They render in the light DOM and
+are styled by the same stylesheet, so they match everything else and take your
+theme with no extra work. Each wraps native markup that still works without
+JavaScript.
+
+```js
+import "berlinx/elements";
+import { toast, confirm } from "berlinx/elements";
+```
+
+```html
+<bx-data-table sortable filter page-size="10">
+  <table>…</table>
+</bx-data-table>
+```
+
+Combobox, dropdown menu, context menu, data table, date picker, toasts and a
+confirm dialog: about 12 KB gzipped together. See the
+[Elements guide](docs/elements.md).
+
+## Make it yours
+
+
 
 ```css
 :root {
@@ -87,6 +112,7 @@ Make it yours:
 ## Learn more
 
 - [**Usage guide**](docs/guide.md): installation, layout, components and theming.
+- [**Elements**](docs/elements.md): the optional custom elements.
 - [**Cheatsheet**](docs/cheatsheet.md): every attribute and token on one page.
 - [**Live demo**](https://berlinx.southernutahsoftware.com): every component, in
   light and dark.
@@ -95,11 +121,12 @@ Make it yours:
 
 ```sh
 npm install
-npm run build    # dist/ stylesheets and the HTML guides
+npm run build    # dist/ stylesheets, elements and the HTML guides
+npm test         # element tests in Chromium, Firefox and WebKit
 ```
 
-Edit `css/berlinx.css`; `dist/` is generated from it. Open `index.html` to see
-the demo, no server needed.
+Edit `css/berlinx.css` and `elements/`; `dist/` is generated from them. Open
+`index.html` to see the demo, no server needed.
 
 ## Thanks
 

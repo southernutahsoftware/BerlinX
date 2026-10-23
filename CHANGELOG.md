@@ -3,6 +3,17 @@
 All notable changes to BerlinX are documented here. This project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+- BerlinX Elements: optional, light-DOM custom elements in `dist/elements/`,
+  imported as `berlinx/elements` or one at a time as `berlinx/elements/<name>`.
+  `<bx-combobox>`, `<bx-dropdown>`, `<bx-context-menu>`, `<bx-data-table>`
+  and `<bx-date-picker>` enhance native markup that still works without
+  JavaScript; `toast()` and `confirm()` are helpers. About 12 KB gzipped.
+- Styles for the elements, and for `[role="menu"]` and `[role="listbox"]`
+  popovers, in a new section 10 of `berlinx.css`.
+- Pagination buttons no longer flash the primary colour while pressed.
+
 ## 1.0.0
 
 First public release.

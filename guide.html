@@ -31,7 +31,7 @@
   <body>
     <header row justify="between" items="center" gap-m>
       <a href="index.html">Berlin<span primary>X</span></a>
-      <nav aria-label="Documentation" row gap-m><a href="index.html">Components</a><a href="guide.html" aria-current="page">Usage guide</a><a href="cheatsheet.html">Cheatsheet</a></nav>
+      <nav aria-label="Documentation" row gap-m><a href="index.html">Components</a><a href="guide.html" aria-current="page">Usage guide</a><a href="elements.html">Elements</a><a href="cheatsheet.html">Cheatsheet</a></nav>
       <button data-theme-toggle icon ghost aria-pressed="false" aria-label="Dark theme">
         <svg data-icon="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
         <svg data-icon="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>
@@ -55,6 +55,7 @@
 <a href="#light-and-dark-themes">Light and dark themes</a>
 <a href="#theming">Theming</a>
 <a href="#accessibility">Accessibility</a>
+<a href="#elements">Elements</a>
 <a href="#browser-support">Browser support</a>
 <a href="#development">Development</a>
 <a href="#license">License</a>
@@ -774,6 +775,14 @@ them back, and a pointer that cannot hover never triggers the hiding at all.</li
 transitions. A loading spinner keeps turning at a slower 1.4 seconds per
 revolution so ongoing work does not look frozen.</li>
 </ul>
+<h2 id="elements">Elements</h2>
+<p>A few controls have no HTML element: a combobox, dropdown and context menus, a
+data table, a date picker, toasts and a confirm dialog. BerlinX Elements adds
+them as optional custom elements, styled by this same stylesheet and rendered in
+the light DOM, so your theme reaches them like anything else:</p>
+<pre><code tabindex="0" class="language-js">import &quot;berlinx/elements&quot;;
+</code></pre>
+<p>See <a href="elements.html">the Elements guide</a> for each one.</p>
 <h2 id="browser-support">Browser support</h2>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
@@ -825,12 +834,14 @@ be feature-detected either, because <code>CSS.supports()</code> reports <code>tr
 custom-property value. An inherited custom property works everywhere.</p>
 <h2 id="development">Development</h2>
 <pre><code tabindex="0" class="language-sh">npm install
-npm run build    # dist/ stylesheets, guide.html and cheatsheet.html
+npm run build    # dist/ stylesheets and elements, and the HTML guides
+npm test         # element tests in Chromium, Firefox and WebKit
 npm run deploy   # build, then publish the demo site to Cloudflare
 </code></pre>
-<p>Edit <code>css/berlinx.css</code>; <code>dist/</code> is generated from it. <code>dist/berlinx.min.css</code> is
-minified with Lightning CSS. This guide and the cheatsheet are written in
-<code>docs/*.md</code> and rendered to <code>guide.html</code> and <code>cheatsheet.html</code> by the same build.
+<p>Edit <code>css/berlinx.css</code> and <code>elements/</code>; <code>dist/</code> is generated from them.
+<code>dist/berlinx.min.css</code> is minified with Lightning CSS and <code>dist/elements/</code> is
+bundled with esbuild. The guides are written in <code>docs/*.md</code> and rendered to
+<code>guide.html</code>, <code>elements.html</code> and <code>cheatsheet.html</code> by the same build.
 <code>index.html</code> is the demo — open it directly, no server needed.</p>
 <h2 id="license">License</h2>
 <p><a href="https://github.com/southernutahsoftware/BerlinX/blob/main/LICENSE">MIT</a> © Southern Utah Software</p>

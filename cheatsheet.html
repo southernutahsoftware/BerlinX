@@ -31,7 +31,7 @@
   <body>
     <header row justify="between" items="center" gap-m>
       <a href="index.html">Berlin<span primary>X</span></a>
-      <nav aria-label="Documentation" row gap-m><a href="index.html">Components</a><a href="guide.html">Usage guide</a><a href="cheatsheet.html" aria-current="page">Cheatsheet</a></nav>
+      <nav aria-label="Documentation" row gap-m><a href="index.html">Components</a><a href="guide.html">Usage guide</a><a href="elements.html">Elements</a><a href="cheatsheet.html" aria-current="page">Cheatsheet</a></nav>
       <button data-theme-toggle icon ghost aria-pressed="false" aria-label="Dark theme">
         <svg data-icon="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
         <svg data-icon="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>
@@ -53,6 +53,7 @@
 <a href="#themes">Themes</a>
 <a href="#text">Text</a>
 <a href="#elements-that-are-already-components">Elements that are already components</a>
+<a href="#elements">Elements</a>
 <a href="#theming-tokens">Theming tokens</a>
 <a href="#gotchas">Gotchas</a>
 </nav>
@@ -648,6 +649,47 @@ Override them the same way. Print is always light.</p>
 </tbody></table></div>
 <p><code>aside</code> and <code>menu</code> are claimed by components — use <code>blockquote</code> for pull quotes
 and <code>ul</code> for plain lists.</p>
+<h2 id="elements">Elements</h2>
+<p>Optional custom elements: <code>import &quot;berlinx/elements&quot;</code>. Details in the
+<a href="elements.html">Elements guide</a>.</p>
+<div responsive tabindex="0" role="region" aria-label="Table"><table>
+<thead>
+<tr>
+<th>Markup</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;bx-combobox&gt;</code> around <code>&lt;input list&gt;</code> + <code>&lt;datalist&gt;</code></td>
+<td>Filtering listbox; <code>strict</code> rejects other values; <code>.options</code> from script</td>
+</tr>
+<tr>
+<td><code>&lt;bx-dropdown&gt;</code> around a button + <code>[popover]</code></td>
+<td>Menu with arrow keys and type-ahead; <code>placement</code> on the popover</td>
+</tr>
+<tr>
+<td><code>&lt;bx-context-menu&gt;</code> around content + <code>[popover]</code></td>
+<td>The same menu on right-click or <kbd>Shift</kbd>+<kbd>F10</kbd></td>
+</tr>
+<tr>
+<td><code>&lt;bx-data-table&gt;</code> around a <code>&lt;table&gt;</code></td>
+<td><code>sortable</code> (<code>th[nosort]</code>, <code>td[data-value]</code>), <code>filter</code>, <code>page-size</code>, <code>selectable</code></td>
+</tr>
+<tr>
+<td><code>&lt;bx-date-picker&gt;</code> around <code>&lt;input type=&quot;date&quot;&gt;</code></td>
+<td>Calendar; <code>placeholder</code>, <code>week-start</code>; <code>min</code>/<code>max</code> on the input</td>
+</tr>
+<tr>
+<td><code>toast(message | { message, title, variant, duration, action })</code></td>
+<td>Stacked, self-dismissing messages</td>
+</tr>
+<tr>
+<td><code>await confirm(message | { title, message, confirm, cancel, destructive })</code></td>
+<td><code>true</code> or <code>false</code></td>
+</tr>
+</tbody></table></div>
+<p>Menus and listboxes are styled by role, so <code>[popover][role=&quot;menu&quot;]</code> with
+<code>role=&quot;menuitem&quot;</code> buttons looks the same without the elements.</p>
 <h2 id="theming-tokens">Theming tokens</h2>
 <p>Every one is a custom property on <code>:root</code>. Override the ones you want; the rest
 follow.</p>

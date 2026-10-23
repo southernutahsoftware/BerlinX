@@ -1,11 +1,15 @@
 // npm run build
 //
 // 1. dist/berlinx.css and dist/berlinx.min.css from css/berlinx.css.
-// 2. guide.html and cheatsheet.html from docs/guide.md and docs/cheatsheet.md,
-//    styled with BerlinX itself.
+// 2. dist/elements/ from elements/: one ES module per element, plus index.js
+//    with all of them. Atomico is bundled into a shared chunk, so the files run
+//    straight from a CDN as well as through a bundler.
+// 3. guide.html, elements.html and cheatsheet.html from docs/*.md, styled with
+//    BerlinX itself.
 
 const fs = require("node:fs");
 const path = require("node:path");
+const { buildSync } = require("esbuild");
 const { transform } = require("lightningcss");
 const { marked } = require("marked");
 
@@ -24,10 +28,61 @@ const css = read("css/berlinx.css").replace(/^\/\*! BerlinX v\S+/, `/*! BerlinX 
 write("dist/berlinx.css", css);
 write("dist/berlinx.min.css", `${transform({ filename: "berlinx.css", code: Buffer.from(css), minify: true }).code.toString().trim()}\n`);
 
+// --- Elements ----------------------------------------------------------------
+
+// Atomico is bundled once, into atomico.js, which every element imports. Left to
+// esbuild's code splitting it would be cut up and its internal circular imports
+// run out of order.
+const elements = ["index", "combobox", "confirm", "context-menu", "data-table", "date-picker", "dropdown", "toast"];
+const options = {
+  absWorkingDir: root,
+  bundle: true,
+  format: "esm",
+  minify: !process.env.BX_DEV,
+  write: false,
+  target: ["chrome114", "edge114", "firefox125", "safari17"],
+  legalComments: "none",
+  banner: { js: `/*! BerlinX Elements v${pkg.version} | MIT License | Includes Atomico (MIT) and Lucide icons (ISC) */` },
+};
+
+fs.rmSync(path.join(root, "dist/elements"), { recursive: true, force: true });
+const runtime = buildSync({
+  ...options,
+  stdin: { contents: 'export { c, useEffect, useHost, useId, useRef, useUpdate } from "atomico"; export { jsx, jsxs, Fragment } from "atomico/jsx-runtime";', resolveDir: root },
+  outfile: "dist/elements/atomico.js",
+});
+const modules = buildSync({
+  ...options,
+  entryPoints: elements.map(name => ({ in: `elements/${name}${["index", "confirm", "toast"].includes(name) ? ".js" : ".jsx"}`, out: name })),
+  outdir: "dist/elements",
+  chunkNames: "[name]-[hash]",
+  splitting: true,
+  jsx: "automatic",
+  jsxImportSource: "atomico",
+  external: ["atomico", "atomico/jsx-runtime"],
+});
+for (const file of [...runtime.outputFiles, ...modules.outputFiles]) {
+  write(path.relative(root, file.path), file.text.replace(/(from|import)\s*"atomico(\/jsx-runtime)?"/g, '$1"./atomico.js"'));
+}
+for (const name of ["index", "confirm", "toast"]) write(`dist/elements/${name}.d.ts`, read(`elements/${name}.d.ts`));
 // --- Guides ------------------------------------------------------------------
+
+// The Elements page runs its live examples, and wires its demo buttons here.
+const elementsDemo = `
+      import { confirm, toast } from "./dist/elements/index.js";
+      const demos = {
+        toast: () => toast({ title: "Invoice sent", message: "Ada will get it in a minute.", variant: "success" }),
+        "toast-undo": () => toast({ message: "Client archived", action: { label: "Undo", onClick: () => toast("Client restored") } }),
+        "toast-error": () => toast({ title: "Payment failed", message: "The card was declined.", variant: "error" }),
+        confirm: async () => (await confirm({ title: "Send invoice #1024?", message: "Ada will get it by email.", confirm: "Send" })) && toast("Invoice sent"),
+        "confirm-delete": async () =>
+          (await confirm({ title: "Delete invoice #1024?", message: "This cannot be undone.", confirm: "Delete", destructive: true })) && toast("Invoice deleted"),
+      };
+      document.addEventListener("click", event => demos[event.target.closest("[data-demo]")?.dataset.demo]?.());`;
 
 const pages = [
   { source: "docs/guide.md", out: "guide.html", title: "Usage guide" },
+  { source: "docs/elements.md", out: "elements.html", title: "Elements", script: elementsDemo },
   { source: "docs/cheatsheet.md", out: "cheatsheet.html", title: "Cheatsheet" },
 ];
 const github = "https://github.com/southernutahsoftware/BerlinX/blob/main/";
@@ -104,7 +159,9 @@ for (const page of pages) {
     <main>
 ${body}
     </main>
-    <footer><small muted>BerlinX v${pkg.version} · MIT License</small></footer>
+    <footer><small muted>BerlinX v${pkg.version} · MIT License</small></footer>${page.script ? `
+    <script type="module">${page.script}
+    </script>` : ""}
     <script>
       const toggle = document.querySelector("[data-theme-toggle]");
       const systemDark = matchMedia("(prefers-color-scheme: dark)");

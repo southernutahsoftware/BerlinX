@@ -1,0 +1,438 @@
+<!doctype html>
+<!-- Generated from docs/elements.md by npm run build. Edit the Markdown instead. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BerlinX Elements</title>
+    <meta name="color-scheme" content="light dark" />
+    <script>
+      try {
+        const theme = localStorage.getItem("berlinx-theme");
+        if (theme === "light" || theme === "dark") document.documentElement.setAttribute("theme", theme);
+      } catch {}
+    </script>
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="dist/berlinx.min.css" />
+    <!-- Lucide SVG paths: https://lucide.dev · license: docs/LUCIDE-LICENSE.txt -->
+    <style>
+      @font-face { font-family: Inter; src: url("assets/fonts/InterVariable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
+      body { padding: var(--space-l); }
+      body > header { margin-bottom: var(--space-l); }
+      body > header > a { font-weight: 700; font-size: 1.25rem; text-decoration: none; color: var(--foreground); }
+      body > header nav { margin-left: auto; }
+      body > header nav a[aria-current] { color: var(--foreground); font-weight: 600; }
+      @media (max-width: 600px) { body > header nav { order: 1; width: 100%; } }
+      main :where(p, li, td) a { text-decoration: underline; }
+      [data-theme-toggle][aria-pressed="true"] > [data-icon="moon"],
+      [data-theme-toggle][aria-pressed="false"] > [data-icon="sun"] { display: none; }
+    </style>
+  </head>
+  <body>
+    <header row justify="between" items="center" gap-m>
+      <a href="index.html">Berlin<span primary>X</span></a>
+      <nav aria-label="Documentation" row gap-m><a href="index.html">Components</a><a href="guide.html">Usage guide</a><a href="elements.html" aria-current="page">Elements</a><a href="cheatsheet.html">Cheatsheet</a></nav>
+      <button data-theme-toggle icon ghost aria-pressed="false" aria-label="Dark theme">
+        <svg data-icon="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
+        <svg data-icon="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>
+      </button>
+    </header>
+    <main>
+<h1 id="berlinx-elements">BerlinX Elements</h1>
+<details>
+<summary>Contents</summary>
+<nav aria-label="Contents" col gap-xs>
+<a href="#install">Install</a>
+<a href="#combobox">Combobox</a>
+<a href="#dropdown-menu">Dropdown menu</a>
+<a href="#context-menu">Context menu</a>
+<a href="#data-table">Data table</a>
+<a href="#date-picker">Date picker</a>
+<a href="#toasts">Toasts</a>
+<a href="#confirm-dialog">Confirm dialog</a>
+<a href="#frameworks">Frameworks</a>
+<a href="#browser-support">Browser support</a>
+</nav>
+</details>
+<p>Optional custom elements for the controls HTML has no element for: a combobox,
+dropdown and context menus, a data table, a date picker, toasts and a confirm
+dialog. BerlinX itself stays a stylesheet; Elements is a separate import that you
+add only if you want it.</p>
+<pre><code tabindex="0" class="language-html">&lt;bx-data-table sortable filter page-size=&quot;10&quot;&gt;
+  &lt;table&gt;…&lt;/table&gt;
+&lt;/bx-data-table&gt;
+</code></pre>
+<p>Three rules hold for every element:</p>
+<ul>
+<li><strong>Light DOM.</strong> No shadow root. Everything an element shows is ordinary markup
+on your page, styled by <code>berlinx.css</code> with the same tokens as the rest. Your
+CSS, your theme and <code>density</code> reach inside without <code>::part()</code> or extra
+variables.</li>
+<li><strong>Your markup first.</strong> Each element wraps native HTML — an <code>&lt;input list&gt;</code>, a
+<code>popover</code>, a <code>&lt;table&gt;</code>, an <code>&lt;input type=&quot;date&quot;&gt;</code> — and only adds behaviour.
+Before the script loads, or without JavaScript, that HTML still works the
+native way.</li>
+<li><strong>Forms stay native.</strong> Values live in the real inputs you wrote, so <code>name</code>,
+<code>required</code>, <code>FormData</code>, reset and validation work as they always did.</li>
+</ul>
+<h2 id="install">Install</h2>
+<p>The elements&#39; styles are already in <code>berlinx.css</code>. Add the script beside it:</p>
+<pre><code tabindex="0" class="language-sh">npm install berlinx
+</code></pre>
+<pre><code tabindex="0" class="language-js">import &quot;berlinx/elements&quot;;                 // every element and helper
+import &quot;berlinx/elements/data-table&quot;;      // or only the ones you use
+import { toast, confirm } from &quot;berlinx/elements&quot;;
+</code></pre>
+<p>From a CDN, as an ES module:</p>
+<pre><code tabindex="0" class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/berlinx@1.0.0/dist/berlinx.min.css&quot; /&gt;
+&lt;script type=&quot;module&quot; src=&quot;https://cdn.jsdelivr.net/npm/berlinx@1.0.0/dist/elements/index.js&quot;&gt;&lt;/script&gt;
+</code></pre>
+<p>Everything together is about 12 KB gzipped, including the
+<a href="https://atomicojs.dev">Atomico</a> runtime the elements share. Importing an
+element defines it; importing it twice is harmless. TypeScript declarations are
+included.</p>
+<h2 id="combobox">Combobox</h2>
+<p>A text input that suggests options as you type. Write an <code>&lt;input list&gt;</code> and its
+<code>&lt;datalist&gt;</code>; the element turns the browser&#39;s suggestions into a styled listbox
+that filters while ignoring case and accents.</p>
+<form col gap-m items="stretch" style="max-width: 24rem">
+  <label stack>
+    Country
+    <bx-combobox strict>
+      <input name="country" list="demo-countries" placeholder="Start typing…" />
+      <datalist id="demo-countries">
+        <option value="Austria"></option>
+        <option value="Belgium"></option>
+        <option value="Côte d'Ivoire"></option>
+        <option value="Denmark"></option>
+        <option value="Germany"></option>
+        <option value="Netherlands"></option>
+        <option value="Switzerland"></option>
+      </datalist>
+    </bx-combobox>
+  </label>
+</form><pre><code tabindex="0" class="language-html">&lt;label stack&gt;
+  Country
+  &lt;bx-combobox strict&gt;
+    &lt;input name=&quot;country&quot; list=&quot;countries&quot; /&gt;
+    &lt;datalist id=&quot;countries&quot;&gt;
+      &lt;option value=&quot;Austria&quot;&gt;&lt;/option&gt;
+      &lt;option value=&quot;Belgium&quot;&gt;&lt;/option&gt;
+    &lt;/datalist&gt;
+  &lt;/bx-combobox&gt;
+&lt;/label&gt;
+</code></pre>
+<div responsive tabindex="0" role="region" aria-label="Table"><table>
+<thead>
+<tr>
+<th>Attribute or property</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>strict</code></td>
+<td>A value that is not an option is invalid. Give it a value to set the message: <code>strict=&quot;Pick a country&quot;</code></td>
+</tr>
+<tr>
+<td><code>options</code></td>
+<td>Options from script instead of a datalist: <code>[&quot;Oslo&quot;, { value: &quot;BER&quot;, label: &quot;Berlin&quot; }]</code></td>
+</tr>
+</tbody></table></div>
+<p>Keys: <kbd>↓</kbd> <kbd>↑</kbd> move through the list, <kbd>Enter</kbd> chooses,
+<kbd>Esc</kbd> closes it, <kbd>Alt</kbd>+<kbd>↓</kbd> opens it without moving.
+Choosing fires <code>input</code> and <code>change</code> on the input, as typing does.</p>
+<h2 id="dropdown-menu">Dropdown menu</h2>
+<p>A button that opens a menu of actions. It is a native popover, so it opens
+without JavaScript; the element adds menu semantics, arrow keys, type-ahead and
+placement under the button.</p>
+<bx-dropdown>
+  <button outline popovertarget="demo-actions">Actions</button>
+  <div popover id="demo-actions">
+    <small>Invoice</small>
+    <button>Edit</button>
+    <button>Duplicate <kbd>⌘D</kbd></button>
+    <button disabled>Archive</button>
+    <hr />
+    <button destructive>Delete</button>
+  </div>
+</bx-dropdown><pre><code tabindex="0" class="language-html">&lt;bx-dropdown&gt;
+  &lt;button popovertarget=&quot;actions&quot;&gt;Actions&lt;/button&gt;
+  &lt;div popover id=&quot;actions&quot; placement=&quot;bottom-end&quot;&gt;
+    &lt;small&gt;Invoice&lt;/small&gt;
+    &lt;button&gt;Edit&lt;/button&gt;
+    &lt;button&gt;Duplicate &lt;kbd&gt;⌘D&lt;/kbd&gt;&lt;/button&gt;
+    &lt;hr /&gt;
+    &lt;a href=&quot;/invoices/1024.pdf&quot;&gt;Download&lt;/a&gt;
+    &lt;button destructive&gt;Delete&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/bx-dropdown&gt;
+</code></pre>
+<p>Items are the <code>&lt;button&gt;</code>s and links in the popover. <code>&lt;small&gt;</code> labels a group,
+<code>&lt;hr&gt;</code> separates groups, <code>destructive</code> colours an item, and a trailing <code>&lt;kbd&gt;</code>
+shows its shortcut. <code>placement</code> takes <code>bottom-start</code> (the default),
+<code>bottom-end</code>, <code>top-start</code> or <code>top-end</code>; near an edge the menu flips to fit.</p>
+<p>Keys: <kbd>↓</kbd> <kbd>↑</kbd> on the button open the menu at the first or last
+item. In the menu <kbd>↓</kbd> <kbd>↑</kbd> <kbd>Home</kbd> <kbd>End</kbd> move,
+typing jumps to an item, <kbd>Esc</kbd> closes and returns focus to the button,
+<kbd>Tab</kbd> closes and moves on.</p>
+<h2 id="context-menu">Context menu</h2>
+<p>The same menu, opened where the content is right-clicked, or from the keyboard
+with the context-menu key or <kbd>Shift</kbd>+<kbd>F10</kbd>. Everything in the
+element except the popover is the area it listens on.</p>
+<bx-context-menu>
+  <article tabindex="0">Right-click this card.</article>
+  <div popover>
+    <button>Rename</button>
+    <button>Share</button>
+    <hr />
+    <button destructive>Delete</button>
+  </div>
+</bx-context-menu><pre><code tabindex="0" class="language-html">&lt;bx-context-menu&gt;
+  &lt;article tabindex=&quot;0&quot;&gt;Right-click this card.&lt;/article&gt;
+  &lt;div popover&gt;
+    &lt;button&gt;Rename&lt;/button&gt;
+    &lt;button destructive&gt;Delete&lt;/button&gt;
+  &lt;/div&gt;
+&lt;/bx-context-menu&gt;
+</code></pre>
+<p>Give the area <code>tabindex=&quot;0&quot;</code> (or put focusable content in it) so keyboard users
+can reach it. iOS Safari never fires a context-menu event, so offer the same
+actions somewhere else too — a dropdown in the card&#39;s header works well.</p>
+<h2 id="data-table">Data table</h2>
+<p>Sorting, filtering, paging and row selection for a table you already have. Each
+feature is an attribute; the table itself is the one you wrote.</p>
+<bx-data-table sortable filter page-size="4" selectable>
+  <div responsive tabindex="0" role="region" aria-label="Table"><table>
+    <thead>
+      <tr><th scope="col">Client</th><th scope="col">Invoices</th><th scope="col">Total</th><th scope="col" nosort>Status</th></tr>
+    </thead>
+    <tbody>
+      <tr><th scope="row">Ada Lovelace</th><td>12</td><td data-value="18200">$18,200</td><td><span badge>Active</span></td></tr>
+      <tr><th scope="row">Grace Hopper</th><td>4</td><td data-value="3150">$3,150</td><td><span badge secondary>Paused</span></td></tr>
+      <tr><th scope="row">Émile Baudot</th><td>9</td><td data-value="7400">$7,400</td><td><span badge>Active</span></td></tr>
+      <tr><th scope="row">Linus Torvalds</th><td>21</td><td data-value="40900">$40,900</td><td><span badge>Active</span></td></tr>
+      <tr><th scope="row">Barbara Liskov</th><td>2</td><td data-value="950">$950</td><td><span badge destructive>Overdue</span></td></tr>
+      <tr><th scope="row">Alan Turing</th><td>7</td><td data-value="6100">$6,100</td><td><span badge>Active</span></td></tr>
+    </tbody>
+  </table></div>
+</bx-data-table><pre><code tabindex="0" class="language-html">&lt;bx-data-table sortable filter page-size=&quot;10&quot; selectable&gt;
+  &lt;table&gt;
+    &lt;thead&gt;
+      &lt;tr&gt;&lt;th scope=&quot;col&quot;&gt;Client&lt;/th&gt;&lt;th scope=&quot;col&quot;&gt;Total&lt;/th&gt;&lt;th scope=&quot;col&quot; nosort&gt;Status&lt;/th&gt;&lt;/tr&gt;
+    &lt;/thead&gt;
+    &lt;tbody&gt;
+      &lt;tr&gt;&lt;th scope=&quot;row&quot;&gt;Ada Lovelace&lt;/th&gt;&lt;td data-value=&quot;18200&quot;&gt;$18,200&lt;/td&gt;&lt;td&gt;Active&lt;/td&gt;&lt;/tr&gt;
+    &lt;/tbody&gt;
+  &lt;/table&gt;
+&lt;/bx-data-table&gt;
+</code></pre>
+<div responsive tabindex="0" role="region" aria-label="Table"><table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>sortable</code></td>
+<td>Header buttons sort by their column: ascending, descending, then back to the order written. <code>&lt;th nosort&gt;</code> opts a column out</td>
+</tr>
+<tr>
+<td><code>data-value</code></td>
+<td>On a cell: sort by this instead of the text, for dates and formatted numbers</td>
+</tr>
+<tr>
+<td><code>filter</code></td>
+<td>A search box that hides rows not containing its text. Its value, if any, is the placeholder and label</td>
+</tr>
+<tr>
+<td><code>page-size=&quot;10&quot;</code></td>
+<td>Pages of that many rows, with a summary and page buttons</td>
+</tr>
+<tr>
+<td><code>selectable</code></td>
+<td>A checkbox on each row; the header box selects every row the filter leaves</td>
+</tr>
+</tbody></table></div>
+<p>Selected rows carry the <code>selected</code> attribute. <code>table.selectedRows()</code> returns
+them, and a <code>rowselect</code> event fires whenever they change, with the rows in
+<code>event.detail.rows</code>. Numbers such as <code>$1,200</code> and <code>12%</code> sort as numbers; other
+text sorts in the page&#39;s language.</p>
+<p>The element orders and hides the rows of the first <code>&lt;tbody&gt;</code> (it manages their
+<code>hidden</code> attribute). Rows your app adds or removes are picked up, so re-render
+the table&#39;s rows however you like. A wrapping <code>&lt;div responsive&gt;</code> and
+<code>responsive=&quot;stack&quot;</code> work as they do on any table.</p>
+<h2 id="date-picker">Date picker</h2>
+<p>A button that shows the date in the reader&#39;s language and opens a calendar.
+The <code>&lt;input type=&quot;date&quot;&gt;</code> inside stays in the form, hidden, holding the value.</p>
+<form col gap-m items="stretch" style="max-width: 24rem">
+  <label stack>
+    Due date
+    <bx-date-picker>
+      <input type="date" name="due" value="2026-10-22" />
+    </bx-date-picker>
+  </label>
+</form><pre><code tabindex="0" class="language-html">&lt;label stack&gt;
+  Due date
+  &lt;bx-date-picker placeholder=&quot;Pick a date&quot;&gt;
+    &lt;input type=&quot;date&quot; name=&quot;due&quot; min=&quot;2026-01-01&quot; required /&gt;
+  &lt;/bx-date-picker&gt;
+&lt;/label&gt;
+</code></pre>
+<div responsive tabindex="0" role="region" aria-label="Table"><table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>min</code>, <code>max</code>, <code>required</code>, <code>value</code></td>
+<td>On the input, as always. Days outside <code>min</code>–<code>max</code> are disabled; a required date has no Clear button</td>
+</tr>
+<tr>
+<td><code>placeholder</code></td>
+<td>Shown while there is no date. Default &quot;Pick a date&quot;</td>
+</tr>
+<tr>
+<td><code>week-start</code></td>
+<td><code>0</code> (Sunday) to <code>6</code>. By default the week starts where the page&#39;s <code>lang</code> says it does</td>
+</tr>
+</tbody></table></div>
+<p>Keys in the calendar: arrows move a day or a week, <kbd>Home</kbd> and
+<kbd>End</kbd> go to the start and end of the week, <kbd>PgUp</kbd>
+<kbd>PgDn</kbd> change the month and, with <kbd>Shift</kbd>, the year.
+<kbd>Enter</kbd> chooses and <kbd>Esc</kbd> closes.</p>
+<p>The button is named from the input&#39;s label, so put the element inside the
+<code>&lt;label&gt;</code> or give the input an <code>aria-label</code>. A required date that is empty when
+the form is submitted marks the button <code>aria-invalid</code>.</p>
+<h2 id="toasts">Toasts</h2>
+<p>Short messages that stack in the corner. Up to three show at once and the rest
+wait their turn. Each dismisses itself after five seconds, pausing while the
+pointer or focus is on it.</p>
+<div row gap>
+  <button data-demo="toast">Show a toast</button>
+  <button secondary data-demo="toast-undo">With an action</button>
+  <button outline data-demo="toast-error">Error</button>
+</div><pre><code tabindex="0" class="language-js">import { toast } from &quot;berlinx/elements&quot;;
+
+toast(&quot;Invoice sent&quot;);
+toast({ title: &quot;Payment failed&quot;, message: &quot;The card was declined.&quot;, variant: &quot;error&quot; });
+toast({ message: &quot;Client archived&quot;, action: { label: &quot;Undo&quot;, onClick: restore } });
+
+const saving = toast({ message: &quot;Saving…&quot;, duration: 0 });
+saving.dismiss();
+</code></pre>
+<div responsive tabindex="0" role="region" aria-label="Table"><table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>message</code>, <code>title</code></td>
+<td>The text, and an optional heading above it</td>
+</tr>
+<tr>
+<td><code>variant</code></td>
+<td><code>success</code>, <code>warning</code> or <code>error</code>: the same coloured edge as <code>[notice]</code></td>
+</tr>
+<tr>
+<td><code>duration</code></td>
+<td>Milliseconds on screen. Default 5000; <code>0</code> keeps it until dismissed</td>
+</tr>
+<tr>
+<td><code>action</code></td>
+<td><code>{ label, onClick }</code> for a button beside the message</td>
+</tr>
+</tbody></table></div>
+<p>Toasts are announced politely; errors are announced as alerts. While a modal
+dialog is open they appear inside it, so they can still be read and clicked.</p>
+<h2 id="confirm-dialog">Confirm dialog</h2>
+<p>Ask a yes-or-no question in a BerlinX dialog and wait for the answer. It
+resolves <code>true</code> for the confirm button, and <code>false</code> for Cancel or <kbd>Esc</kbd>.</p>
+<div row gap>
+  <button data-demo="confirm">Send invoice</button>
+  <button destructive data-demo="confirm-delete">Delete invoice</button>
+</div><pre><code tabindex="0" class="language-js">import { confirm } from &quot;berlinx/elements&quot;;
+
+if (await confirm(&quot;Discard your changes?&quot;)) discard();
+
+const remove = await confirm({
+  title: &quot;Delete invoice #1024?&quot;,
+  message: &quot;This cannot be undone.&quot;,
+  confirm: &quot;Delete&quot;,
+  destructive: true,
+});
+</code></pre>
+<div responsive tabindex="0" role="region" aria-label="Table"><table>
+<thead>
+<tr>
+<th>Option</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>title</code>, <code>message</code></td>
+<td>The heading and the question</td>
+</tr>
+<tr>
+<td><code>confirm</code>, <code>cancel</code></td>
+<td>Button text. Default &quot;Confirm&quot; and &quot;Cancel&quot;</td>
+</tr>
+<tr>
+<td><code>destructive</code></td>
+<td>A red confirm button, and focus starts on Cancel so <kbd>Enter</kbd> cannot destroy anything by accident</td>
+</tr>
+</tbody></table></div>
+<h2 id="frameworks">Frameworks</h2>
+<p>The elements are standard custom elements, so they work in plain HTML and in
+any framework that renders HTML. A few notes:</p>
+<ul>
+<li><strong>Attributes in markup, properties in script.</strong> <code>page-size=&quot;10&quot;</code> in HTML is
+<code>pageSize = 10</code> in script. Complex values such as a combobox&#39;s <code>options</code> are
+properties.</li>
+<li><strong>Events are DOM events.</strong> Listen for <code>change</code> on the inputs inside, and for
+<code>rowselect</code> on a data table, with <code>addEventListener</code> or your framework&#39;s own
+syntax (React 19: <code>onrowselect</code>).</li>
+<li><strong>Re-rendering is fine.</strong> A data table picks up rows your framework adds or
+removes. Keep the wrapped input or table the same element across renders, as
+frameworks do by default.</li>
+</ul>
+<h2 id="browser-support">Browser support</h2>
+<p>The elements need what BerlinX needs — Chrome and Edge 114, Firefox 125,
+Safari 17 — and nothing more. Menus, listboxes and calendars are placed by
+script, so they line up under their controls in every engine, whether or not it
+supports CSS anchor positioning.</p>
+
+    </main>
+    <footer><small muted>BerlinX v1.0.0 · MIT License</small></footer>
+    <script type="module">
+      import { confirm, toast } from "./dist/elements/index.js";
+      const demos = {
+        toast: () => toast({ title: "Invoice sent", message: "Ada will get it in a minute.", variant: "success" }),
+        "toast-undo": () => toast({ message: "Client archived", action: { label: "Undo", onClick: () => toast("Client restored") } }),
+        "toast-error": () => toast({ title: "Payment failed", message: "The card was declined.", variant: "error" }),
+        confirm: async () => (await confirm({ title: "Send invoice #1024?", message: "Ada will get it by email.", confirm: "Send" })) && toast("Invoice sent"),
+        "confirm-delete": async () =>
+          (await confirm({ title: "Delete invoice #1024?", message: "This cannot be undone.", confirm: "Delete", destructive: true })) && toast("Invoice deleted"),
+      };
+      document.addEventListener("click", event => demos[event.target.closest("[data-demo]")?.dataset.demo]?.());
+    </script>
+    <script>
+      const toggle = document.querySelector("[data-theme-toggle]");
+      const systemDark = matchMedia("(prefers-color-scheme: dark)");
+      const isDark = () => (document.documentElement.getAttribute("theme") || (systemDark.matches ? "dark" : "light")) === "dark";
+      const sync = () => toggle.setAttribute("aria-pressed", String(isDark()));
+      toggle.addEventListener("click", () => {
+        const theme = isDark() ? "light" : "dark";
+        document.documentElement.setAttribute("theme", theme);
+        try { localStorage.setItem("berlinx-theme", theme); } catch {}
+        sync();
+      });
+      systemDark.addEventListener("change", sync);
+      sync();
+    </script>
+  </body>
+</html>

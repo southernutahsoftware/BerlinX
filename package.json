@@ -1,7 +1,7 @@
 {
   "name": "berlinx",
   "version": "1.0.0",
-  "description": "A powerful semantic CSS library",
+  "description": "A powerful semantic CSS library, with optional custom elements for app controls",
   "license": "MIT",
   "author": "Southern Utah Software",
   "homepage": "https://berlinx.southernutahsoftware.com",
@@ -20,7 +20,9 @@
     "css-framework",
     "html",
     "no-class",
-    "minimal"
+    "minimal",
+    "web-components",
+    "custom-elements"
   ],
   "main": "dist/berlinx.css",
   "style": "dist/berlinx.css",
@@ -30,6 +32,14 @@
     ".": "./dist/berlinx.css",
     "./css": "./dist/berlinx.css",
     "./min": "./dist/berlinx.min.css",
+    "./elements": {
+      "types": "./dist/elements/index.d.ts",
+      "default": "./dist/elements/index.js"
+    },
+    "./elements/*": {
+      "types": "./dist/elements/*.d.ts",
+      "default": "./dist/elements/*.js"
+    },
     "./dist/*": "./dist/*",
     "./package.json": "./package.json"
   },
@@ -41,14 +51,20 @@
     "LICENSE"
   ],
   "sideEffects": [
-    "*.css"
+    "*.css",
+    "./dist/elements/**"
   ],
   "scripts": {
     "build": "node scripts/build.js",
     "deploy": "npm run build && wrangler deploy",
-    "prepack": "npm run build"
+    "prepack": "npm run build",
+    "test": "playwright test"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.64.1",
+    "atomico": "2.2.0",
+    "esbuild": "0.28.2",
     "lightningcss": "1.33.0",
     "marked": "18.1.1"
   },
