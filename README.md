@@ -42,7 +42,7 @@ when you want a variant. No classes, no build step, no JavaScript.
 Drop the stylesheet into your page:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.0.0/dist/berlinx.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.1.0/dist/berlinx.min.css" />
 ```
 
 or install it:

@@ -47,9 +47,9 @@ import { toast, confirm, setLabels } from "berlinx/elements";
 From a CDN:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.0.0/dist/berlinx.min.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.0.0/dist/berlinx-elements.min.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/berlinx@1.0.0/dist/elements/index.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.1.0/dist/berlinx.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.1.0/dist/berlinx-elements.min.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/berlinx@1.1.0/dist/elements/index.js"></script>
 ```
 
 The stylesheet is about 3.5 KB gzipped. The scripts share the 4 KB

@@ -36,7 +36,7 @@ Bundlers can also import the files directly, as `berlinx/dist/berlinx.min.css`.
 From a CDN, pin the exact version so a release can never change under you:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.0.0/dist/berlinx.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.1.0/dist/berlinx.min.css" />
 ```
 
 BerlinX asks for **Inter** first and falls back to the system sans stack. It

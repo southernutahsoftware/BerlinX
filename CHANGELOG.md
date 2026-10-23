@@ -3,7 +3,7 @@
 All notable changes to BerlinX are documented here. This project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 1.1.0
 
 - BerlinX Elements: optional, light-DOM custom elements in `dist/elements/`,
   imported as `berlinx/elements` or one at a time as `berlinx/elements/<name>`,
