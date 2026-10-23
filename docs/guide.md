@@ -599,10 +599,14 @@ levels; `--input` is the background of text fields.
 
 ## Elements
 
-A few controls have no HTML element: a combobox, dropdown and context menus, a
-data table, a date picker, toasts and a confirm dialog. BerlinX Elements adds
-them as optional custom elements, styled by this same stylesheet and rendered in
-the light DOM, so your theme reaches them like anything else:
+Some controls have no HTML element: a combobox, a multi-select, menus, a command
+palette, tabs, a data table, a date picker, a tree. BerlinX Elements adds them as
+optional custom elements, rendered in the light DOM and drawn from the same
+tokens, so your theme reaches them like anything else:
+
+```css
+@import "berlinx/elements.min.css";
+```
 
 ```js
 import "berlinx/elements";
@@ -654,9 +658,8 @@ npm test         # element tests in Chromium, Firefox and WebKit
 npm run deploy   # build, then publish the demo site to Cloudflare
 ```
 
-Edit `css/berlinx.css` and `elements/`; `dist/` is generated from them.
-`dist/berlinx.min.css` is minified with Lightning CSS and `dist/elements/` is
-bundled with esbuild. The guides are written in `docs/*.md` and rendered to
+Edit `css/` and `elements/`; `dist/` is generated from them. The stylesheets
+are minified with Lightning CSS and `dist/elements/` is bundled with esbuild. The guides are written in `docs/*.md` and rendered to
 `guide.html`, `elements.html` and `cheatsheet.html` by the same build.
 `index.html` is the demo — open it directly, no server needed.
 

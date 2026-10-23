@@ -16,6 +16,8 @@
 // Returns { dismiss() }. Timers pause while the pointer or focus is on a toast.
 // At most three show at once; the rest wait their turn.
 
+import { labels } from "./labels.js";
+
 const MAX = 3;
 const visible = new Set();
 const queue = [];
@@ -28,11 +30,14 @@ const closeIcon =
 // made on first use and kept, so screen readers have a live region that already
 // exists when a message arrives.
 function getRegion() {
-  if (region?.isConnected) return region;
+  if (region?.isConnected) {
+    region.setAttribute("aria-label", labels.notifications);
+    return region;
+  }
   region = document.createElement("section");
   region.setAttribute("bx-toaster", "");
   region.setAttribute("popover", "manual");
-  region.setAttribute("aria-label", "Notifications");
+  region.setAttribute("aria-label", labels.notifications);
   region.setAttribute("aria-live", "polite");
   const hovered = () => region.matches(":hover");
   const focused = () => region.contains(document.activeElement);
@@ -125,7 +130,7 @@ function render({ message = "", title, variant, action }, handle) {
   }
 
   const close = button("", ["icon", "ghost"]);
-  close.setAttribute("aria-label", "Dismiss");
+  close.setAttribute("aria-label", labels.dismiss);
   close.innerHTML = closeIcon;
   close.addEventListener("click", () => handle.dismiss());
   el.append(close);

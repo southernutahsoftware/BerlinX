@@ -32,6 +32,8 @@
     ".": "./dist/berlinx.css",
     "./css": "./dist/berlinx.css",
     "./min": "./dist/berlinx.min.css",
+    "./elements.css": "./dist/berlinx-elements.css",
+    "./elements.min.css": "./dist/berlinx-elements.min.css",
     "./elements": {
       "types": "./dist/elements/index.d.ts",
       "default": "./dist/elements/index.js"
@@ -46,12 +48,14 @@
   "files": [
     "dist",
     "css/berlinx.css",
+    "css/elements.css",
     "README.md",
     "CHANGELOG.md",
     "LICENSE"
   ],
   "sideEffects": [
     "*.css",
+    "./elements/**",
     "./dist/elements/**"
   ],
   "scripts": {

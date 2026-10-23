@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>BerlinX Elements test page</title>
     <link rel="stylesheet" href="/dist/berlinx.css" />
+    <link rel="stylesheet" href="/dist/berlinx-elements.css" />
     <script type="module" src="/dist/elements/index.js"></script>
   </head>
   <body>
@@ -82,5 +83,104 @@
         </tbody>
       </table>
     </bx-data-table>
+
+    <section id="moreForm">
+      <form id="form2" validation col gap-m items="stretch">
+        <label stack>
+          Labels
+          <bx-multi-select placeholder="Add labels">
+            <select id="labelsSelect" name="labels" multiple required>
+              <option value="bug" selected>Bug</option>
+              <option value="design">Design</option>
+              <option value="docs">Documentation</option>
+              <option value="locked" disabled>Locked</option>
+              <option value="perf">Performance</option>
+            </select>
+          </bx-multi-select>
+        </label>
+
+        <label stack>
+          Stay
+          <bx-date-picker id="stay">
+            <input id="from" type="date" name="from" aria-label="Check in" value="2026-10-12" />
+            <input id="to" type="date" name="to" aria-label="Check out" value="2026-10-15" />
+          </bx-date-picker>
+        </label>
+
+        <label stack>
+          City
+          <bx-combobox id="city">
+            <input id="cityInput" name="city" />
+          </bx-combobox>
+        </label>
+      </form>
+    </section>
+
+    <bx-tabs id="tabs">
+      <nav tabs aria-label="Invoice">
+        <a href="#overview">Overview</a>
+        <a href="#items" aria-current="page">Items</a>
+        <a href="#history">History</a>
+      </nav>
+      <section id="overview"><p>Overview panel</p></section>
+      <section id="items"><p>Items panel</p></section>
+      <section id="history"><p>History panel</p></section>
+    </bx-tabs>
+
+    <div id="scroller" scroll-x style="max-width: 12rem; padding: 2rem 0">
+      <div row nowrap gap>
+        <button id="tipDelete" icon outline tooltip="Delete" aria-label="Delete"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M8 6V4h8v2m-9 0 1 14h8l1-14" /></svg></button>
+        <button id="tipArchive" icon outline tooltip="Archive this invoice" aria-label="Archive"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 4h18v4H3zM5 8v12h14V8" /></svg></button>
+      </div>
+    </div>
+
+    <bx-tree id="tree" aria-label="Files">
+      <ul>
+        <li>
+          <details open>
+            <summary>src</summary>
+            <ul>
+              <li><button>index.js</button></li>
+              <li>
+                <details>
+                  <summary>components</summary>
+                  <ul>
+                    <li><button>button.js</button></li>
+                  </ul>
+                </details>
+              </li>
+              <li><button>styles.css</button></li>
+            </ul>
+          </details>
+        </li>
+        <li><a href="#readme">README.md</a></li>
+      </ul>
+    </bx-tree>
+
+    <div row nowrap style="height: 20rem">
+      <bx-sidebar id="sidebar" persist="test">
+        <aside>
+          <header>Acme</header>
+          <nav aria-label="Main">
+            <a href="#inbox" aria-current="page"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 12h-6l-2 3h-4l-2-3H2" /></svg>Inbox</a>
+            <a href="#clients"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-8 0v2M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8" /></svg>Clients</a>
+            <button><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 5v14M5 12h14" /></svg>New invoice</button>
+          </nav>
+        </aside>
+      </bx-sidebar>
+      <main style="padding: 1rem">Content</main>
+    </div>
+
+    <bx-command id="command">
+      <dialog>
+        <small>Invoices</small>
+        <a href="#new">New invoice <kbd>N</kbd></a>
+        <button id="exportCommand">Export as CSV</button>
+        <hr />
+        <small>Go to</small>
+        <a href="#clients">Clients</a>
+        <a href="#settings">Settings</a>
+      </dialog>
+    </bx-command>
   </body>
 </html>

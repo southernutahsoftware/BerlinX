@@ -1,6 +1,7 @@
 // npm run build
 //
-// 1. dist/berlinx.css and dist/berlinx.min.css from css/berlinx.css.
+// 1. dist/berlinx(.min).css from css/berlinx.css, and dist/berlinx-elements(.min).css
+//    from css/elements.css.
 // 2. dist/elements/ from elements/: one ES module per element, plus index.js
 //    with all of them. Atomico is bundled into a shared chunk, so the files run
 //    straight from a CDN as well as through a bundler.
@@ -24,16 +25,21 @@ const write = (file, content) => {
 
 // --- Stylesheets -------------------------------------------------------------
 
-const css = read("css/berlinx.css").replace(/^\/\*! BerlinX v\S+/, `/*! BerlinX v${pkg.version}`);
-write("dist/berlinx.css", css);
-write("dist/berlinx.min.css", `${transform({ filename: "berlinx.css", code: Buffer.from(css), minify: true }).code.toString().trim()}\n`);
+for (const [source, out] of [["css/berlinx.css", "berlinx"], ["css/elements.css", "berlinx-elements"]]) {
+  const css = read(source).replace(/^\/\*! BerlinX (Elements )?v\S+/, (_, elements = "") => `/*! BerlinX ${elements}v${pkg.version}`);
+  write(`dist/${out}.css`, css);
+  write(`dist/${out}.min.css`, `${transform({ filename: `${out}.css`, code: Buffer.from(css), minify: true }).code.toString().trim()}\n`);
+}
 
 // --- Elements ----------------------------------------------------------------
 
 // Atomico is bundled once, into atomico.js, which every element imports. Left to
 // esbuild's code splitting it would be cut up and its internal circular imports
 // run out of order.
-const elements = ["index", "combobox", "confirm", "context-menu", "data-table", "date-picker", "dropdown", "toast"];
+// Every module in elements/ is an entry point, berlinx/elements/<name>, except
+// the internals the others share.
+const internal = ["shared.js", "use-labels.js"];
+const elements = fs.readdirSync(path.join(root, "elements")).filter(file => /\.jsx?$/.test(file) && !internal.includes(file));
 const options = {
   absWorkingDir: root,
   bundle: true,
@@ -53,7 +59,7 @@ const runtime = buildSync({
 });
 const modules = buildSync({
   ...options,
-  entryPoints: elements.map(name => ({ in: `elements/${name}${["index", "confirm", "toast"].includes(name) ? ".js" : ".jsx"}`, out: name })),
+  entryPoints: elements.map(file => ({ in: `elements/${file}`, out: file.replace(/\.jsx?$/, "") })),
   outdir: "dist/elements",
   chunkNames: "[name]-[hash]",
   splitting: true,
@@ -64,7 +70,9 @@ const modules = buildSync({
 for (const file of [...runtime.outputFiles, ...modules.outputFiles]) {
   write(path.relative(root, file.path), file.text.replace(/(from|import)\s*"atomico(\/jsx-runtime)?"/g, '$1"./atomico.js"'));
 }
-for (const name of ["index", "confirm", "toast"]) write(`dist/elements/${name}.d.ts`, read(`elements/${name}.d.ts`));
+for (const file of fs.readdirSync(path.join(root, "elements")).filter(file => file.endsWith(".d.ts"))) {
+  write(`dist/elements/${file}`, read(`elements/${file}`));
+}
 // --- Guides ------------------------------------------------------------------
 
 // The Elements page runs its live examples, and wires its demo buttons here.
@@ -75,6 +83,9 @@ const elementsDemo = `
         "toast-undo": () => toast({ message: "Client archived", action: { label: "Undo", onClick: () => toast("Client restored") } }),
         "toast-error": () => toast({ title: "Payment failed", message: "The card was declined.", variant: "error" }),
         confirm: async () => (await confirm({ title: "Send invoice #1024?", message: "Ada will get it by email.", confirm: "Send" })) && toast("Invoice sent"),
+        command: () => document.querySelector("#demo-command").show(),
+        "command-new": () => toast("New invoice started"),
+        "command-export": () => toast("Exported 6 invoices"),
         "confirm-delete": async () =>
           (await confirm({ title: "Delete invoice #1024?", message: "This cannot be undone.", confirm: "Delete", destructive: true })) && toast("Invoice deleted"),
       };
@@ -82,7 +93,7 @@ const elementsDemo = `
 
 const pages = [
   { source: "docs/guide.md", out: "guide.html", title: "Usage guide" },
-  { source: "docs/elements.md", out: "elements.html", title: "Elements", script: elementsDemo },
+  { source: "docs/elements.md", out: "elements.html", title: "Elements", styles: ["dist/berlinx-elements.min.css"], script: elementsDemo },
   { source: "docs/cheatsheet.md", out: "cheatsheet.html", title: "Cheatsheet" },
 ];
 const github = "https://github.com/southernutahsoftware/BerlinX/blob/main/";
@@ -132,7 +143,8 @@ for (const page of pages) {
       } catch {}
     </script>
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="dist/berlinx.min.css" />
+    <link rel="stylesheet" href="dist/berlinx.min.css" />${(page.styles ?? []).map(href => `
+    <link rel="stylesheet" href="${href}" />`).join("")}
     <!-- Lucide SVG paths: https://lucide.dev · license: docs/LUCIDE-LICENSE.txt -->
     <style>
       @font-face { font-family: Inter; src: url("assets/fonts/InterVariable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }

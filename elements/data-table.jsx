@@ -25,9 +25,9 @@
 // or removes later are picked up.
 
 import { c, useEffect, useHost, useId, useRef, useUpdate } from "atomico";
-import { langOf } from "./shared.js";
-
-const fold = text => text.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLocaleLowerCase();
+import { labels } from "./labels.js";
+import { useLabels } from "./use-labels.js";
+import { fold, langOf } from "./shared.js";
 
 // "$1,200.50", "-3", "12%" sort as numbers; anything else sorts as text.
 function toNumber(text) {
@@ -63,6 +63,7 @@ const chevron = path => (
 function dataTable({ sortable, filter, pageSize, selectable }) {
   const host = useHost();
   const update = useUpdate();
+  useLabels();
   const state = useRef({ rows: [], matching: [], sort: null, query: "", page: 1, pages: 1, from: 0, to: 0 }).current;
   const tableId = `bx-table-${useId()}`;
   const table = host.current.querySelector(":scope > table, :scope > [responsive] > table");
@@ -102,10 +103,10 @@ function dataTable({ sortable, filter, pageSize, selectable }) {
       const head = row.parentElement === table.tHead;
       const added = document.createElement(head ? "th" : "td");
       added.setAttribute("bx-select", "");
-      if (head && row === header[header.length - 1]) added.append(checkbox("Select all rows"));
+      if (head && row === header[header.length - 1]) added.append(checkbox(labels.selectAll));
       if (row.parentElement === table.tBodies[0]) {
         const name = (row.querySelector("th[scope=row]") ?? row.cells[0])?.textContent.trim();
-        added.append(checkbox(name ? `Select ${name}` : "Select row"));
+        added.append(checkbox(labels.selectRow(name)));
       }
       row.prepend(added);
     }
@@ -226,6 +227,16 @@ function dataTable({ sortable, filter, pageSize, selectable }) {
     };
   }, [sortable, selectable, pageSize]);
 
+  // Checkbox names follow the labels, which can change after the boxes exist.
+  useEffect(() => {
+    if (!table) return;
+    table.tHead?.querySelector("[bx-select] > input")?.setAttribute("aria-label", labels.selectAll);
+    for (const row of state.rows) {
+      const name = (row.querySelector("th[scope=row]") ?? row.cells[1])?.textContent.trim();
+      row.querySelector(":scope > [bx-select] > input")?.setAttribute("aria-label", labels.selectRow(name));
+    }
+  });
+
   // --- Rendered controls ---------------------------------------------------------
 
   if (!table) return <host />;
@@ -238,12 +249,10 @@ function dataTable({ sortable, filter, pageSize, selectable }) {
   const count = n => n.toLocaleString(langOf(host.current));
   const matching = state.matching.length;
   const summary = !matching
-    ? "No matching rows"
+    ? labels.noMatchingRows
     : paged
-      ? `${count(state.from + 1)}–${count(state.to)} of ${count(matching)}`
-      : state.query.trim()
-        ? `${count(matching)} of ${count(state.rows.length)} rows`
-        : `${count(matching)} rows`;
+      ? labels.showing(count(state.from + 1), count(state.to), count(matching))
+      : labels.rows(matching, state.rows.length);
 
   return (
     <host>
@@ -251,8 +260,8 @@ function dataTable({ sortable, filter, pageSize, selectable }) {
         <input
           type="search"
           bx-filter=""
-          placeholder={filter || "Filter…"}
-          aria-label={filter || "Filter rows"}
+          placeholder={filter || labels.filter}
+          aria-label={filter || labels.filterRows}
           aria-controls={table.id || tableId}
           value={state.query}
           oninput={event => {
@@ -268,20 +277,20 @@ function dataTable({ sortable, filter, pageSize, selectable }) {
             {summary}
           </small>
           {state.pages > 1 && (
-            <nav pagination="" aria-label="Pagination">
-              <button type="button" aria-label="Previous page" disabled={state.page === 1} onclick={() => go(state.page - 1)}>
+            <nav pagination="" aria-label={labels.pagination}>
+              <button type="button" aria-label={labels.previousPage} disabled={state.page === 1} onclick={() => go(state.page - 1)}>
                 {chevron("m15 18-6-6 6-6")}
               </button>
               {pageList(state.page, state.pages).map(page =>
                 page === "…" ? (
                   <span aria-hidden="true">…</span>
                 ) : (
-                  <button type="button" aria-label={`Page ${page}`} aria-current={page === state.page ? "page" : null} onclick={() => go(page)}>
+                  <button type="button" aria-label={labels.page(page)} aria-current={page === state.page ? "page" : null} onclick={() => go(page)}>
                     {page}
                   </button>
                 ),
               )}
-              <button type="button" aria-label="Next page" disabled={state.page === state.pages} onclick={() => go(state.page + 1)}>
+              <button type="button" aria-label={labels.nextPage} disabled={state.page === state.pages} onclick={() => go(state.page + 1)}>
                 {chevron("m9 18 6-6-6-6")}
               </button>
             </nav>

@@ -650,8 +650,8 @@ Override them the same way. Print is always light.</p>
 <p><code>aside</code> and <code>menu</code> are claimed by components — use <code>blockquote</code> for pull quotes
 and <code>ul</code> for plain lists.</p>
 <h2 id="elements">Elements</h2>
-<p>Optional custom elements: <code>import &quot;berlinx/elements&quot;</code>. Details in the
-<a href="elements.html">Elements guide</a>.</p>
+<p>Optional custom elements: <code>berlinx/elements.min.css</code> and
+<code>import &quot;berlinx/elements&quot;</code>. Details in the <a href="elements.html">Elements guide</a>.</p>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
 <tr>
@@ -661,7 +661,19 @@ and <code>ul</code> for plain lists.</p>
 </thead>
 <tbody><tr>
 <td><code>&lt;bx-combobox&gt;</code> around <code>&lt;input list&gt;</code> + <code>&lt;datalist&gt;</code></td>
-<td>Filtering listbox; <code>strict</code> rejects other values; <code>.options</code> from script</td>
+<td>Filtering listbox; <code>strict</code> rejects other values; <code>.options</code> or <code>.load(query, { signal })</code> from script</td>
+</tr>
+<tr>
+<td><code>&lt;bx-multi-select&gt;</code> around <code>&lt;select multiple&gt;</code></td>
+<td>Chips and a filtering checkbox list; <code>placeholder</code></td>
+</tr>
+<tr>
+<td><code>&lt;bx-command&gt;</code> around a <code>&lt;dialog&gt;</code> of links and buttons</td>
+<td>Command palette on <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>K</kbd>; <code>shortcut</code>, <code>show()</code></td>
+</tr>
+<tr>
+<td><code>&lt;bx-tabs&gt;</code> around <code>nav[tabs]</code> + panels</td>
+<td>Tabs; <code>selected=&quot;panel-id&quot;</code>; <code>change</code> event</td>
 </tr>
 <tr>
 <td><code>&lt;bx-dropdown&gt;</code> around a button + <code>[popover]</code></td>
@@ -677,7 +689,19 @@ and <code>ul</code> for plain lists.</p>
 </tr>
 <tr>
 <td><code>&lt;bx-date-picker&gt;</code> around <code>&lt;input type=&quot;date&quot;&gt;</code></td>
-<td>Calendar; <code>placeholder</code>, <code>week-start</code>; <code>min</code>/<code>max</code> on the input</td>
+<td>Calendar; two inputs make a range; <code>placeholder</code>, <code>week-start</code>; <code>min</code>/<code>max</code> on the input</td>
+</tr>
+<tr>
+<td><code>&lt;bx-tree&gt;</code> around nested <code>&lt;ul&gt;</code>, <code>&lt;details&gt;</code></td>
+<td>Tree with arrow keys; a clicked button becomes <code>aria-current</code></td>
+</tr>
+<tr>
+<td><code>&lt;bx-sidebar&gt;</code> around <code>&lt;aside&gt;</code></td>
+<td>Collapses to icons; <code>collapsed</code>, <code>persist</code>, <code>shortcut</code>; <code>--sidebar-width</code></td>
+</tr>
+<tr>
+<td><code>import &quot;berlinx/elements/tooltips&quot;</code></td>
+<td><code>[tooltip]</code> in the top layer, read by screen readers</td>
 </tr>
 <tr>
 <td><code>toast(message | { message, title, variant, duration, action })</code></td>
@@ -686,6 +710,10 @@ and <code>ul</code> for plain lists.</p>
 <tr>
 <td><code>await confirm(message | { title, message, confirm, cancel, destructive })</code></td>
 <td><code>true</code> or <code>false</code></td>
+</tr>
+<tr>
+<td><code>setLabels({ … })</code></td>
+<td>Translate the words the elements add</td>
 </tr>
 </tbody></table></div>
 <p>Menus and listboxes are styled by role, so <code>[popover][role=&quot;menu&quot;]</code> with

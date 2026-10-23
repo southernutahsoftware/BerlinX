@@ -14,6 +14,7 @@
     </script>
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="dist/berlinx.min.css" />
+    <link rel="stylesheet" href="dist/berlinx-elements.min.css" />
     <!-- Lucide SVG paths: https://lucide.dev · license: docs/LUCIDE-LICENSE.txt -->
     <style>
       @font-face { font-family: Inter; src: url("assets/fonts/InterVariable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
@@ -44,20 +45,28 @@
 <nav aria-label="Contents" col gap-xs>
 <a href="#install">Install</a>
 <a href="#combobox">Combobox</a>
+<a href="#multi-select">Multi-select</a>
 <a href="#dropdown-menu">Dropdown menu</a>
 <a href="#context-menu">Context menu</a>
+<a href="#command-palette">Command palette</a>
+<a href="#tabs">Tabs</a>
 <a href="#data-table">Data table</a>
 <a href="#date-picker">Date picker</a>
+<a href="#tree">Tree</a>
+<a href="#sidebar">Sidebar</a>
+<a href="#tooltips">Tooltips</a>
 <a href="#toasts">Toasts</a>
 <a href="#confirm-dialog">Confirm dialog</a>
+<a href="#labels-and-languages">Labels and languages</a>
 <a href="#frameworks">Frameworks</a>
 <a href="#browser-support">Browser support</a>
 </nav>
 </details>
-<p>Optional custom elements for the controls HTML has no element for: a combobox,
-dropdown and context menus, a data table, a date picker, toasts and a confirm
-dialog. BerlinX itself stays a stylesheet; Elements is a separate import that you
-add only if you want it.</p>
+<p>Optional custom elements for the controls HTML has no element for: comboboxes
+and multi-selects, menus, a command palette, tabs, a data table, a date picker,
+a tree, a collapsible sidebar, tooltips, toasts and a confirm dialog. BerlinX
+itself stays a stylesheet; Elements is a separate import that you add only if
+you want it.</p>
 <pre><code tabindex="0" class="language-html">&lt;bx-data-table sortable filter page-size=&quot;10&quot;&gt;
   &lt;table&gt;…&lt;/table&gt;
 &lt;/bx-data-table&gt;
@@ -65,32 +74,37 @@ add only if you want it.</p>
 <p>Three rules hold for every element:</p>
 <ul>
 <li><strong>Light DOM.</strong> No shadow root. Everything an element shows is ordinary markup
-on your page, styled by <code>berlinx.css</code> with the same tokens as the rest. Your
-CSS, your theme and <code>density</code> reach inside without <code>::part()</code> or extra
+on your page, drawn by a BerlinX stylesheet with the same tokens as the rest.
+Your CSS, your theme and <code>density</code> reach inside without <code>::part()</code> or extra
 variables.</li>
 <li><strong>Your markup first.</strong> Each element wraps native HTML — an <code>&lt;input list&gt;</code>, a
-<code>popover</code>, a <code>&lt;table&gt;</code>, an <code>&lt;input type=&quot;date&quot;&gt;</code> — and only adds behaviour.
-Before the script loads, or without JavaScript, that HTML still works the
-native way.</li>
+<code>&lt;select multiple&gt;</code>, a <code>popover</code>, a <code>&lt;table&gt;</code>, an <code>&lt;input type=&quot;date&quot;&gt;</code>,
+<code>&lt;details&gt;</code> — and only adds behaviour. Before the script loads, or without
+JavaScript, that HTML still works the native way.</li>
 <li><strong>Forms stay native.</strong> Values live in the real inputs you wrote, so <code>name</code>,
 <code>required</code>, <code>FormData</code>, reset and validation work as they always did.</li>
 </ul>
 <h2 id="install">Install</h2>
-<p>The elements&#39; styles are already in <code>berlinx.css</code>. Add the script beside it:</p>
+<p>Add the Elements stylesheet after BerlinX&#39;s own, and the script:</p>
 <pre><code tabindex="0" class="language-sh">npm install berlinx
+</code></pre>
+<pre><code tabindex="0" class="language-css">@import &quot;berlinx/min&quot;;
+@import &quot;berlinx/elements.min.css&quot;;
 </code></pre>
 <pre><code tabindex="0" class="language-js">import &quot;berlinx/elements&quot;;                 // every element and helper
 import &quot;berlinx/elements/data-table&quot;;      // or only the ones you use
-import { toast, confirm } from &quot;berlinx/elements&quot;;
+import { toast, confirm, setLabels } from &quot;berlinx/elements&quot;;
 </code></pre>
-<p>From a CDN, as an ES module:</p>
+<p>From a CDN:</p>
 <pre><code tabindex="0" class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/berlinx@1.0.0/dist/berlinx.min.css&quot; /&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/berlinx@1.0.0/dist/berlinx-elements.min.css&quot; /&gt;
 &lt;script type=&quot;module&quot; src=&quot;https://cdn.jsdelivr.net/npm/berlinx@1.0.0/dist/elements/index.js&quot;&gt;&lt;/script&gt;
 </code></pre>
-<p>Everything together is about 12 KB gzipped, including the
-<a href="https://atomicojs.dev">Atomico</a> runtime the elements share. Importing an
-element defines it; importing it twice is harmless. TypeScript declarations are
-included.</p>
+<p>The stylesheet is about 3.5 KB gzipped. The scripts share the 4 KB
+<a href="https://atomicojs.dev">Atomico</a> runtime: one element with it is 5–10 KB, all of
+them 24 KB, and <code>toast()</code>, <code>confirm()</code> and tooltips, which do not need it, 1–3 KB
+each. Importing an element defines it; importing it twice is harmless.
+TypeScript declarations are included.</p>
 <h2 id="combobox">Combobox</h2>
 <p>A text input that suggests options as you type. Write an <code>&lt;input list&gt;</code> and its
 <code>&lt;datalist&gt;</code>; the element turns the browser&#39;s suggestions into a styled listbox
@@ -137,10 +151,53 @@ that filters while ignoring case and accents.</p>
 <td><code>options</code></td>
 <td>Options from script instead of a datalist: <code>[&quot;Oslo&quot;, { value: &quot;BER&quot;, label: &quot;Berlin&quot; }]</code></td>
 </tr>
+<tr>
+<td><code>load</code></td>
+<td>A function that fetches options for what was typed. See below</td>
+</tr>
 </tbody></table></div>
+<p>To search a server, set <code>load</code>. It is called a moment after typing pauses, with
+the text and an <code>AbortSignal</code> that fires if the person types again before it
+answers. Its options are shown as they arrive, without further filtering, and
+&quot;Loading…&quot; shows while it works:</p>
+<pre><code tabindex="0" class="language-js">document.querySelector(&quot;#city&quot;).load = (query, { signal }) =&gt;
+  fetch(`/api/cities?q=${encodeURIComponent(query)}`, { signal }).then(response =&gt; response.json());
+</code></pre>
 <p>Keys: <kbd>↓</kbd> <kbd>↑</kbd> move through the list, <kbd>Enter</kbd> chooses,
 <kbd>Esc</kbd> closes it, <kbd>Alt</kbd>+<kbd>↓</kbd> opens it without moving.
 Choosing fires <code>input</code> and <code>change</code> on the input, as typing does.</p>
+<h2 id="multi-select">Multi-select</h2>
+<p>Several choices, shown as chips. Write a <code>&lt;select multiple&gt;</code>; the element hides
+it, keeps it as the form value, and puts a field in its place that filters a
+list of checkboxes as you type.</p>
+<form col gap-m items="stretch" style="max-width: 24rem">
+  <label stack>
+    Labels
+    <bx-multi-select placeholder="Add labels">
+      <select name="labels" multiple>
+        <option value="bug" selected>Bug</option>
+        <option value="design">Design</option>
+        <option value="docs">Documentation</option>
+        <option value="perf">Performance</option>
+        <option value="security">Security</option>
+      </select>
+    </bx-multi-select>
+  </label>
+</form><pre><code tabindex="0" class="language-html">&lt;label stack&gt;
+  Labels
+  &lt;bx-multi-select placeholder=&quot;Add labels&quot;&gt;
+    &lt;select name=&quot;labels&quot; multiple required&gt;
+      &lt;option value=&quot;bug&quot; selected&gt;Bug&lt;/option&gt;
+      &lt;option value=&quot;design&quot;&gt;Design&lt;/option&gt;
+    &lt;/select&gt;
+  &lt;/bx-multi-select&gt;
+&lt;/label&gt;
+</code></pre>
+<p><code>required</code>, <code>disabled</code> and a disabled <code>&lt;option&gt;</code> work as they do on the select.
+Keys: <kbd>↓</kbd> <kbd>↑</kbd> open and move through the list, <kbd>Enter</kbd>
+toggles an option and leaves the list open for the next, <kbd>Backspace</kbd> in
+the empty field removes the last chip, <kbd>Esc</kbd> closes the list. Each
+change fires <code>input</code> and <code>change</code> on the select.</p>
 <h2 id="dropdown-menu">Dropdown menu</h2>
 <p>A button that opens a menu of actions. It is a native popover, so it opens
 without JavaScript; the element adds menu semantics, arrow keys, type-ahead and
@@ -198,6 +255,77 @@ element except the popover is the area it listens on.</p>
 <p>Give the area <code>tabindex=&quot;0&quot;</code> (or put focusable content in it) so keyboard users
 can reach it. iOS Safari never fires a context-menu event, so offer the same
 actions somewhere else too — a dropdown in the card&#39;s header works well.</p>
+<h2 id="command-palette">Command palette</h2>
+<p>A searchable list of everything the app can do, opened with <kbd>Ctrl</kbd>+<kbd>K</kbd>
+or <kbd>⌘</kbd><kbd>K</kbd>. Write a <code>&lt;dialog&gt;</code> of links and buttons, grouped
+like a menu; the element adds the search field, filtering and keys. Choosing a
+command closes the palette and clicks it, so links navigate and buttons run their
+own handlers.</p>
+<bx-command id="demo-command">
+  <dialog>
+    <small>Invoices</small>
+    <button data-demo="command-new">New invoice <kbd>N</kbd></button>
+    <button data-demo="command-export">Export as CSV</button>
+    <small>Go to</small>
+    <a href="#combobox">Combobox</a>
+    <a href="#data-table">Data table</a>
+    <a href="#date-picker">Date picker</a>
+  </dialog>
+</bx-command><p><button outline data-demo="command">Open the command palette <kbd>Ctrl K</kbd></button></p>
+<pre><code tabindex="0" class="language-html">&lt;bx-command&gt;
+  &lt;dialog&gt;
+    &lt;small&gt;Invoices&lt;/small&gt;
+    &lt;a href=&quot;/invoices/new&quot;&gt;New invoice &lt;kbd&gt;N&lt;/kbd&gt;&lt;/a&gt;
+    &lt;button&gt;Export as CSV&lt;/button&gt;
+    &lt;small&gt;Go to&lt;/small&gt;
+    &lt;a href=&quot;/clients&quot;&gt;Clients&lt;/a&gt;
+  &lt;/dialog&gt;
+&lt;/bx-command&gt;
+</code></pre>
+<div responsive tabindex="0" role="region" aria-label="Table"><table>
+<thead>
+<tr>
+<th>Attribute or method</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>shortcut</code></td>
+<td>The key used with <kbd>Ctrl</kbd> or <kbd>⌘</kbd>. Default <code>k</code>; empty for none</td>
+</tr>
+<tr>
+<td><code>show()</code>, <code>close()</code></td>
+<td>Open and close it from script. It is a <code>&lt;dialog&gt;</code>, so <code>showModal()</code> and <code>commandfor</code> work too</td>
+</tr>
+</tbody></table></div>
+<h2 id="tabs">Tabs</h2>
+<p>One panel at a time, under a row of tabs. Write a <code>nav[tabs]</code> of links to the
+panels&#39; ids; the element turns the links into tabs and shows only the chosen
+panel. Without JavaScript the links jump to each panel, all of them visible.</p>
+<bx-tabs>
+  <nav tabs aria-label="Invoice">
+    <a href="#demo-overview">Overview</a>
+    <a href="#demo-items">Items</a>
+    <a href="#demo-history">History</a>
+  </nav>
+  <section id="demo-overview"><p>Invoice #1024 for Ada Lovelace, due Friday.</p></section>
+  <section id="demo-items"><p>Three line items totalling $18,200.</p></section>
+  <section id="demo-history"><p>Created Monday; sent Tuesday; viewed today.</p></section>
+</bx-tabs><pre><code tabindex="0" class="language-html">&lt;bx-tabs&gt;
+  &lt;nav tabs aria-label=&quot;Invoice&quot;&gt;
+    &lt;a href=&quot;#overview&quot;&gt;Overview&lt;/a&gt;
+    &lt;a href=&quot;#items&quot;&gt;Items&lt;/a&gt;
+  &lt;/nav&gt;
+  &lt;section id=&quot;overview&quot;&gt;…&lt;/section&gt;
+  &lt;section id=&quot;items&quot;&gt;…&lt;/section&gt;
+&lt;/bx-tabs&gt;
+</code></pre>
+<p>Tabs can also be buttons with <code>aria-controls=&quot;panel-id&quot;</code>. The first tab shows
+unless the address bar names a panel, a tab carries <code>aria-current</code>, or the
+element has <code>selected=&quot;panel-id&quot;</code>. Set <code>selected</code> to switch tabs from script; a
+<code>change</code> event fires when the person switches. Keys: <kbd>←</kbd> <kbd>→</kbd>
+move between tabs and show each as they go, <kbd>Home</kbd> and <kbd>End</kbd>
+go to the ends, <kbd>Tab</kbd> moves into the panel.</p>
 <h2 id="data-table">Data table</h2>
 <p>Sorting, filtering, paging and row selection for a table you already have. Each
 feature is an attribute; the table itself is the one you wrote.</p>
@@ -264,7 +392,8 @@ the table&#39;s rows however you like. A wrapping <code>&lt;div responsive&gt;</
 <code>responsive=&quot;stack&quot;</code> work as they do on any table.</p>
 <h2 id="date-picker">Date picker</h2>
 <p>A button that shows the date in the reader&#39;s language and opens a calendar.
-The <code>&lt;input type=&quot;date&quot;&gt;</code> inside stays in the form, hidden, holding the value.</p>
+The <code>&lt;input type=&quot;date&quot;&gt;</code> inside stays in the form, hidden, holding the value.
+Two inputs make a range: the first pick is one end, the second the other.</p>
 <form col gap-m items="stretch" style="max-width: 24rem">
   <label stack>
     Due date
@@ -272,10 +401,25 @@ The <code>&lt;input type=&quot;date&quot;&gt;</code> inside stays in the form, h
       <input type="date" name="due" value="2026-10-22" />
     </bx-date-picker>
   </label>
+  <label stack>
+    Stay
+    <bx-date-picker>
+      <input type="date" name="from" aria-label="Check in" value="2026-10-12" />
+      <input type="date" name="to" aria-label="Check out" value="2026-10-15" />
+    </bx-date-picker>
+  </label>
 </form><pre><code tabindex="0" class="language-html">&lt;label stack&gt;
   Due date
   &lt;bx-date-picker placeholder=&quot;Pick a date&quot;&gt;
     &lt;input type=&quot;date&quot; name=&quot;due&quot; min=&quot;2026-01-01&quot; required /&gt;
+  &lt;/bx-date-picker&gt;
+&lt;/label&gt;
+
+&lt;label stack&gt;
+  Stay
+  &lt;bx-date-picker&gt;
+    &lt;input type=&quot;date&quot; name=&quot;from&quot; aria-label=&quot;Check in&quot; /&gt;
+    &lt;input type=&quot;date&quot; name=&quot;to&quot; aria-label=&quot;Check out&quot; /&gt;
   &lt;/bx-date-picker&gt;
 &lt;/label&gt;
 </code></pre>
@@ -288,7 +432,7 @@ The <code>&lt;input type=&quot;date&quot;&gt;</code> inside stays in the form, h
 </thead>
 <tbody><tr>
 <td><code>min</code>, <code>max</code>, <code>required</code>, <code>value</code></td>
-<td>On the input, as always. Days outside <code>min</code>–<code>max</code> are disabled; a required date has no Clear button</td>
+<td>On the inputs, as always. Days outside <code>min</code>–<code>max</code> are disabled; a required date has no Clear button</td>
 </tr>
 <tr>
 <td><code>placeholder</code></td>
@@ -299,13 +443,110 @@ The <code>&lt;input type=&quot;date&quot;&gt;</code> inside stays in the form, h
 <td><code>0</code> (Sunday) to <code>6</code>. By default the week starts where the page&#39;s <code>lang</code> says it does</td>
 </tr>
 </tbody></table></div>
-<p>Keys in the calendar: arrows move a day or a week, <kbd>Home</kbd> and
-<kbd>End</kbd> go to the start and end of the week, <kbd>PgUp</kbd>
-<kbd>PgDn</kbd> change the month and, with <kbd>Shift</kbd>, the year.
-<kbd>Enter</kbd> chooses and <kbd>Esc</kbd> closes.</p>
-<p>The button is named from the input&#39;s label, so put the element inside the
-<code>&lt;label&gt;</code> or give the input an <code>aria-label</code>. A required date that is empty when
-the form is submitted marks the button <code>aria-invalid</code>.</p>
+<p>A range is written to the form only once both ends are picked, earlier date
+first; closing the calendar halfway leaves the old range. Keys in the calendar:
+arrows move a day or a week, <kbd>Home</kbd> and <kbd>End</kbd> go to the start
+and end of the week, <kbd>PgUp</kbd> <kbd>PgDn</kbd> change the month and, with
+<kbd>Shift</kbd>, the year. <kbd>Enter</kbd> picks and <kbd>Esc</kbd> closes.</p>
+<p>The button is named from the label around the element, or for a single date the
+input&#39;s own label. A required date that is empty when the form is submitted
+marks the button <code>aria-invalid</code>.</p>
+<h2 id="tree">Tree</h2>
+<p>Folders and items, such as files or nested navigation. Folders are <code>&lt;details&gt;</code>,
+so they open and close without JavaScript and the stylesheet draws the tree
+either way. The element makes the whole tree one stop in the tab order, moved
+through with the arrow keys.</p>
+<bx-tree aria-label="Files" style="max-width: 18rem">
+  <ul>
+    <li>
+      <details open>
+        <summary>src</summary>
+        <ul>
+          <li><button>index.js</button></li>
+          <li>
+            <details>
+              <summary>components</summary>
+              <ul>
+                <li><button>button.js</button></li>
+                <li><button>dialog.js</button></li>
+              </ul>
+            </details>
+          </li>
+          <li><button>styles.css</button></li>
+        </ul>
+      </details>
+    </li>
+    <li><button>README.md</button></li>
+  </ul>
+</bx-tree><pre><code tabindex="0" class="language-html">&lt;bx-tree aria-label=&quot;Files&quot;&gt;
+  &lt;ul&gt;
+    &lt;li&gt;
+      &lt;details open&gt;
+        &lt;summary&gt;src&lt;/summary&gt;
+        &lt;ul&gt;
+          &lt;li&gt;&lt;a href=&quot;/src/index.js&quot;&gt;index.js&lt;/a&gt;&lt;/li&gt;
+        &lt;/ul&gt;
+      &lt;/details&gt;
+    &lt;/li&gt;
+    &lt;li&gt;&lt;button&gt;README.md&lt;/button&gt;&lt;/li&gt;
+  &lt;/ul&gt;
+&lt;/bx-tree&gt;
+</code></pre>
+<p>Items are links or buttons. A clicked button becomes <code>aria-current=&quot;true&quot;</code>, the
+current item; set <code>aria-current=&quot;page&quot;</code> on a link yourself. Keys: <kbd>↓</kbd>
+<kbd>↑</kbd> move, <kbd>→</kbd> opens a folder or goes into it, <kbd>←</kbd>
+closes it or goes up to its parent, <kbd>Home</kbd> and <kbd>End</kbd> go to the
+ends, typing jumps to an item, and <kbd>Enter</kbd> or <kbd>Space</kbd> act as a
+click does.</p>
+<h2 id="sidebar">Sidebar</h2>
+<p>BerlinX&#39;s <code>&lt;aside&gt;</code>, collapsible to a rail of icons. A button on its edge
+collapses and expands it; collapsed, each link shows its name as a tooltip. Give
+every link in its <code>&lt;nav&gt;</code> a leading icon.</p>
+<pre><code tabindex="0" class="language-html">&lt;bx-sidebar persist=&quot;app&quot;&gt;
+  &lt;aside&gt;
+    &lt;header&gt;Acme&lt;/header&gt;
+    &lt;nav aria-label=&quot;Main&quot;&gt;
+      &lt;a href=&quot;/inbox&quot; aria-current=&quot;page&quot;&gt;&lt;svg …&gt;&lt;/svg&gt; Inbox&lt;/a&gt;
+      &lt;a href=&quot;/clients&quot;&gt;&lt;svg …&gt;&lt;/svg&gt; Clients&lt;/a&gt;
+    &lt;/nav&gt;
+  &lt;/aside&gt;
+&lt;/bx-sidebar&gt;
+</code></pre>
+<div responsive tabindex="0" role="region" aria-label="Table"><table>
+<thead>
+<tr>
+<th>Attribute</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>collapsed</code></td>
+<td>Set it, or read it, to collapse the sidebar. A <code>toggle</code> event fires when the person collapses or expands it</td>
+</tr>
+<tr>
+<td><code>persist=&quot;name&quot;</code></td>
+<td>Remember the choice in this browser, under that name</td>
+</tr>
+<tr>
+<td><code>shortcut</code></td>
+<td>A key used with <kbd>Ctrl</kbd> or <kbd>⌘</kbd> to toggle it, such as <code>b</code></td>
+</tr>
+</tbody></table></div>
+<p><code>--sidebar-width</code> (16rem) and <code>--sidebar-icon</code> (1.25rem) size it. Without
+JavaScript it is an ordinary <code>&lt;aside&gt;</code>, always open.</p>
+<h2 id="tooltips">Tooltips</h2>
+<p>BerlinX&#39;s <code>tooltip=&quot;…&quot;</code> attribute, made accessible. Import it and nothing in your
+markup changes:</p>
+<pre><code tabindex="0" class="language-js">import &quot;berlinx/elements/tooltips&quot;;       // included in berlinx/elements
+</code></pre>
+<div row gap scroll-x style="padding-block: var(--space-l)">
+  <button icon outline tooltip="Archive this invoice" aria-label="Archive"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="5" x="2" y="3" rx="1" /><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8M10 12h4" /></svg></button>
+  <button icon outline tooltip="Delete" aria-label="Delete"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg></button>
+</div><p>The stylesheet&#39;s tooltip is seen on hover and focus, but never read out and
+clipped inside a scrolling container. With the script it is one shared popover
+in the top layer, so nothing clips it; it describes its control to screen readers
+(unless it only repeats the control&#39;s name), stays while the pointer moves onto
+it, and <kbd>Esc</kbd> dismisses it.</p>
 <h2 id="toasts">Toasts</h2>
 <p>Short messages that stack in the corner. Up to three show at once and the rest
 wait their turn. Each dismisses itself after five seconds, pausing while the
@@ -379,31 +620,49 @@ const remove = await confirm({
 </tr>
 <tr>
 <td><code>confirm</code>, <code>cancel</code></td>
-<td>Button text. Default &quot;Confirm&quot; and &quot;Cancel&quot;</td>
+<td>Button text. Defaults come from the labels: &quot;Confirm&quot; and &quot;Cancel&quot;</td>
 </tr>
 <tr>
 <td><code>destructive</code></td>
 <td>A red confirm button, and focus starts on Cancel so <kbd>Enter</kbd> cannot destroy anything by accident</td>
 </tr>
 </tbody></table></div>
+<h2 id="labels-and-languages">Labels and languages</h2>
+<p>Dates and numbers follow the page&#39;s <code>lang</code>. The words the elements add — button
+names, &quot;No results&quot;, &quot;Page 2&quot; — are English until you change them, all at once:</p>
+<pre><code tabindex="0" class="language-js">import { setLabels } from &quot;berlinx/elements&quot;;
+
+setLabels({
+  noResults: &quot;Aucun résultat&quot;,
+  previousMonth: &quot;Mois précédent&quot;,
+  nextMonth: &quot;Mois suivant&quot;,
+  page: n =&gt; `Page ${n}`,
+  selectRow: name =&gt; `Sélectionner ${name}`,
+});
+</code></pre>
+<p>Elements already on the page update to match. Entries that take a value are
+functions; <code>labels</code> holds the current set, and the TypeScript <code>Labels</code> type lists
+every entry.</p>
 <h2 id="frameworks">Frameworks</h2>
 <p>The elements are standard custom elements, so they work in plain HTML and in
 any framework that renders HTML. A few notes:</p>
 <ul>
 <li><strong>Attributes in markup, properties in script.</strong> <code>page-size=&quot;10&quot;</code> in HTML is
-<code>pageSize = 10</code> in script. Complex values such as a combobox&#39;s <code>options</code> are
+<code>pageSize = 10</code> in script. Values such as a combobox&#39;s <code>options</code> and <code>load</code> are
 properties.</li>
-<li><strong>Events are DOM events.</strong> Listen for <code>change</code> on the inputs inside, and for
-<code>rowselect</code> on a data table, with <code>addEventListener</code> or your framework&#39;s own
-syntax (React 19: <code>onrowselect</code>).</li>
+<li><strong>Events are DOM events.</strong> Listen for <code>change</code> on the inputs inside, <code>rowselect</code>
+on a data table and <code>change</code> on tabs, with <code>addEventListener</code> or your
+framework&#39;s own syntax (React 19: <code>onrowselect</code>).</li>
 <li><strong>Re-rendering is fine.</strong> A data table picks up rows your framework adds or
 removes. Keep the wrapped input or table the same element across renders, as
 frameworks do by default.</li>
+<li><strong>Import in the browser.</strong> The elements define themselves on import, so in a
+framework that also renders on a server, import them from client-only code.</li>
 </ul>
 <h2 id="browser-support">Browser support</h2>
 <p>The elements need what BerlinX needs — Chrome and Edge 114, Firefox 125,
-Safari 17 — and nothing more. Menus, listboxes and calendars are placed by
-script, so they line up under their controls in every engine, whether or not it
+Safari 17 — and nothing more. Menus, listboxes, calendars and tooltips are placed
+by script, so they line up with their controls in every engine, whether or not it
 supports CSS anchor positioning.</p>
 
     </main>
@@ -415,6 +674,9 @@ supports CSS anchor positioning.</p>
         "toast-undo": () => toast({ message: "Client archived", action: { label: "Undo", onClick: () => toast("Client restored") } }),
         "toast-error": () => toast({ title: "Payment failed", message: "The card was declined.", variant: "error" }),
         confirm: async () => (await confirm({ title: "Send invoice #1024?", message: "Ada will get it by email.", confirm: "Send" })) && toast("Invoice sent"),
+        command: () => document.querySelector("#demo-command").show(),
+        "command-new": () => toast("New invoice started"),
+        "command-export": () => toast("Exported 6 invoices"),
         "confirm-delete": async () =>
           (await confirm({ title: "Delete invoice #1024?", message: "This cannot be undone.", confirm: "Delete", destructive: true })) && toast("Invoice deleted"),
       };

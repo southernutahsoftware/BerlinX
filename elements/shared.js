@@ -5,8 +5,34 @@ let uid = 0;
 /** The element's id, giving it a unique one first if it has none. */
 export const idOf = (el, prefix = "bx") => el.id || (el.id = `${prefix}-${++uid}`);
 
+/** Text folded for matching: no case, no accents. */
+export const fold = text => text.normalize("NFD").replace(/\p{Diacritic}/gu, "").toLocaleLowerCase();
+
 /** The language of the page around an element, for Intl formatting. */
 export const langOf = el => el.closest("[lang]")?.lang || navigator.language;
+
+/** The text that labels a control an element hides and stands in for, without
+ *  the element's own text (it usually sits inside the same <label>). */
+export function labelOf(control, host) {
+  if (control.hasAttribute("aria-label")) return control.getAttribute("aria-label");
+  const ids = control.getAttribute("aria-labelledby");
+  const nodes = ids
+    ? ids.split(/\s+/).map(id => document.getElementById(id)).filter(Boolean)
+    : [...(control.labels?.[0]?.childNodes ?? [])].filter(node => !node.contains(host));
+  return nodes.map(node => node.textContent).join(" ").replace(/\s+/g, " ").trim();
+}
+
+/** Hide a native control the element stands in for. It stays in the form for its
+ *  value and validation, out of sight, out of the tab order and unread, and a
+ *  label click on it is passed to the stand-in. */
+export function standIn(control, replacement) {
+  control.tabIndex = -1;
+  control.setAttribute("visually-hidden", "");
+  control.setAttribute("aria-hidden", "true");
+  const onFocus = () => replacement()?.focus();
+  control.addEventListener("focus", onFocus);
+  return () => control.removeEventListener("focus", onFocus);
+}
 
 /** Dispatch the events a person typing into a control would, so frameworks and
  *  form libraries see a value the element set. */
@@ -20,7 +46,7 @@ const GAP = 6; // --space-s, the same gap BerlinX leaves under an anchored popov
 
 /** Position an open popover against an anchor: below it, or above when below has
  *  no room, and always inside the viewport. The anchor is an element or a point
- *  ({ x, y }). Done in script rather than with CSS anchor positioning so it is the
+ *  ({ x, y }); align is "start", "center" or "end". Done in script rather than with CSS anchor positioning so it is the
  *  same in every engine, including ones without position-area. */
 export function place(popover, anchor, { align = "start", side = "bottom" } = {}) {
   const box = anchor.getBoundingClientRect?.() ?? { left: anchor.x, right: anchor.x, top: anchor.y, bottom: anchor.y };
@@ -32,7 +58,7 @@ export function place(popover, anchor, { align = "start", side = "bottom" } = {}
   const viewHeight = document.documentElement.clientHeight;
   const rtl = getComputedStyle(popover).direction === "rtl";
 
-  let left = (align === "end") !== rtl ? box.right - width : box.left;
+  let left = align === "center" ? (box.left + box.right - width) / 2 : (align === "end") !== rtl ? box.right - width : box.left;
   left = Math.max(GAP, Math.min(left, viewWidth - width - GAP));
 
   const below = box.bottom + gap;

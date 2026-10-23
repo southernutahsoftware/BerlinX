@@ -11,19 +11,28 @@
 // hidden but still holds the value, so the form submits and validates as before;
 // a button shows the date in the reader's language and opens a calendar.
 //
-// Attributes: placeholder="Pick a date", week-start="0" (Sunday) to "6"
-// (Saturday); the week otherwise starts where the page's language says it does.
+// Two inputs make a range: the first click picks one end, the second the other.
+//
+//   <bx-date-picker>
+//     <input type="date" name="from" aria-label="From" />
+//     <input type="date" name="to" aria-label="To" />
+//   </bx-date-picker>
+//
+// Attributes: placeholder, and week-start="0" (Sunday) to "6" (Saturday); the
+// week otherwise starts where the page's language says it does.
 
 import { c, useEffect, useHost, useId, useRef, useUpdate } from "atomico";
-import { follow, langOf, setValue } from "./shared.js";
+import { useLabels } from "./use-labels.js";
+import { follow, labelOf, langOf, setValue, standIn } from "./shared.js";
 
 // Dates are UTC midnights, so adding days never meets a daylight-saving change.
 const DAY = 864e5;
 const parse = value => (/^\d{4}-\d{2}-\d{2}$/.test(value ?? "") ? new Date(`${value}T00:00Z`) : null);
 const iso = date => date.toISOString().slice(0, 10);
 const addDays = (date, days) => new Date(date.getTime() + days * DAY);
-const sameDay = (a, b) => a && b && a.getTime() === b.getTime();
+const sameDay = (a, b) => !!a && !!b && a.getTime() === b.getTime();
 const monthOf = date => new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
+const ordered = (a, b) => (a <= b ? [a, b] : [b, a]);
 
 function addMonths(date, months) {
   const year = date.getUTCFullYear();
@@ -50,14 +59,13 @@ function weekStartFor(lang) {
   }
 }
 
-// The text that labels the hidden input, without the picker's own button text.
-function labelOf(input, host) {
-  if (input.hasAttribute("aria-label")) return input.getAttribute("aria-label");
-  const ids = input.getAttribute("aria-labelledby");
-  const nodes = ids
-    ? ids.split(/\s+/).map(id => document.getElementById(id)).filter(Boolean)
-    : [...(input.labels?.[0]?.childNodes ?? [])].filter(node => !node.contains(host));
-  return nodes.map(node => node.textContent).join(" ").replace(/\s+/g, " ").trim();
+// A range is named by what wraps both inputs — a <label> or a fieldset's
+// <legend> — rather than by either input's own label.
+function rangeLabel(host, first) {
+  const wrap = host.closest("label");
+  if (wrap) return [...wrap.childNodes].filter(node => !node.contains(host)).map(node => node.textContent).join(" ").replace(/\s+/g, " ").trim();
+  const legend = host.closest("fieldset")?.querySelector(":scope > legend");
+  return legend?.textContent.trim() || labelOf(first, host);
 }
 
 const icon = path => (
@@ -69,27 +77,53 @@ const icon = path => (
 function datePicker({ placeholder, weekStart }) {
   const host = useHost();
   const update = useUpdate();
+  const labels = useLabels();
   const popover = useRef();
   const trigger = useRef();
-  const state = useRef({ focus: today(), moveFocus: false }).current;
+  const state = useRef({ focus: today(), anchor: null, hover: null, moveFocus: false }).current;
   const id = `bx-calendar-${useId()}`;
-  const input = host.current.querySelector(":scope > input");
+  const inputs = [...host.current.querySelectorAll(":scope > input")].slice(0, 2);
+  const [first, last = first] = inputs;
+  const range = inputs.length === 2;
 
   const lang = langOf(host.current);
-  const value = parse(input?.value);
-  const min = parse(input?.min);
-  const max = parse(input?.max);
+  const start = parse(first?.value);
+  const end = range ? parse(last.value) : start;
+  const min = parse(first?.min || last?.min);
+  const max = parse(last?.max || first?.max);
   const allowed = day => !(min && day < min) && !(max && day > max);
   const clamp = day => (min && day < min ? min : max && day > max ? max : day);
-  const start = Number.isInteger(weekStart) ? weekStart % 7 : weekStartFor(lang);
+  const begin = Number.isInteger(weekStart) ? weekStart % 7 : weekStartFor(lang);
 
   const format = options => new Intl.DateTimeFormat(lang, { timeZone: "UTC", ...options });
-  const label = input ? labelOf(input, host.current) : "";
-  const text = value ? format({ dateStyle: "medium" }).format(value) : placeholder || "Pick a date";
+  const medium = format({ dateStyle: "medium" });
+  const label = range ? rangeLabel(host.current, first) : first ? labelOf(first, host.current) : "";
+  const text =
+    start && end && range && !sameDay(start, end)
+      ? medium.formatRange(start, end)
+      : start
+        ? medium.format(start)
+        : placeholder || labels.pickDate;
 
+  const close = () => popover.current?.matches(":popover-open") && popover.current.hidePopover();
+
+  // A range is written once both ends are known, so the form never holds half.
   const choose = day => {
-    setValue(input, day ? iso(day) : "");
-    popover.current.hidePopover();
+    if (!range) {
+      setValue(first, day ? iso(day) : "");
+      close();
+    } else if (!day) {
+      setValue(first, "");
+      setValue(last, "");
+      close();
+    } else if (!state.anchor) {
+      state.anchor = day;
+    } else {
+      const [from, to] = ordered(state.anchor, day);
+      setValue(first, iso(from));
+      setValue(last, iso(to));
+      close();
+    }
     update();
   };
 
@@ -100,30 +134,26 @@ function datePicker({ placeholder, weekStart }) {
   };
 
   useEffect(() => {
-    if (!input) return;
-    // The input stays in the form for its value and validation, out of sight and
-    // out of the tab order; the button stands in for it.
-    input.tabIndex = -1;
-    input.setAttribute("visually-hidden", "");
-    input.setAttribute("aria-hidden", "true");
-
+    if (!first) return;
+    const stops = inputs.map(input => standIn(input, () => trigger.current));
     const sync = () => {
-      if (input.validity.valid) trigger.current?.removeAttribute("aria-invalid");
+      if (inputs.every(input => input.validity.valid)) trigger.current?.removeAttribute("aria-invalid");
       update();
     };
     const onInvalid = () => trigger.current?.setAttribute("aria-invalid", "true");
-    const onFocus = () => trigger.current?.focus();
     const onReset = () => setTimeout(sync);
-
-    input.addEventListener("change", sync);
-    input.addEventListener("invalid", onInvalid);
-    input.addEventListener("focus", onFocus);
-    input.form?.addEventListener("reset", onReset);
+    for (const input of inputs) {
+      input.addEventListener("change", sync);
+      input.addEventListener("invalid", onInvalid);
+    }
+    first.form?.addEventListener("reset", onReset);
     return () => {
-      input.removeEventListener("change", sync);
-      input.removeEventListener("invalid", onInvalid);
-      input.removeEventListener("focus", onFocus);
-      input.form?.removeEventListener("reset", onReset);
+      for (const stop of stops) stop();
+      for (const input of inputs) {
+        input.removeEventListener("change", sync);
+        input.removeEventListener("invalid", onInvalid);
+      }
+      first.form?.removeEventListener("reset", onReset);
     };
   }, []);
 
@@ -135,8 +165,12 @@ function datePicker({ placeholder, weekStart }) {
   });
 
   const onBeforeToggle = event => {
-    if (event.newState !== "open") return state.unfollow?.();
-    state.focus = clamp(value ?? today());
+    state.anchor = state.hover = null;
+    if (event.newState !== "open") {
+      state.unfollow?.();
+      return update();
+    }
+    state.focus = clamp(start ?? today());
     update();
     requestAnimationFrame(() => {
       state.unfollow = follow(popover.current, trigger.current);
@@ -147,7 +181,7 @@ function datePicker({ placeholder, weekStart }) {
   const onGridKey = event => {
     const day = state.focus;
     const rtl = getComputedStyle(host.current).direction === "rtl";
-    const intoWeek = (day.getUTCDay() - start + 7) % 7;
+    const intoWeek = (day.getUTCDay() - begin + 7) % 7;
     const steps = { ArrowLeft: rtl ? 1 : -1, ArrowRight: rtl ? -1 : 1, ArrowUp: -7, ArrowDown: 7, Home: -intoWeek, End: 6 - intoWeek };
 
     if (event.key in steps) moveTo(addDays(day, steps[event.key]), true);
@@ -156,10 +190,15 @@ function datePicker({ placeholder, weekStart }) {
     event.preventDefault();
   };
 
+  // While a range is half chosen, it runs from the first pick to the day under
+  // the pointer, or the focused day.
+  const [from, to] = state.anchor ? ordered(state.anchor, state.hover ?? state.focus) : range && start && end ? [start, end] : [];
+  const inRange = day => !!from && day >= from && day <= to;
+
   // Six weeks always, so the calendar keeps its height from month to month.
   const month = monthOf(state.focus);
-  const first = addDays(month, -((month.getUTCDay() - start + 7) % 7));
-  const days = Array.from({ length: 42 }, (_, i) => addDays(first, i));
+  const firstShown = addDays(month, -((month.getUTCDay() - begin + 7) % 7));
+  const days = Array.from({ length: 42 }, (_, i) => addDays(firstShown, i));
   const weeks = Array.from({ length: 6 }, (_, i) => days.slice(i * 7, i * 7 + 7));
   const weekday = format({ weekday: "short" });
   const weekdayLong = format({ weekday: "long" });
@@ -169,23 +208,17 @@ function datePicker({ placeholder, weekStart }) {
 
   return (
     <host>
-      <button
-        type="button"
-        ref={trigger}
-        popovertarget={id}
-        aria-haspopup="dialog"
-        aria-label={label ? `${label}, ${text}` : text}
-      >
+      <button type="button" ref={trigger} popovertarget={id} aria-haspopup="dialog" aria-label={label ? `${label}, ${text}` : text}>
         {icon([<path d="M8 2v4" />, <path d="M16 2v4" />, <rect width="18" height="18" x="3" y="4" rx="2" />, <path d="M3 10h18" />])}
-        <span muted={value ? null : ""}>{text}</span>
+        <span muted={start ? null : ""}>{text}</span>
       </button>
-      <div popover="auto" id={id} role="dialog" aria-label={label || "Choose a date"} calendar="" ref={popover} onbeforetoggle={onBeforeToggle}>
+      <div popover="auto" id={id} role="dialog" aria-label={label || labels.chooseDate} calendar="" ref={popover} onbeforetoggle={onBeforeToggle}>
         <header>
           <button
             type="button"
             icon=""
             ghost=""
-            aria-label="Previous month"
+            aria-label={labels.previousMonth}
             disabled={!!min && addDays(month, -1) < min}
             onclick={() => moveTo(addMonths(state.focus, -1), false)}
           >
@@ -194,18 +227,20 @@ function datePicker({ placeholder, weekStart }) {
           <h2 id={`${id}-title`} aria-live="polite">
             {format({ month: "long", year: "numeric" }).format(month)}
           </h2>
-          <button
-            type="button"
-            icon=""
-            ghost=""
-            aria-label="Next month"
-            disabled={!!max && next > max}
-            onclick={() => moveTo(addMonths(state.focus, 1), false)}
-          >
+          <button type="button" icon="" ghost="" aria-label={labels.nextMonth} disabled={!!max && next > max} onclick={() => moveTo(next, false)}>
             {icon(<path d="m9 18 6-6-6-6" />)}
           </button>
         </header>
-        <table role="grid" aria-labelledby={`${id}-title`} onkeydown={onGridKey}>
+        <table
+          role="grid"
+          aria-labelledby={`${id}-title`}
+          onkeydown={onGridKey}
+          onpointerleave={() => {
+            if (!state.hover) return;
+            state.hover = null;
+            update();
+          }}
+        >
           <thead>
             <tr>
               {weeks[0].map(day => (
@@ -224,10 +259,18 @@ function datePicker({ placeholder, weekStart }) {
                       type="button"
                       tabindex={sameDay(day, state.focus) ? "0" : "-1"}
                       aria-label={dayLabel.format(day)}
-                      aria-pressed={sameDay(day, value) ? "true" : null}
+                      aria-pressed={sameDay(day, state.anchor) || (!state.anchor && (sameDay(day, start) || sameDay(day, end))) ? "true" : null}
                       aria-current={sameDay(day, now) ? "date" : null}
                       outside={day.getUTCMonth() === month.getUTCMonth() ? null : ""}
+                      in-range={inRange(day) ? "" : null}
+                      range-start={from && sameDay(day, from) ? "" : null}
+                      range-end={to && sameDay(day, to) ? "" : null}
                       disabled={!allowed(day)}
+                      onpointerenter={() => {
+                        if (!state.anchor || sameDay(state.hover, day)) return;
+                        state.hover = day;
+                        update();
+                      }}
                       onclick={() => choose(day)}
                     >
                       {day.getUTCDate()}
@@ -239,12 +282,14 @@ function datePicker({ placeholder, weekStart }) {
           </tbody>
         </table>
         <footer>
-          <button type="button" ghost="" disabled={!allowed(now)} onclick={() => choose(now)}>
-            Today
-          </button>
-          {!input?.required && (
-            <button type="button" ghost="" disabled={!value} onclick={() => choose(null)}>
-              Clear
+          {!range && (
+            <button type="button" ghost="" disabled={!allowed(now)} onclick={() => choose(now)}>
+              {labels.today}
+            </button>
+          )}
+          {!inputs.some(input => input.required) && (
+            <button type="button" ghost="" disabled={!start && !end} onclick={() => choose(null)}>
+              {labels.clear}
             </button>
           )}
         </footer>

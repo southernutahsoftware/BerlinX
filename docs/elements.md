@@ -1,9 +1,10 @@
 # BerlinX Elements
 
-Optional custom elements for the controls HTML has no element for: a combobox,
-dropdown and context menus, a data table, a date picker, toasts and a confirm
-dialog. BerlinX itself stays a stylesheet; Elements is a separate import that you
-add only if you want it.
+Optional custom elements for the controls HTML has no element for: comboboxes
+and multi-selects, menus, a command palette, tabs, a data table, a date picker,
+a tree, a collapsible sidebar, tooltips, toasts and a confirm dialog. BerlinX
+itself stays a stylesheet; Elements is a separate import that you add only if
+you want it.
 
 ```html
 <bx-data-table sortable filter page-size="10">
@@ -14,41 +15,48 @@ add only if you want it.
 Three rules hold for every element:
 
 - **Light DOM.** No shadow root. Everything an element shows is ordinary markup
-  on your page, styled by `berlinx.css` with the same tokens as the rest. Your
-  CSS, your theme and `density` reach inside without `::part()` or extra
+  on your page, drawn by a BerlinX stylesheet with the same tokens as the rest.
+  Your CSS, your theme and `density` reach inside without `::part()` or extra
   variables.
 - **Your markup first.** Each element wraps native HTML — an `<input list>`, a
-  `popover`, a `<table>`, an `<input type="date">` — and only adds behaviour.
-  Before the script loads, or without JavaScript, that HTML still works the
-  native way.
+  `<select multiple>`, a `popover`, a `<table>`, an `<input type="date">`,
+  `<details>` — and only adds behaviour. Before the script loads, or without
+  JavaScript, that HTML still works the native way.
 - **Forms stay native.** Values live in the real inputs you wrote, so `name`,
   `required`, `FormData`, reset and validation work as they always did.
 
 ## Install
 
-The elements' styles are already in `berlinx.css`. Add the script beside it:
+Add the Elements stylesheet after BerlinX's own, and the script:
 
 ```sh
 npm install berlinx
 ```
 
+```css
+@import "berlinx/min";
+@import "berlinx/elements.min.css";
+```
+
 ```js
 import "berlinx/elements";                 // every element and helper
 import "berlinx/elements/data-table";      // or only the ones you use
-import { toast, confirm } from "berlinx/elements";
+import { toast, confirm, setLabels } from "berlinx/elements";
 ```
 
-From a CDN, as an ES module:
+From a CDN:
 
 ```html
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.0.0/dist/berlinx.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.0.0/dist/berlinx-elements.min.css" />
 <script type="module" src="https://cdn.jsdelivr.net/npm/berlinx@1.0.0/dist/elements/index.js"></script>
 ```
 
-Everything together is about 12 KB gzipped, including the
-[Atomico](https://atomicojs.dev) runtime the elements share. Importing an
-element defines it; importing it twice is harmless. TypeScript declarations are
-included.
+The stylesheet is about 3.5 KB gzipped. The scripts share the 4 KB
+[Atomico](https://atomicojs.dev) runtime: one element with it is 5–10 KB, all of
+them 24 KB, and `toast()`, `confirm()` and tooltips, which do not need it, 1–3 KB
+each. Importing an element defines it; importing it twice is harmless.
+TypeScript declarations are included.
 
 ## Combobox
 
@@ -91,10 +99,60 @@ that filters while ignoring case and accents.
 | --- | --- |
 | `strict` | A value that is not an option is invalid. Give it a value to set the message: `strict="Pick a country"` |
 | `options` | Options from script instead of a datalist: `["Oslo", { value: "BER", label: "Berlin" }]` |
+| `load` | A function that fetches options for what was typed. See below |
+
+To search a server, set `load`. It is called a moment after typing pauses, with
+the text and an `AbortSignal` that fires if the person types again before it
+answers. Its options are shown as they arrive, without further filtering, and
+"Loading…" shows while it works:
+
+```js
+document.querySelector("#city").load = (query, { signal }) =>
+  fetch(`/api/cities?q=${encodeURIComponent(query)}`, { signal }).then(response => response.json());
+```
 
 Keys: <kbd>↓</kbd> <kbd>↑</kbd> move through the list, <kbd>Enter</kbd> chooses,
 <kbd>Esc</kbd> closes it, <kbd>Alt</kbd>+<kbd>↓</kbd> opens it without moving.
 Choosing fires `input` and `change` on the input, as typing does.
+
+## Multi-select
+
+Several choices, shown as chips. Write a `<select multiple>`; the element hides
+it, keeps it as the form value, and puts a field in its place that filters a
+list of checkboxes as you type.
+
+<form col gap-m items="stretch" style="max-width: 24rem">
+  <label stack>
+    Labels
+    <bx-multi-select placeholder="Add labels">
+      <select name="labels" multiple>
+        <option value="bug" selected>Bug</option>
+        <option value="design">Design</option>
+        <option value="docs">Documentation</option>
+        <option value="perf">Performance</option>
+        <option value="security">Security</option>
+      </select>
+    </bx-multi-select>
+  </label>
+</form>
+
+```html
+<label stack>
+  Labels
+  <bx-multi-select placeholder="Add labels">
+    <select name="labels" multiple required>
+      <option value="bug" selected>Bug</option>
+      <option value="design">Design</option>
+    </select>
+  </bx-multi-select>
+</label>
+```
+
+`required`, `disabled` and a disabled `<option>` work as they do on the select.
+Keys: <kbd>↓</kbd> <kbd>↑</kbd> open and move through the list, <kbd>Enter</kbd>
+toggles an option and leaves the list open for the next, <kbd>Backspace</kbd> in
+the empty field removes the last chip, <kbd>Esc</kbd> closes the list. Each
+change fires `input` and `change` on the select.
 
 ## Dropdown menu
 
@@ -168,6 +226,80 @@ Give the area `tabindex="0"` (or put focusable content in it) so keyboard users
 can reach it. iOS Safari never fires a context-menu event, so offer the same
 actions somewhere else too — a dropdown in the card's header works well.
 
+## Command palette
+
+A searchable list of everything the app can do, opened with <kbd>Ctrl</kbd>+<kbd>K</kbd>
+or <kbd>⌘</kbd><kbd>K</kbd>. Write a `<dialog>` of links and buttons, grouped
+like a menu; the element adds the search field, filtering and keys. Choosing a
+command closes the palette and clicks it, so links navigate and buttons run their
+own handlers.
+
+<bx-command id="demo-command">
+  <dialog>
+    <small>Invoices</small>
+    <button data-demo="command-new">New invoice <kbd>N</kbd></button>
+    <button data-demo="command-export">Export as CSV</button>
+    <small>Go to</small>
+    <a href="#combobox">Combobox</a>
+    <a href="#data-table">Data table</a>
+    <a href="#date-picker">Date picker</a>
+  </dialog>
+</bx-command>
+
+<button outline data-demo="command">Open the command palette <kbd>Ctrl K</kbd></button>
+
+```html
+<bx-command>
+  <dialog>
+    <small>Invoices</small>
+    <a href="/invoices/new">New invoice <kbd>N</kbd></a>
+    <button>Export as CSV</button>
+    <small>Go to</small>
+    <a href="/clients">Clients</a>
+  </dialog>
+</bx-command>
+```
+
+| Attribute or method | Effect |
+| --- | --- |
+| `shortcut` | The key used with <kbd>Ctrl</kbd> or <kbd>⌘</kbd>. Default `k`; empty for none |
+| `show()`, `close()` | Open and close it from script. It is a `<dialog>`, so `showModal()` and `commandfor` work too |
+
+## Tabs
+
+One panel at a time, under a row of tabs. Write a `nav[tabs]` of links to the
+panels' ids; the element turns the links into tabs and shows only the chosen
+panel. Without JavaScript the links jump to each panel, all of them visible.
+
+<bx-tabs>
+  <nav tabs aria-label="Invoice">
+    <a href="#demo-overview">Overview</a>
+    <a href="#demo-items">Items</a>
+    <a href="#demo-history">History</a>
+  </nav>
+  <section id="demo-overview"><p>Invoice #1024 for Ada Lovelace, due Friday.</p></section>
+  <section id="demo-items"><p>Three line items totalling $18,200.</p></section>
+  <section id="demo-history"><p>Created Monday; sent Tuesday; viewed today.</p></section>
+</bx-tabs>
+
+```html
+<bx-tabs>
+  <nav tabs aria-label="Invoice">
+    <a href="#overview">Overview</a>
+    <a href="#items">Items</a>
+  </nav>
+  <section id="overview">…</section>
+  <section id="items">…</section>
+</bx-tabs>
+```
+
+Tabs can also be buttons with `aria-controls="panel-id"`. The first tab shows
+unless the address bar names a panel, a tab carries `aria-current`, or the
+element has `selected="panel-id"`. Set `selected` to switch tabs from script; a
+`change` event fires when the person switches. Keys: <kbd>←</kbd> <kbd>→</kbd>
+move between tabs and show each as they go, <kbd>Home</kbd> and <kbd>End</kbd>
+go to the ends, <kbd>Tab</kbd> moves into the panel.
+
 ## Data table
 
 Sorting, filtering, paging and row selection for a table you already have. Each
@@ -224,12 +356,20 @@ the table's rows however you like. A wrapping `<div responsive>` and
 
 A button that shows the date in the reader's language and opens a calendar.
 The `<input type="date">` inside stays in the form, hidden, holding the value.
+Two inputs make a range: the first pick is one end, the second the other.
 
 <form col gap-m items="stretch" style="max-width: 24rem">
   <label stack>
     Due date
     <bx-date-picker>
       <input type="date" name="due" value="2026-10-22" />
+    </bx-date-picker>
+  </label>
+  <label stack>
+    Stay
+    <bx-date-picker>
+      <input type="date" name="from" aria-label="Check in" value="2026-10-12" />
+      <input type="date" name="to" aria-label="Check out" value="2026-10-15" />
     </bx-date-picker>
   </label>
 </form>
@@ -241,22 +381,132 @@ The `<input type="date">` inside stays in the form, hidden, holding the value.
     <input type="date" name="due" min="2026-01-01" required />
   </bx-date-picker>
 </label>
+
+<label stack>
+  Stay
+  <bx-date-picker>
+    <input type="date" name="from" aria-label="Check in" />
+    <input type="date" name="to" aria-label="Check out" />
+  </bx-date-picker>
+</label>
 ```
 
 | Attribute | Effect |
 | --- | --- |
-| `min`, `max`, `required`, `value` | On the input, as always. Days outside `min`–`max` are disabled; a required date has no Clear button |
+| `min`, `max`, `required`, `value` | On the inputs, as always. Days outside `min`–`max` are disabled; a required date has no Clear button |
 | `placeholder` | Shown while there is no date. Default "Pick a date" |
 | `week-start` | `0` (Sunday) to `6`. By default the week starts where the page's `lang` says it does |
 
-Keys in the calendar: arrows move a day or a week, <kbd>Home</kbd> and
-<kbd>End</kbd> go to the start and end of the week, <kbd>PgUp</kbd>
-<kbd>PgDn</kbd> change the month and, with <kbd>Shift</kbd>, the year.
-<kbd>Enter</kbd> chooses and <kbd>Esc</kbd> closes.
+A range is written to the form only once both ends are picked, earlier date
+first; closing the calendar halfway leaves the old range. Keys in the calendar:
+arrows move a day or a week, <kbd>Home</kbd> and <kbd>End</kbd> go to the start
+and end of the week, <kbd>PgUp</kbd> <kbd>PgDn</kbd> change the month and, with
+<kbd>Shift</kbd>, the year. <kbd>Enter</kbd> picks and <kbd>Esc</kbd> closes.
 
-The button is named from the input's label, so put the element inside the
-`<label>` or give the input an `aria-label`. A required date that is empty when
-the form is submitted marks the button `aria-invalid`.
+The button is named from the label around the element, or for a single date the
+input's own label. A required date that is empty when the form is submitted
+marks the button `aria-invalid`.
+
+## Tree
+
+Folders and items, such as files or nested navigation. Folders are `<details>`,
+so they open and close without JavaScript and the stylesheet draws the tree
+either way. The element makes the whole tree one stop in the tab order, moved
+through with the arrow keys.
+
+<bx-tree aria-label="Files" style="max-width: 18rem">
+  <ul>
+    <li>
+      <details open>
+        <summary>src</summary>
+        <ul>
+          <li><button>index.js</button></li>
+          <li>
+            <details>
+              <summary>components</summary>
+              <ul>
+                <li><button>button.js</button></li>
+                <li><button>dialog.js</button></li>
+              </ul>
+            </details>
+          </li>
+          <li><button>styles.css</button></li>
+        </ul>
+      </details>
+    </li>
+    <li><button>README.md</button></li>
+  </ul>
+</bx-tree>
+
+```html
+<bx-tree aria-label="Files">
+  <ul>
+    <li>
+      <details open>
+        <summary>src</summary>
+        <ul>
+          <li><a href="/src/index.js">index.js</a></li>
+        </ul>
+      </details>
+    </li>
+    <li><button>README.md</button></li>
+  </ul>
+</bx-tree>
+```
+
+Items are links or buttons. A clicked button becomes `aria-current="true"`, the
+current item; set `aria-current="page"` on a link yourself. Keys: <kbd>↓</kbd>
+<kbd>↑</kbd> move, <kbd>→</kbd> opens a folder or goes into it, <kbd>←</kbd>
+closes it or goes up to its parent, <kbd>Home</kbd> and <kbd>End</kbd> go to the
+ends, typing jumps to an item, and <kbd>Enter</kbd> or <kbd>Space</kbd> act as a
+click does.
+
+## Sidebar
+
+BerlinX's `<aside>`, collapsible to a rail of icons. A button on its edge
+collapses and expands it; collapsed, each link shows its name as a tooltip. Give
+every link in its `<nav>` a leading icon.
+
+```html
+<bx-sidebar persist="app">
+  <aside>
+    <header>Acme</header>
+    <nav aria-label="Main">
+      <a href="/inbox" aria-current="page"><svg …></svg> Inbox</a>
+      <a href="/clients"><svg …></svg> Clients</a>
+    </nav>
+  </aside>
+</bx-sidebar>
+```
+
+| Attribute | Effect |
+| --- | --- |
+| `collapsed` | Set it, or read it, to collapse the sidebar. A `toggle` event fires when the person collapses or expands it |
+| `persist="name"` | Remember the choice in this browser, under that name |
+| `shortcut` | A key used with <kbd>Ctrl</kbd> or <kbd>⌘</kbd> to toggle it, such as `b` |
+
+`--sidebar-width` (16rem) and `--sidebar-icon` (1.25rem) size it. Without
+JavaScript it is an ordinary `<aside>`, always open.
+
+## Tooltips
+
+BerlinX's `tooltip="…"` attribute, made accessible. Import it and nothing in your
+markup changes:
+
+```js
+import "berlinx/elements/tooltips";       // included in berlinx/elements
+```
+
+<div row gap scroll-x style="padding-block: var(--space-l)">
+  <button icon outline tooltip="Archive this invoice" aria-label="Archive"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="20" height="5" x="2" y="3" rx="1" /><path d="M4 8v11a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8M10 12h4" /></svg></button>
+  <button icon outline tooltip="Delete" aria-label="Delete"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" /></svg></button>
+</div>
+
+The stylesheet's tooltip is seen on hover and focus, but never read out and
+clipped inside a scrolling container. With the script it is one shared popover
+in the top layer, so nothing clips it; it describes its control to screen readers
+(unless it only repeats the control's name), stays while the pointer moves onto
+it, and <kbd>Esc</kbd> dismisses it.
 
 ## Toasts
 
@@ -317,8 +567,29 @@ const remove = await confirm({
 | Option | Effect |
 | --- | --- |
 | `title`, `message` | The heading and the question |
-| `confirm`, `cancel` | Button text. Default "Confirm" and "Cancel" |
+| `confirm`, `cancel` | Button text. Defaults come from the labels: "Confirm" and "Cancel" |
 | `destructive` | A red confirm button, and focus starts on Cancel so <kbd>Enter</kbd> cannot destroy anything by accident |
+
+## Labels and languages
+
+Dates and numbers follow the page's `lang`. The words the elements add — button
+names, "No results", "Page 2" — are English until you change them, all at once:
+
+```js
+import { setLabels } from "berlinx/elements";
+
+setLabels({
+  noResults: "Aucun résultat",
+  previousMonth: "Mois précédent",
+  nextMonth: "Mois suivant",
+  page: n => `Page ${n}`,
+  selectRow: name => `Sélectionner ${name}`,
+});
+```
+
+Elements already on the page update to match. Entries that take a value are
+functions; `labels` holds the current set, and the TypeScript `Labels` type lists
+every entry.
 
 ## Frameworks
 
@@ -326,18 +597,20 @@ The elements are standard custom elements, so they work in plain HTML and in
 any framework that renders HTML. A few notes:
 
 - **Attributes in markup, properties in script.** `page-size="10"` in HTML is
-  `pageSize = 10` in script. Complex values such as a combobox's `options` are
+  `pageSize = 10` in script. Values such as a combobox's `options` and `load` are
   properties.
-- **Events are DOM events.** Listen for `change` on the inputs inside, and for
-  `rowselect` on a data table, with `addEventListener` or your framework's own
-  syntax (React 19: `onrowselect`).
+- **Events are DOM events.** Listen for `change` on the inputs inside, `rowselect`
+  on a data table and `change` on tabs, with `addEventListener` or your
+  framework's own syntax (React 19: `onrowselect`).
 - **Re-rendering is fine.** A data table picks up rows your framework adds or
   removes. Keep the wrapped input or table the same element across renders, as
   frameworks do by default.
+- **Import in the browser.** The elements define themselves on import, so in a
+  framework that also renders on a server, import them from client-only code.
 
 ## Browser support
 
 The elements need what BerlinX needs — Chrome and Edge 114, Firefox 125,
-Safari 17 — and nothing more. Menus, listboxes and calendars are placed by
-script, so they line up under their controls in every engine, whether or not it
+Safari 17 — and nothing more. Menus, listboxes, calendars and tooltips are placed
+by script, so they line up with their controls in every engine, whether or not it
 supports CSS anchor positioning.

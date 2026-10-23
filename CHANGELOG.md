@@ -6,12 +6,14 @@ All notable changes to BerlinX are documented here. This project follows
 ## Unreleased
 
 - BerlinX Elements: optional, light-DOM custom elements in `dist/elements/`,
-  imported as `berlinx/elements` or one at a time as `berlinx/elements/<name>`.
-  `<bx-combobox>`, `<bx-dropdown>`, `<bx-context-menu>`, `<bx-data-table>`
-  and `<bx-date-picker>` enhance native markup that still works without
-  JavaScript; `toast()` and `confirm()` are helpers. About 12 KB gzipped.
-- Styles for the elements, and for `[role="menu"]` and `[role="listbox"]`
-  popovers, in a new section 10 of `berlinx.css`.
+  imported as `berlinx/elements` or one at a time as `berlinx/elements/<name>`,
+  with their own stylesheet, `dist/berlinx-elements.css`. `<bx-combobox>`
+  (with options loaded as you type), `<bx-multi-select>`, `<bx-dropdown>`,
+  `<bx-context-menu>`, `<bx-command>`, `<bx-tabs>`, `<bx-data-table>`,
+  `<bx-date-picker>` (single dates and ranges), `<bx-tree>` and
+  `<bx-sidebar>` enhance native markup that still works without JavaScript.
+  `toast()`, `confirm()` and accessible `[tooltip]`s are helpers, and
+  `setLabels()` translates every word the elements add.
 - Pagination buttons no longer flash the primary colour while pressed.
 
 ## 1.0.0

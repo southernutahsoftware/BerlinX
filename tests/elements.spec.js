@@ -423,7 +423,7 @@ test.describe("toast()", () => {
 
     await toast(page, { message: "Still here", duration: 0 });
     await page.keyboard.press("Escape");
-    await expect(page.locator("dialog")).toHaveCount(0);
+    await expect(page.locator("dialog[bx-confirm]")).toHaveCount(0);
     await expect(toasts(page)).toHaveText(["Still here"]);
     expect(await page.locator("[bx-toaster]").evaluate(el => el.parentElement === document.body && el.matches(":popover-open"))).toBe(true);
   });
@@ -440,7 +440,7 @@ test.describe("confirm()", () => {
     await expect(dialog.getByRole("button", { name: "Send" })).toBeFocused();
     await dialog.getByRole("button", { name: "Send" }).click();
     expect(await answer).toBe(true);
-    await expect(page.locator("dialog")).toHaveCount(0);
+    await expect(page.locator("dialog[bx-confirm]")).toHaveCount(0);
   });
 
   test("resolves false on Escape; destructive focuses Cancel", async ({ page }) => {

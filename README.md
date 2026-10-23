@@ -79,9 +79,12 @@ Prefer to self-host? Download [`dist/berlinx.min.css`](dist/berlinx.min.css).
 
 HTML has no element for a combobox, a data table or a date picker, so BerlinX
 Elements adds them as optional custom elements. They render in the light DOM and
-are styled by the same stylesheet, so they match everything else and take your
-theme with no extra work. Each wraps native markup that still works without
-JavaScript.
+are drawn from the same tokens, so they match everything else and take your theme
+with no extra work. Each wraps native markup that still works without JavaScript.
+
+```css
+@import "berlinx/elements.min.css";
+```
 
 ```js
 import "berlinx/elements";
@@ -94,8 +97,9 @@ import { toast, confirm } from "berlinx/elements";
 </bx-data-table>
 ```
 
-Combobox, dropdown menu, context menu, data table, date picker, toasts and a
-confirm dialog: about 12 KB gzipped together. See the
+Combobox, multi-select, dropdown and context menus, command palette, tabs, data
+table, date and range picker, tree, collapsible sidebar, accessible tooltips,
+toasts and a confirm dialog, with every label translatable. See the
 [Elements guide](docs/elements.md).
 
 ## Make it yours
@@ -125,7 +129,7 @@ npm run build    # dist/ stylesheets, elements and the HTML guides
 npm test         # element tests in Chromium, Firefox and WebKit
 ```
 
-Edit `css/berlinx.css` and `elements/`; `dist/` is generated from them. Open
+Edit `css/` and `elements/`; `dist/` is generated from them. Open
 `index.html` to see the demo, no server needed.
 
 ## Thanks

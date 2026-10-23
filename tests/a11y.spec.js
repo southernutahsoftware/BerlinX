@@ -18,6 +18,28 @@ const states = {
     await page.getByRole("button", { name: "Total" }).click();
     await page.getByRole("checkbox", { name: "Select Grace" }).check();
   },
+  "multi-select": async page => {
+    await page.locator("bx-multi-select [role=combobox]").click();
+    await page.keyboard.press("ArrowDown");
+  },
+  "command palette": async page => {
+    await page.keyboard.press("Control+k");
+    await page.keyboard.press("ArrowDown");
+  },
+  "date range": async page => {
+    await page.locator("#stay [aria-haspopup]").click();
+    await page.keyboard.press("Enter");
+    await page.keyboard.press("ArrowRight");
+  },
+  "tabs, tree and tooltip": async page => {
+    await page.getByRole("tab", { name: "History" }).click();
+    await page.locator("#tree summary").nth(1).click();
+    await page.locator("#tipArchive").hover();
+  },
+  "collapsed sidebar": async page => {
+    await page.getByRole("button", { name: "Collapse sidebar" }).click();
+    await page.getByRole("link", { name: "Clients" }).hover();
+  },
   "toasts and confirm": page =>
     page.evaluate(async () => {
       const { toast, confirm } = await import("/dist/elements/index.js");

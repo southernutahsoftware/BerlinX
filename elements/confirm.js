@@ -11,11 +11,13 @@
 //     destructive: true,
 //   });
 //
-// Options: title, message, confirm (button text, default "Confirm"), cancel
-// (default "Cancel"), destructive (a red confirm button, and focus starts on
+// Options: title, message, confirm (button text, default labels.confirm), cancel
+// (default labels.cancel), destructive (a red confirm button, and focus starts on
 // Cancel so Enter cannot destroy anything by accident).
 //
 // Resolves true for the confirm button; false for Cancel or Escape.
+
+import { labels } from "./labels.js";
 
 let count = 0;
 
@@ -28,7 +30,7 @@ function text(tag, content, id) {
 
 /** Ask a question. Takes a message, or an options object. Resolves to a boolean. */
 export function confirm(options) {
-  const { title, message = "", confirm = "Confirm", cancel = "Cancel", destructive = false } =
+  const { title, message = "", confirm = labels.confirm, cancel = labels.cancel, destructive = false } =
     typeof options === "string" ? { message: options } : options;
   const id = `bx-confirm-${++count}`;
 

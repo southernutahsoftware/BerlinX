@@ -265,18 +265,25 @@ and `ul` for plain lists.
 
 ## Elements
 
-Optional custom elements: `import "berlinx/elements"`. Details in the
-[Elements guide](elements.md).
+Optional custom elements: `berlinx/elements.min.css` and
+`import "berlinx/elements"`. Details in the [Elements guide](elements.md).
 
 | Markup | Effect |
 | --- | --- |
-| `<bx-combobox>` around `<input list>` + `<datalist>` | Filtering listbox; `strict` rejects other values; `.options` from script |
+| `<bx-combobox>` around `<input list>` + `<datalist>` | Filtering listbox; `strict` rejects other values; `.options` or `.load(query, { signal })` from script |
+| `<bx-multi-select>` around `<select multiple>` | Chips and a filtering checkbox list; `placeholder` |
+| `<bx-command>` around a `<dialog>` of links and buttons | Command palette on <kbd>Ctrl</kbd>/<kbd>⌘</kbd>+<kbd>K</kbd>; `shortcut`, `show()` |
+| `<bx-tabs>` around `nav[tabs]` + panels | Tabs; `selected="panel-id"`; `change` event |
 | `<bx-dropdown>` around a button + `[popover]` | Menu with arrow keys and type-ahead; `placement` on the popover |
 | `<bx-context-menu>` around content + `[popover]` | The same menu on right-click or <kbd>Shift</kbd>+<kbd>F10</kbd> |
 | `<bx-data-table>` around a `<table>` | `sortable` (`th[nosort]`, `td[data-value]`), `filter`, `page-size`, `selectable` |
-| `<bx-date-picker>` around `<input type="date">` | Calendar; `placeholder`, `week-start`; `min`/`max` on the input |
+| `<bx-date-picker>` around `<input type="date">` | Calendar; two inputs make a range; `placeholder`, `week-start`; `min`/`max` on the input |
+| `<bx-tree>` around nested `<ul>`, `<details>` | Tree with arrow keys; a clicked button becomes `aria-current` |
+| `<bx-sidebar>` around `<aside>` | Collapses to icons; `collapsed`, `persist`, `shortcut`; `--sidebar-width` |
+| `import "berlinx/elements/tooltips"` | `[tooltip]` in the top layer, read by screen readers |
 | `toast(message \| { message, title, variant, duration, action })` | Stacked, self-dismissing messages |
 | `await confirm(message \| { title, message, confirm, cancel, destructive })` | `true` or `false` |
+| `setLabels({ … })` | Translate the words the elements add |
 
 Menus and listboxes are styled by role, so `[popover][role="menu"]` with
 `role="menuitem"` buttons looks the same without the elements.
