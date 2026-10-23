@@ -502,6 +502,10 @@ click does.</p>
 <p>BerlinX&#39;s <code>&lt;aside&gt;</code>, collapsible to a rail of icons. A button on its edge
 collapses and expands it; collapsed, each link shows its name as a tooltip. Give
 every link in its <code>&lt;nav&gt;</code> a leading icon.</p>
+<p>At 600px wide and below the sidebar leaves the layout and a menu button takes
+its place, opening it as a drawer from the start edge. Tapping outside,
+<kbd>Esc</kbd> or choosing a link closes the drawer and returns focus to the
+button.</p>
 <pre><code tabindex="0" class="language-html">&lt;bx-sidebar persist=&quot;app&quot;&gt;
   &lt;aside&gt;
     &lt;header&gt;Acme&lt;/header&gt;
@@ -529,7 +533,7 @@ every link in its <code>&lt;nav&gt;</code> a leading icon.</p>
 </tr>
 <tr>
 <td><code>shortcut</code></td>
-<td>A key used with <kbd>Ctrl</kbd> or <kbd>⌘</kbd> to toggle it, such as <code>b</code></td>
+<td>A key used with <kbd>Ctrl</kbd> or <kbd>⌘</kbd> to toggle it, such as <code>b</code>; on a phone it opens the drawer</td>
 </tr>
 </tbody></table></div>
 <p><code>--sidebar-width</code> (16rem) and <code>--sidebar-icon</code> (1.25rem) size it. Without

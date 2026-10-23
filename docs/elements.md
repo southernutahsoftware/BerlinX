@@ -467,6 +467,11 @@ BerlinX's `<aside>`, collapsible to a rail of icons. A button on its edge
 collapses and expands it; collapsed, each link shows its name as a tooltip. Give
 every link in its `<nav>` a leading icon.
 
+At 600px wide and below the sidebar leaves the layout and a menu button takes
+its place, opening it as a drawer from the start edge. Tapping outside,
+<kbd>Esc</kbd> or choosing a link closes the drawer and returns focus to the
+button.
+
 ```html
 <bx-sidebar persist="app">
   <aside>
@@ -483,7 +488,7 @@ every link in its `<nav>` a leading icon.
 | --- | --- |
 | `collapsed` | Set it, or read it, to collapse the sidebar. A `toggle` event fires when the person collapses or expands it |
 | `persist="name"` | Remember the choice in this browser, under that name |
-| `shortcut` | A key used with <kbd>Ctrl</kbd> or <kbd>⌘</kbd> to toggle it, such as `b` |
+| `shortcut` | A key used with <kbd>Ctrl</kbd> or <kbd>⌘</kbd> to toggle it, such as `b`; on a phone it opens the drawer |
 
 `--sidebar-width` (16rem) and `--sidebar-icon` (1.25rem) size it. Without
 JavaScript it is an ordinary `<aside>`, always open.

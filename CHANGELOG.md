@@ -11,7 +11,7 @@ All notable changes to BerlinX are documented here. This project follows
   (with options loaded as you type), `<bx-multi-select>`, `<bx-dropdown>`,
   `<bx-context-menu>`, `<bx-command>`, `<bx-tabs>`, `<bx-data-table>`,
   `<bx-date-picker>` (single dates and ranges), `<bx-tree>` and
-  `<bx-sidebar>` enhance native markup that still works without JavaScript.
+  `<bx-sidebar>` (a drawer on phones) enhance native markup that still works without JavaScript.
   `toast()`, `confirm()` and accessible `[tooltip]`s are helpers, and
   `setLabels()` translates every word the elements add.
 - Pagination buttons no longer flash the primary colour while pressed.

@@ -1,4 +1,5 @@
-// <bx-sidebar>: a sidebar that collapses to its icons.
+// <bx-sidebar>: a sidebar that collapses to its icons, and on a phone becomes a
+// drawer.
 //
 //   <bx-sidebar persist="app">
 //     <aside>
@@ -14,15 +15,21 @@
 // the edge collapses the sidebar to a rail of icons, so give each link a leading
 // icon; collapsed, every link shows its name as a tooltip.
 //
+// At 600px wide and below (BerlinX's phone breakpoint) the sidebar leaves the
+// layout: a menu button stands in its place and opens it as a drawer from the
+// start edge. Tapping outside, Escape or choosing a link closes it.
+//
 // Attributes: collapsed (set or read to change it), persist="name" to remember
-// the choice in this browser, shortcut="b" for Ctrl+B or ⌘B. A `toggle` event
-// fires when the person collapses or expands it.
+// the choice in this browser, shortcut="b" for Ctrl+B or ⌘B, which opens the
+// drawer on a phone. A `toggle` event fires when the person collapses or expands
+// it.
 
-import { c, useEffect, useHost, useRef } from "atomico";
+import { c, useEffect, useHost, useRef, useUpdate } from "atomico";
 import { useLabels } from "./use-labels.js";
 import { idOf } from "./shared.js";
 import "./tooltips.js";
 
+const PHONE = "(max-width: 600px)";
 const LINK = ":scope > aside nav :is(a, button)";
 const key = name => `bx-sidebar:${name}`;
 
@@ -40,11 +47,21 @@ function write(name, collapsed) {
   } catch {}
 }
 
+const icon = path => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d={path} />
+  </svg>
+);
+
 function sidebar({ collapsed, persist, shortcut }) {
   const host = useHost();
+  const update = useUpdate();
   const labels = useLabels();
   const added = useRef(new Set()).current;
+  const state = useRef({ open: false }).current;
+  const phone = useRef(matchMedia(PHONE)).current;
   const aside = host.current.querySelector(":scope > aside");
+  const drawer = phone.matches;
 
   const set = value => {
     if (host.current.collapsed === value) return;
@@ -63,49 +80,89 @@ function sidebar({ collapsed, persist, shortcut }) {
     requestAnimationFrame(() => requestAnimationFrame(() => host.current.removeAttribute("bx-still")));
   }, []);
 
+  // On a phone the aside is a popover in the top layer; elsewhere it is not.
+  useEffect(() => {
+    if (!aside) return;
+    const onChange = () => update();
+    const onClick = event => {
+      if (event.target.closest("nav :is(a, button)") && aside.matches(":popover-open")) aside.hidePopover();
+    };
+    const onToggle = event => {
+      state.open = event.newState === "open";
+      update();
+      if (!state.open) return;
+      aside.querySelector("nav [aria-current]:not([aria-current='false']), nav :is(a, button)")?.focus({ preventScroll: true });
+    };
+    phone.addEventListener("change", onChange);
+    aside.addEventListener("click", onClick);
+    aside.addEventListener("toggle", onToggle);
+    return () => {
+      phone.removeEventListener("change", onChange);
+      aside.removeEventListener("click", onClick);
+      aside.removeEventListener("toggle", onToggle);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!aside) return;
+    host.current.toggleAttribute("bx-drawer", drawer);
+    if (drawer) {
+      aside.popover = "auto";
+    } else if (aside.hasAttribute("popover")) {
+      if (aside.matches(":popover-open")) aside.hidePopover();
+      aside.removeAttribute("popover");
+    }
+  }, [drawer]);
+
   // Collapsed, the links' names are only in their tooltips; the ones added here
-  // are taken off again when it expands.
+  // are taken off again when it expands or becomes a drawer.
   useEffect(() => {
     if (!aside) return;
     for (const link of host.current.querySelectorAll(LINK)) {
-      if (collapsed && !link.hasAttribute("tooltip")) {
+      if (collapsed && !drawer && !link.hasAttribute("tooltip")) {
         link.setAttribute("tooltip", link.textContent.trim());
         added.add(link);
-      } else if (!collapsed && added.has(link)) {
+      } else if ((!collapsed || drawer) && added.has(link)) {
         link.removeAttribute("tooltip");
         added.delete(link);
       }
     }
-  }, [collapsed]);
+  }, [collapsed, drawer]);
 
   useEffect(() => {
-    if (!shortcut) return;
+    if (!shortcut || !aside) return;
     const onKey = event => {
       if (!(event.ctrlKey || event.metaKey) || event.altKey || event.key.toLowerCase() !== shortcut.toLowerCase()) return;
       event.preventDefault();
-      set(!host.current.collapsed);
+      if (phone.matches) aside.togglePopover();
+      else set(!host.current.collapsed);
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
   }, [shortcut]);
 
   if (!aside) return <host />;
+  const id = idOf(aside, "bx-sidebar");
 
   return (
     <host>
-      <button
-        type="button"
-        bx-collapse=""
-        aria-controls={idOf(aside, "bx-sidebar")}
-        aria-expanded={String(!collapsed)}
-        aria-label={collapsed ? labels.expandSidebar : labels.collapseSidebar}
-        tooltip={collapsed ? labels.expandSidebar : labels.collapseSidebar}
-        onclick={() => set(!collapsed)}
-      >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-          <path d="m15 18-6-6 6-6" />
-        </svg>
-      </button>
+      {drawer ? (
+        <button type="button" icon="" ghost="" bx-menu="" popovertarget={id} aria-expanded={String(state.open)} aria-label={labels.openSidebar}>
+          {icon("M4 6h16M4 12h16M4 18h16")}
+        </button>
+      ) : (
+        <button
+          type="button"
+          bx-collapse=""
+          aria-controls={id}
+          aria-expanded={String(!collapsed)}
+          aria-label={collapsed ? labels.expandSidebar : labels.collapseSidebar}
+          tooltip={collapsed ? labels.expandSidebar : labels.collapseSidebar}
+          onclick={() => set(!collapsed)}
+        >
+          {icon("m15 18-6-6 6-6")}
+        </button>
+      )}
     </host>
   );
 }

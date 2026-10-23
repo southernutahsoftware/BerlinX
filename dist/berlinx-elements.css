@@ -651,9 +651,11 @@ bx-sidebar > aside nav > :is(a, button) {
   overflow: hidden;
 }
 
+/* Rows, not links: no underline on hover. */
 bx-sidebar > aside nav > :is(a, button):hover {
   background-color: var(--button-bg-hover);
   color: var(--button-fg);
+  text-decoration: none;
 }
 
 bx-sidebar > aside nav > [aria-current]:not([aria-current="false"]) {
@@ -668,21 +670,57 @@ bx-sidebar > aside nav > :is(a, button) > :is(svg, img):first-child {
   height: var(--sidebar-icon);
 }
 
-bx-sidebar[bx-still] > aside {
+bx-sidebar:is([bx-still], [bx-drawer]) > aside {
   transition: none;
 }
 
-bx-sidebar[collapsed] > aside {
+bx-sidebar[collapsed]:not([bx-drawer]) > aside {
   width: calc(var(--control-min-height) + 2 * var(--space-s));
   padding-inline: var(--space-s);
 }
 
-bx-sidebar[collapsed] > aside nav > :is(a, button) {
+bx-sidebar[collapsed]:not([bx-drawer]) > aside nav > :is(a, button) {
   width: var(--control-min-height);
 }
 
-bx-sidebar[collapsed] > aside :is(nav > small, header, footer) {
+bx-sidebar[collapsed]:not([bx-drawer]) > aside :is(nav > small, header, footer) {
   visibility: hidden;
+}
+
+/* On a phone the aside is a popover: a drawer from the start edge over a dimmed
+   page, opened by the menu button left in its place. It is pinned to the
+   viewport, not anchored to the button as other popovers are, and fixed:
+   BerlinX makes every <aside> position: relative. */
+bx-sidebar[bx-drawer] > aside {
+  position: fixed;
+  position-area: none;
+  inset-block: 0;
+  inset-inline: 0 auto;
+  width: min(var(--sidebar-width), 85vw);
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: var(--space-m) var(--space-l);
+  border: 0;
+  border-radius: 0;
+  background-color: var(--sidebar);
+  color: var(--sidebar-foreground);
+  box-shadow: var(--shadow);
+  overflow-y: auto;
+}
+
+bx-sidebar[bx-drawer] > aside:popover-open {
+  display: flex;
+  animation: berlinx-slide-right 0.2s ease-out;
+}
+
+bx-sidebar[bx-drawer] > aside:popover-open:dir(rtl) {
+  animation-name: berlinx-slide-left;
+}
+
+bx-sidebar[bx-drawer] > aside::backdrop {
+  background-color: rgb(0 0 0 / 0.5);
 }
 
 /* A round button astride the edge. */
@@ -858,6 +896,7 @@ bx-tree details[open] > summary::before {
 bx-tree :is(summary, a, button):hover {
   background-color: var(--button-bg-hover);
   color: var(--button-fg);
+  text-decoration: none;
 }
 
 bx-tree :is(summary, a, button):focus-visible {

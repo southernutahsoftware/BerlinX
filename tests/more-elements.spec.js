@@ -359,3 +359,50 @@ test.describe("bx-sidebar", () => {
     await expect(page.locator("#sidebar")).toHaveAttribute("collapsed", "");
   });
 });
+
+test.describe("bx-sidebar on a phone", () => {
+  test.use({ viewport: { width: 390, height: 800 } });
+
+  test("is a menu button that opens the sidebar as a drawer", async ({ page }) => {
+    const aside = page.locator("#sidebar aside");
+    const menu = page.getByRole("button", { name: "Open menu" });
+    await expect(aside).toBeHidden();
+    await expect(page.locator("#sidebar [bx-collapse]")).toHaveCount(0);
+    await menu.click();
+    await expect.poll(() => isOpen(aside)).toBe(true);
+    await expect(menu).toHaveAttribute("aria-expanded", "true");
+    await expect(page.getByRole("link", { name: "Inbox" })).toBeFocused();
+    // Once it has slid in, it runs down the start edge.
+    await expect.poll(async () => (await aside.boundingBox()).x).toBe(0);
+    expect((await aside.boundingBox()).y).toBe(0);
+    expect((await aside.boundingBox()).height).toBeCloseTo(800, 0);
+
+    await page.keyboard.press("Escape");
+    await expect(aside).toBeHidden();
+    await expect(menu).toBeFocused();
+  });
+
+  test("closes when a link is chosen or the page is tapped", async ({ page }) => {
+    const aside = page.locator("#sidebar aside");
+    await page.getByRole("button", { name: "Open menu" }).click();
+    await page.getByRole("link", { name: "Clients" }).click();
+    await expect(aside).toBeHidden();
+    await page.getByRole("button", { name: "Open menu" }).click();
+    await expect.poll(() => isOpen(aside)).toBe(true);
+    await page.mouse.click(380, 400);
+    await expect(aside).toBeHidden();
+  });
+
+  test("goes back to a sidebar on a wider screen, keeping the collapsed state", async ({ page }) => {
+    await page.evaluate(() => (document.querySelector("#sidebar").collapsed = true));
+    await page.setViewportSize({ width: 1100, height: 800 });
+    await expect(page.locator("#sidebar aside")).toBeVisible();
+    await expect(page.locator("#sidebar aside")).not.toHaveAttribute("popover");
+    await expect(page.getByRole("button", { name: "Expand sidebar" })).toBeVisible();
+    await page.setViewportSize({ width: 390, height: 800 });
+    await page.getByRole("button", { name: "Open menu" }).click();
+    // In the drawer the names show, collapsed or not.
+    await expect(page.getByRole("link", { name: "Clients" })).not.toHaveAttribute("tooltip");
+    expect((await page.locator("#sidebar aside").boundingBox()).width).toBeGreaterThan(250);
+  });
+});

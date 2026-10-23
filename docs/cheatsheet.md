@@ -279,7 +279,7 @@ Optional custom elements: `berlinx/elements.min.css` and
 | `<bx-data-table>` around a `<table>` | `sortable` (`th[nosort]`, `td[data-value]`), `filter`, `page-size`, `selectable` |
 | `<bx-date-picker>` around `<input type="date">` | Calendar; two inputs make a range; `placeholder`, `week-start`; `min`/`max` on the input |
 | `<bx-tree>` around nested `<ul>`, `<details>` | Tree with arrow keys; a clicked button becomes `aria-current` |
-| `<bx-sidebar>` around `<aside>` | Collapses to icons; `collapsed`, `persist`, `shortcut`; `--sidebar-width` |
+| `<bx-sidebar>` around `<aside>` | Collapses to icons, a drawer on phones; `collapsed`, `persist`, `shortcut`; `--sidebar-width` |
 | `import "berlinx/elements/tooltips"` | `[tooltip]` in the top layer, read by screen readers |
 | `toast(message \| { message, title, variant, duration, action })` | Stacked, self-dismissing messages |
 | `await confirm(message \| { title, message, confirm, cancel, destructive })` | `true` or `false` |

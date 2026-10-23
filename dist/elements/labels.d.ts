@@ -24,6 +24,7 @@ export interface Labels {
   noMatchingRows: string;
   collapseSidebar: string;
   expandSidebar: string;
+  openSidebar: string;
   notifications: string;
   dismiss: string;
   confirm: string;

@@ -39,6 +39,7 @@ export const labels = {
   // Sidebar
   collapseSidebar: "Collapse sidebar",
   expandSidebar: "Expand sidebar",
+  openSidebar: "Open menu",
 
   // toast() and confirm()
   notifications: "Notifications",
