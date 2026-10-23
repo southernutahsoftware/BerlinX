@@ -98,7 +98,38 @@ const elementsDemo = `
         "confirm-delete": async () =>
           (await confirm({ title: "Delete invoice #1024?", message: "This cannot be undone.", confirm: "Delete", destructive: true })) && toast("Invoice deleted"),
       };
-      document.addEventListener("click", event => demos[event.target.closest("[data-demo]")?.dataset.demo]?.());`;
+      document.addEventListener("click", event => demos[event.target.closest("[data-demo]")?.dataset.demo]?.());
+
+      // A fake server for the remote examples: 48 clients, answered after a delay.
+      const first = ["Ada", "Alan", "Barbara", "Claude", "Donald", "Edsger", "Frances", "Grace", "Hedy", "John", "Katherine", "Linus"];
+      const last = ["Hopper", "Kay", "Knuth", "Lamport", "Liskov", "Lovelace", "Shannon", "Turing"];
+      const cities = ["Berlin", "Lisbon", "Oslo", "Vienna", "Zürich"];
+      const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
+      const clients = Array.from({ length: 48 }, (_, i) => ({
+        id: i + 1,
+        client: \`\${first[i % 12]} \${last[(i + Math.floor(i / 12)) % 8]}\`,
+        city: cities[(i * 3) % cities.length],
+        invoices: (i * 7) % 23 + 1,
+        total: ((i * 7919) % 40000) + 500,
+      }));
+      const wait = (signal, ms = 350) =>
+        new Promise((resolve, reject) => {
+          const timer = setTimeout(resolve, ms);
+          signal.addEventListener("abort", () => (clearTimeout(timer), reject(signal.reason)));
+        });
+      const matching = query => clients.filter(c => !query || \`\${c.client} \${c.city}\`.toLowerCase().includes(query.toLowerCase()));
+
+      document.querySelector("#demo-remote").load = async ({ page, pageSize, sort, order, query, signal }) => {
+        await wait(signal);
+        let rows = matching(query);
+        if (sort) rows = [...rows].sort((a, b) => (a[sort] > b[sort] ? 1 : a[sort] < b[sort] ? -1 : 0) * (order === "desc" ? -1 : 1));
+        const from = (page - 1) * pageSize;
+        return { rows: rows.slice(from, from + pageSize).map(c => ({ ...c, total: money.format(c.total) })), total: rows.length };
+      };
+      document.querySelector("#demo-client").load = async (query, { signal }) => {
+        await wait(signal, 250);
+        return matching(query).slice(0, 8).map(c => ({ value: String(c.id), label: c.client }));
+      };`;
 
 const pages = [
   { source: "docs/guide.md", out: "guide.html", title: "Usage guide" },

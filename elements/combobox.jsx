@@ -19,30 +19,31 @@
 //   combobox.options = ["Austria", { value: "de", label: "Germany" }];
 //   combobox.load = (query, { signal }) => fetch(`/api?q=${query}`, { signal }).then(r => r.json());
 // load() is called as the person types, a moment after they pause, and its
-// options are shown as they come back, unfiltered.
+// options are shown as they come back, unfiltered. src="/api/cities" does the
+// same without script: it is fetched with ?q= and must answer a JSON array.
 //
 // Add `strict` to make any value that is not one of the options invalid; its
 // value, if any, is the error message.
 
 import { c, useEffect, useHost, useId, useRef, useUpdate } from "atomico";
 import { useLabels } from "./use-labels.js";
-import { fold, follow, setValue } from "./shared.js";
+import { fold, follow, getJSON, setValue } from "./shared.js";
 
 const DELAY = 200;
 
 const normalize = list => (list ?? []).map(o => (typeof o === "string" ? { value: o, label: o } : { value: o.value, label: o.label || o.value }));
 
-function combobox({ options, load, strict }) {
+function combobox({ options, load, src, strict }) {
   const host = useHost();
   const list = useRef();
   const update = useUpdate();
   const labels = useLabels();
-  const state = useRef({ open: false, all: false, active: -1, loaded: [], loading: false, chosen: null }).current;
+  const state = useRef({ open: false, all: false, active: -1, loaded: [], loading: false, failed: false, chosen: null }).current;
   const input = host.current.querySelector(":scope > input");
   const listId = `bx-listbox-${useId()}`;
 
   // Read through state, so listeners added on the first render see new values.
-  Object.assign(state, { options, load, strict });
+  Object.assign(state, { options, load: load ?? (src && ((q, { signal }) => getJSON(src, { q }, signal))), strict });
 
   const allOptions = () => (state.load ? state.loaded : normalize(state.options ?? [...(state.datalist?.options ?? [])]));
 
@@ -67,9 +68,11 @@ function combobox({ options, load, strict }) {
         const result = await state.load(query, { signal: controller.signal });
         if (controller.signal.aborted) return;
         state.loaded = normalize(result);
+        state.failed = false;
       } catch (error) {
         if (controller.signal.aborted) return;
         state.loaded = [];
+        state.failed = true;
         console.error(error);
       }
       state.loading = false;
@@ -214,7 +217,7 @@ function combobox({ options, load, strict }) {
         ))}
         {state.open && !items.length && (
           <li role="presentation" hint="">
-            {state.loading ? labels.loading : labels.noResults}
+            {state.loading ? labels.loading : state.failed ? labels.loadFailed : labels.noResults}
           </li>
         )}
       </ul>
@@ -226,6 +229,7 @@ export const Combobox = c(combobox, {
   props: {
     options: { type: Array },
     load: { type: Function },
+    src: { type: String },
     strict: { type: String },
   },
 });

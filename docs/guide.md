@@ -36,7 +36,7 @@ Bundlers can also import the files directly, as `berlinx/dist/berlinx.min.css`.
 From a CDN, pin the exact version so a release can never change under you:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.1.0/dist/berlinx.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.2.0/dist/berlinx.min.css" />
 ```
 
 BerlinX asks for **Inter** first and falls back to the system sans stack. It
@@ -599,7 +599,7 @@ levels; `--input` is the background of text fields.
 
 ## Elements
 
-Some controls have no HTML element: a combobox, a multi-select, menus, a command
+Some controls have no HTML element: a combobox, a searchable select, a multi-select, menus, a command
 palette, tabs, a data table, a date picker, a tree. BerlinX Elements adds them as
 optional custom elements, rendered in the light DOM and drawn from the same
 tokens, so your theme reaches them like anything else:

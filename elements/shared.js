@@ -158,3 +158,15 @@ export function menuKeys(menu) {
     menu.removeEventListener("click", onClick);
   };
 }
+
+// --- Remote data --------------------------------------------------------------
+
+/** GET a URL as JSON, with the params added to its query string (empty ones are
+ *  left out). Rejects on a response that is not ok, so the caller can say so. */
+export async function getJSON(src, params, signal) {
+  const url = new URL(src, document.baseURI);
+  for (const [key, value] of Object.entries(params)) if (value != null && value !== "") url.searchParams.set(key, value);
+  const response = await fetch(url, { signal, headers: { accept: "application/json" } });
+  if (!response.ok) throw new Error(`${response.status} ${response.statusText} from ${url}`);
+  return response.json();
+}

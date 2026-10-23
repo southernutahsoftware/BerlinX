@@ -1,6 +1,7 @@
 export interface Labels {
   noResults: string;
   loading: string;
+  loadFailed: string;
   invalidOption: string;
   remove: (label: string) => string;
   commands: string;

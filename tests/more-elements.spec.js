@@ -175,6 +175,67 @@ test.describe("bx-multi-select", () => {
   });
 });
 
+test.describe("bx-select", () => {
+  const field = page => page.locator("#status [role=combobox]");
+  const options = page => page.locator("#status [role=option]");
+
+  test("shows the chosen option and lists the others, without the placeholder", async ({ page }) => {
+    await expect(field(page)).toHaveValue("Sent");
+    await expect(field(page)).toHaveAttribute("placeholder", "Choose a status");
+    await expect(page.locator("#statusSelect")).toHaveAttribute("aria-hidden", "true");
+    await field(page).click();
+    await expect(options(page)).toHaveText(["Draft", "Sent", "Paid", "Void"]);
+    await expect(options(page).nth(1)).toHaveAttribute("active", "");
+    await expect(options(page).nth(3)).toHaveAttribute("aria-disabled", "true");
+  });
+
+  test("filters as you type and chooses with the keyboard", async ({ page }) => {
+    await page.evaluate(() => {
+      window.changes = [];
+      document.querySelector("#statusSelect").addEventListener("change", e => window.changes.push(e.target.value));
+    });
+    await field(page).click();
+    await page.keyboard.type("a");
+    await expect(options(page)).toHaveText(["Draft", "Paid"]);
+    await page.keyboard.press("ArrowDown");
+    await page.keyboard.press("Enter");
+    await expect(field(page)).toHaveValue("Paid");
+    await expect(page.locator("#statusSelect")).toHaveValue("paid");
+    expect(await page.evaluate(() => window.changes)).toEqual(["paid"]);
+  });
+
+  test("Escape and leaving put back the chosen option's text", async ({ page }) => {
+    await field(page).click();
+    await page.keyboard.type("dr");
+    await page.keyboard.press("Escape");
+    await expect(field(page)).toHaveValue("Sent");
+    await field(page).click();
+    await page.keyboard.type("pa");
+    await page.locator("h1").click();
+    await expect(field(page)).toHaveValue("Sent");
+    await expect(page.locator("#statusSelect")).toHaveValue("sent");
+  });
+
+  test("an emptied field chooses the placeholder, which a required select rejects", async ({ page }) => {
+    await field(page).click();
+    await page.keyboard.press("Backspace");
+    await page.locator("h1").click();
+    await expect(page.locator("#statusSelect")).toHaveValue("");
+    await expect(field(page)).toHaveValue("");
+    await page.locator("#form2").evaluate(form => form.requestSubmit());
+    await expect(field(page)).toHaveAttribute("aria-invalid", "true");
+    await field(page).click();
+    await options(page).first().click();
+    await expect(field(page)).not.toHaveAttribute("aria-invalid");
+  });
+
+  test("a disabled option cannot be chosen", async ({ page }) => {
+    await field(page).click();
+    await options(page).last().click();
+    await expect(page.locator("#statusSelect")).toHaveValue("sent");
+  });
+});
+
 test.describe("bx-command", () => {
   const dialog = page => page.getByRole("dialog", { name: "Commands" });
 

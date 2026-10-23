@@ -10,6 +10,7 @@ export { DataTable } from "./data-table.jsx";
 export { DatePicker } from "./date-picker.jsx";
 export { Dropdown } from "./dropdown.jsx";
 export { MultiSelect } from "./multi-select.jsx";
+export { Select } from "./select.jsx";
 export { Sidebar } from "./sidebar.jsx";
 export { Tabs } from "./tabs.jsx";
 export { Tree } from "./tree.jsx";

@@ -3,6 +3,18 @@
 All notable changes to BerlinX are documented here. This project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.2.0
+
+- `<bx-data-table src>`, or a `load` function, hands sorting, filtering and
+  paging to a server. Rows come back as objects keyed by the headers'
+  `data-key`, arrays or `<tr>`s, and stay selected by id across pages
+  (`selectedIds()`). `reload()` fetches the current page again.
+- `<bx-select>`: a searchable single select around a native `<select>`, with
+  options from the page or from a server (`src` or `load`). It shows the
+  label and submits the value.
+- `<bx-combobox src>` fetches options without script.
+- Elements that load say so when a request fails (the `loadFailed` label).
+
 ## 1.1.0
 
 - BerlinX Elements: optional, light-DOM custom elements in `dist/elements/`,

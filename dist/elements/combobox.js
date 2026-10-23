@@ -1,2 +1,2 @@
-/*! BerlinX Elements v1.1.0 | MIT License | Includes Atomico (MIT) and Lucide icons (ISC) */
-import{a}from"./chunk-75BESZAG.js";import"./chunk-P7B5OT4S.js";import"./chunk-RC4WE2BE.js";import"./chunk-MGGZBI5O.js";export{a as Combobox};
+/*! BerlinX Elements v1.2.0 | MIT License | Includes Atomico (MIT) and Lucide icons (ISC) */
+import{a}from"./chunk-DCKVDKZU.js";import"./chunk-623IHBQW.js";import"./chunk-IVCYLUH6.js";import"./chunk-ME2HRJDM.js";export{a as Combobox};

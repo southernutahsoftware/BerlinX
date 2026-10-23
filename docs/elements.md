@@ -1,10 +1,10 @@
 # BerlinX Elements
 
-Optional custom elements for the controls HTML has no element for: comboboxes
-and multi-selects, menus, a command palette, tabs, a data table, a date picker,
-a tree, a collapsible sidebar, tooltips, toasts and a confirm dialog. BerlinX
-itself stays a stylesheet; Elements is a separate import that you add only if
-you want it.
+Optional custom elements for the controls HTML has no element for: comboboxes,
+searchable selects and multi-selects, menus, a command palette, tabs, a data
+table, a date picker, a tree, a collapsible sidebar, tooltips, toasts and a
+confirm dialog. BerlinX itself stays a stylesheet; Elements is a separate import
+that you add only if you want it.
 
 ```html
 <bx-data-table sortable filter page-size="10">
@@ -19,7 +19,7 @@ Three rules hold for every element:
   Your CSS, your theme and `density` reach inside without `::part()` or extra
   variables.
 - **Your markup first.** Each element wraps native HTML — an `<input list>`, a
-  `<select multiple>`, a `popover`, a `<table>`, an `<input type="date">`,
+  `<select>`, a `popover`, a `<table>`, an `<input type="date">`,
   `<details>` — and only adds behaviour. Before the script loads, or without
   JavaScript, that HTML still works the native way.
 - **Forms stay native.** Values live in the real inputs you wrote, so `name`,
@@ -47,9 +47,9 @@ import { toast, confirm, setLabels } from "berlinx/elements";
 From a CDN:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.1.0/dist/berlinx.min.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.1.0/dist/berlinx-elements.min.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/berlinx@1.1.0/dist/elements/index.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.2.0/dist/berlinx.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.2.0/dist/berlinx-elements.min.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/berlinx@1.2.0/dist/elements/index.js"></script>
 ```
 
 The stylesheet is about 3.5 KB gzipped. The scripts share the 4 KB
@@ -100,11 +100,13 @@ that filters while ignoring case and accents.
 | `strict` | A value that is not an option is invalid. Give it a value to set the message: `strict="Pick a country"` |
 | `options` | Options from script instead of a datalist: `["Oslo", { value: "BER", label: "Berlin" }]` |
 | `load` | A function that fetches options for what was typed. See below |
+| `src` | A URL fetched with `?q=` and what was typed, answering a JSON array of options. The same as `load`, without script |
 
-To search a server, set `load`. It is called a moment after typing pauses, with
-the text and an `AbortSignal` that fires if the person types again before it
-answers. Its options are shown as they arrive, without further filtering, and
-"Loading…" shows while it works:
+To search a server, set `src="/api/cities"`, or `load` for any other request.
+`load` is called a moment after typing pauses, with the text and an
+`AbortSignal` that fires if the person types again before it answers. Its
+options are shown as they arrive, without further filtering, "Loading…" shows
+while it works, and a failed request says so:
 
 ```js
 document.querySelector("#city").load = (query, { signal }) =>
@@ -114,6 +116,77 @@ document.querySelector("#city").load = (query, { signal }) =>
 Keys: <kbd>↓</kbd> <kbd>↑</kbd> move through the list, <kbd>Enter</kbd> chooses,
 <kbd>Esc</kbd> closes it, <kbd>Alt</kbd>+<kbd>↓</kbd> opens it without moving.
 Choosing fires `input` and `change` on the input, as typing does.
+
+## Select
+
+A single choice you can search, from a list on the page or from a server. Write
+a `<select>`; the element hides it, keeps it as the form value, and puts a text
+field in its place that shows the chosen option and filters the others as you
+type. The form gets the option's value and the person sees its label, so a list
+of records can be searched by name and submit an id.
+
+<form col gap-m items="stretch" style="max-width: 24rem">
+  <label stack>
+    Currency
+    <bx-select>
+      <select name="currency">
+        <option value="">Choose a currency</option>
+        <option value="CHF">Swiss franc</option>
+        <option value="DKK">Danish krone</option>
+        <option value="EUR" selected>Euro</option>
+        <option value="GBP">Pound sterling</option>
+        <option value="NOK">Norwegian krone</option>
+        <option value="SEK">Swedish krona</option>
+        <option value="USD">US dollar</option>
+      </select>
+    </bx-select>
+  </label>
+  <label stack>
+    Client
+    <bx-select id="demo-client" placeholder="Search clients">
+      <select name="client">
+        <option value="">No client</option>
+      </select>
+    </bx-select>
+  </label>
+</form>
+
+```html
+<label stack>
+  Client
+  <bx-select src="/api/clients" placeholder="Search clients">
+    <select name="client" required>
+      <option value="">No client</option>
+      <option value="42" selected>Ada Lovelace</option>
+    </select>
+  </bx-select>
+</label>
+```
+
+| Attribute or property | Effect |
+| --- | --- |
+| `placeholder` | Shown when nothing is chosen. Without it, the label of an `<option value="">` |
+| `src` | A URL to search. It is fetched with `?q=` and the text typed, and answers a JSON array of options |
+| `load` | A function that fetches options for what was typed, as on the [combobox](#combobox) |
+
+Without `src` or `load` the options are the select's own, filtered while
+ignoring case and accents. With either, the options are what the server sends
+back, `"Oslo"` or `{ "value": "42", "label": "Ada Lovelace" }`, shown without
+further filtering. The option chosen is added to the select, so the form has it;
+the option written `selected` stays too, so a form reset goes back to it. The
+second field above loads from a fake server with a short delay:
+
+```js
+document.querySelector("#client").load = (query, { signal }) =>
+  fetch(`/api/clients?search=${encodeURIComponent(query)}`, { signal }).then(response => response.json());
+```
+
+An `<option value="">` is the placeholder. It is not listed, and clearing the
+text and leaving the field chooses it, which a `required` select then rejects.
+`disabled` and a disabled `<option>` work as they do on the select. Keys:
+<kbd>↓</kbd> <kbd>↑</kbd> open and move through the list, <kbd>Enter</kbd>
+chooses, <kbd>Esc</kbd> closes it and puts back the chosen option. A choice
+fires `input` and `change` on the select.
 
 ## Multi-select
 
@@ -351,6 +424,74 @@ The element orders and hides the rows of the first `<tbody>` (it manages their
 `hidden` attribute). Rows your app adds or removes are picked up, so re-render
 the table's rows however you like. A wrapping `<div responsive>` and
 `responsive="stack"` work as they do on any table.
+
+### Data from a server
+
+For more rows than a page should hold, give the table a `src`. The server then
+sorts, filters and pages; the element asks for each page, writes its rows into
+the `<tbody>` and keeps the sort buttons, filter, pager and checkboxes working
+as before. Name each column's field with `data-key` on its header:
+
+<bx-data-table id="demo-remote" sortable filter page-size="5" selectable>
+  <table>
+    <thead>
+      <tr><th scope="col" data-key="client">Client</th><th scope="col" data-key="city">City</th><th scope="col" data-key="invoices">Invoices</th><th scope="col" data-key="total">Total</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</bx-data-table>
+
+```html
+<bx-data-table src="/api/clients" sortable filter page-size="25" selectable>
+  <table>
+    <thead>
+      <tr><th scope="col" data-key="name">Client</th><th scope="col" data-key="total">Total</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+</bx-data-table>
+```
+
+The URL is fetched with these parameters, and answers JSON:
+
+```text
+GET /api/clients?page=2&size=25&sort=total&order=desc&q=ada
+
+{ "rows": [{ "id": 42, "name": "Ada Lovelace", "total": "$18,200" }], "total": 128 }
+```
+
+`size` is sent with `page-size`, `sort` and `order` (`asc` or `desc`) while a
+column is sorted, and `q` while the filter has text, a moment after typing
+pauses. `total` counts every matching row, for the summary and the pager. An
+answer that is just an array of rows is one page with no more.
+
+A row can be an object, read through the headers' `data-key`, an array of cells
+in column order, or a `<tr>` you built. The first cell becomes the row's
+`<th scope="row">`. A cell value that is a DOM node goes in as it is, anything
+else as text, so format numbers and dates on the server or in `load`. A row's
+`id` (or a `<tr data-id>`) keeps it selected as pages come and go:
+`table.selectedIds()` returns every id selected, on any page, and the
+`rowselect` event has them in `event.detail.ids`. The header checkbox selects
+the rows on the page shown.
+
+For another URL scheme, headers or a different shape of answer, set `load`
+instead. It gets the request and returns `{ rows, total }`, or a promise of it.
+The demo above uses one, with a fake server:
+
+```js
+const table = document.querySelector("#clients");
+table.load = async ({ page, pageSize, sort, order, query, signal }) => {
+  const response = await fetch(`/graphql?…`, { signal });
+  const { items, count } = await response.json();
+  return { rows: items.map(c => ({ id: c.id, name: c.name, total: money.format(c.total) })), total: count };
+};
+```
+
+`sort` is the column's `data-key`, or its index when it has none. A request
+still on its way is cancelled through `signal` when a newer one starts. While
+one loads the table carries `aria-busy` and its rows fade; if it fails the
+summary says so and the rows shown stay. `table.reload()` asks for the current
+page again, after a change on the server.
 
 ## Date picker
 

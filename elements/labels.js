@@ -10,6 +10,7 @@ export const labels = {
   // Combobox, multi-select and command palette
   noResults: "No results",
   loading: "Loading…",
+  loadFailed: "Couldn't load results",
   invalidOption: "Choose an option from the list.",
   remove: label => `Remove ${label}`,
   commands: "Commands",

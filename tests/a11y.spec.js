@@ -22,6 +22,10 @@ const states = {
     await page.locator("bx-multi-select [role=combobox]").click();
     await page.keyboard.press("ArrowDown");
   },
+  select: async page => {
+    await page.locator("#status [role=combobox]").click();
+    await page.keyboard.press("ArrowDown");
+  },
   "command palette": async page => {
     await page.keyboard.press("Control+k");
     await page.keyboard.press("ArrowDown");

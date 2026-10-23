@@ -42,7 +42,7 @@ when you want a variant. No classes, no build step, no JavaScript.
 Drop the stylesheet into your page:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.1.0/dist/berlinx.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.2.0/dist/berlinx.min.css" />
 ```
 
 or install it:
@@ -97,9 +97,10 @@ import { toast, confirm } from "berlinx/elements";
 </bx-data-table>
 ```
 
-Combobox, multi-select, dropdown and context menus, command palette, tabs, data
-table, date and range picker, tree, collapsible sidebar, accessible tooltips,
-toasts and a confirm dialog, with every label translatable. See the
+Combobox, searchable select, multi-select, dropdown and context menus, command
+palette, tabs, data table (local or server-side), date and range picker, tree,
+collapsible sidebar, accessible tooltips, toasts and a confirm dialog, with
+every label translatable. See the
 [Elements guide](docs/elements.md).
 
 ## Make it yours

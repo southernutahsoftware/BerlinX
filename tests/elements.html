@@ -113,6 +113,19 @@
             <input id="cityInput" name="city" />
           </bx-combobox>
         </label>
+
+        <label stack>
+          Status
+          <bx-select id="status">
+            <select id="statusSelect" name="status" required>
+              <option value="">Choose a status</option>
+              <option value="draft">Draft</option>
+              <option value="sent" selected>Sent</option>
+              <option value="paid">Paid</option>
+              <option value="void" disabled>Void</option>
+            </select>
+          </bx-select>
+        </label>
       </form>
     </section>
 

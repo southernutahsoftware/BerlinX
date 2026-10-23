@@ -1,4 +1,4 @@
-/*! BerlinX Elements v1.1.0 | MIT License | github.com/southernutahsoftware/BerlinX */
+/*! BerlinX Elements v1.2.0 | MIT License | github.com/southernutahsoftware/BerlinX */
 
 /* ==========================================================================
    BerlinX Elements — styles for the optional custom elements.
@@ -10,8 +10,8 @@
    those roles looks the same.
 
    Sections:
-     menus, listboxes, date picker, data table, toasts, multi-select, command
-     palette, sidebar, tabs, tooltips, tree, confirm dialog
+     menus, listboxes, date picker, data table, toasts, select, multi-select,
+     command palette, sidebar, tabs, tooltips, tree, confirm dialog
    ========================================================================== */
 
 /* --- Menus: <bx-dropdown>, <bx-context-menu>, any [role="menu"] popover ---- */
@@ -107,7 +107,8 @@ bx-command [role="option"][active] {
 /* --- Listbox: <bx-combobox> ------------------------------------------------- */
 bx-combobox,
 bx-date-picker,
-bx-multi-select {
+bx-multi-select,
+bx-select {
   display: inline-flex;
   flex-direction: column;
   max-width: 100%;
@@ -116,7 +117,7 @@ bx-multi-select {
 
 /* A field label beside the control: the element takes the rest of the row, as a
    bare input would. */
-:where(label:not([stack])) > :where(bx-combobox, bx-date-picker, bx-multi-select) {
+:where(label:not([stack])) > :where(bx-combobox, bx-date-picker, bx-multi-select, bx-select) {
   flex: 1;
 }
 
@@ -310,6 +311,18 @@ bx-data-table > [bx-filter] {
   width: min(100%, 20rem);
 }
 
+/* Rows on their way from a server: the old ones stay, faded, until they come.
+   Only the rows: the headers and their sort buttons stay readable and usable,
+   where BerlinX would fade the whole busy table. */
+bx-data-table [aria-busy="true"] {
+  opacity: 1;
+}
+
+bx-data-table [aria-busy="true"] > tbody {
+  opacity: 0.7;
+  transition: opacity 0.2s ease 0.15s;
+}
+
 bx-data-table > footer {
   display: flex;
   flex-wrap: wrap;
@@ -442,6 +455,28 @@ tr[selected] {
   width: 2rem;
   margin-block-start: calc(-1 * var(--space-xs));
   margin-inline-end: calc(-1 * var(--space-xs));
+}
+
+/* --- Select: <bx-select> ---------------------------------------------------- */
+
+/* The field stands in for the select it hides, so it carries its chevron. */
+bx-select > [bx-field] {
+  min-width: 12rem;
+  padding-inline-end: calc(var(--control-padding-inline) + 1.5em);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2371717a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 10l5 5 5-5'/%3E%3C/svg%3E");
+  background-position: right var(--control-padding-inline) center;
+  background-repeat: no-repeat;
+  background-size: 1em;
+}
+
+bx-select > [bx-field]:dir(rtl) {
+  background-position: left var(--control-padding-inline) center;
+}
+
+@supports selector(:user-invalid) {
+  [validation] bx-select:has(> select:user-invalid) > [bx-field] {
+    border-color: var(--destructive);
+  }
 }
 
 /* --- Multi-select: <bx-multi-select> ----------------------------------------- */

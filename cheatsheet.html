@@ -661,7 +661,11 @@ and <code>ul</code> for plain lists.</p>
 </thead>
 <tbody><tr>
 <td><code>&lt;bx-combobox&gt;</code> around <code>&lt;input list&gt;</code> + <code>&lt;datalist&gt;</code></td>
-<td>Filtering listbox; <code>strict</code> rejects other values; <code>.options</code> or <code>.load(query, { signal })</code> from script</td>
+<td>Filtering listbox; <code>strict</code> rejects other values; <code>.options</code> or <code>.load(query, { signal })</code> from script, or <code>src</code> for a URL</td>
+</tr>
+<tr>
+<td><code>&lt;bx-select&gt;</code> around <code>&lt;select&gt;</code></td>
+<td>Searchable single choice that submits the value and shows the label; <code>placeholder</code>; <code>src</code> or <code>.load(query, { signal })</code> for a server</td>
 </tr>
 <tr>
 <td><code>&lt;bx-multi-select&gt;</code> around <code>&lt;select multiple&gt;</code></td>
@@ -685,7 +689,7 @@ and <code>ul</code> for plain lists.</p>
 </tr>
 <tr>
 <td><code>&lt;bx-data-table&gt;</code> around a <code>&lt;table&gt;</code></td>
-<td><code>sortable</code> (<code>th[nosort]</code>, <code>td[data-value]</code>), <code>filter</code>, <code>page-size</code>, <code>selectable</code></td>
+<td><code>sortable</code> (<code>th[nosort]</code>, <code>td[data-value]</code>), <code>filter</code>, <code>page-size</code>, <code>selectable</code>; <code>src</code> or <code>.load(request)</code> to sort, filter and page on a server</td>
 </tr>
 <tr>
 <td><code>&lt;bx-date-picker&gt;</code> around <code>&lt;input type=&quot;date&quot;&gt;</code></td>
@@ -958,7 +962,7 @@ needs <code>light-dark()</code> (Chrome/Edge 123+, Safari 17.5+); older engines 
 </ul>
 
     </main>
-    <footer><small muted>BerlinX v1.1.0 · MIT License</small></footer>
+    <footer><small muted>BerlinX v1.2.0 · MIT License</small></footer>
     <script>
       const toggle = document.querySelector("[data-theme-toggle]");
       const systemDark = matchMedia("(prefers-color-scheme: dark)");

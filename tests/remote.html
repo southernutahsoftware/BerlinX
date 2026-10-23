@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en-US">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>BerlinX Elements remote data test page</title>
+    <link rel="stylesheet" href="/dist/berlinx.css" />
+    <link rel="stylesheet" href="/dist/berlinx-elements.css" />
+    <script type="module" src="/dist/elements/index.js"></script>
+  </head>
+  <body>
+    <h1>Remote data</h1>
+
+    <bx-data-table id="remote" src="/api/invoices" sortable filter page-size="2" selectable>
+      <table>
+        <thead>
+          <tr><th scope="col" data-key="client">Client</th><th scope="col" data-key="total">Total</th><th scope="col" nosort data-key="status">Status</th></tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </bx-data-table>
+
+    <form id="form" validation>
+      <label stack>
+        Client
+        <bx-select id="client" src="/api/clients" placeholder="Search clients">
+          <select id="clientSelect" name="client">
+            <option value="">No client</option>
+            <option value="1" selected>Ada Lovelace</option>
+          </select>
+        </bx-select>
+      </label>
+      <button type="reset">Reset</button>
+    </form>
+  </body>
+</html>
