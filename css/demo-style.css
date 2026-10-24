@@ -55,7 +55,8 @@ main > section > p {
   max-width: 68ch;
 }
 
-main > section > :last-child {
+/* Not a dialog or popover: their auto margins centre them in the viewport. */
+main > section > :last-child:not(dialog, [popover]) {
   margin-bottom: 0;
 }
 
@@ -184,12 +185,12 @@ main > hr {
   text-decoration: none;
 }
 
-#menu nav {
+#pageNav {
   gap: 2px;
   scrollbar-gutter: stable;
 }
 
-#menu nav > small {
+#pageNav > small {
   padding: var(--space-s) var(--space-m);
   font-size: 0.6875rem;
   font-weight: 600;
@@ -197,7 +198,7 @@ main > hr {
   text-transform: uppercase;
 }
 
-#menu nav > a {
+#pageNav > a {
   flex: none;
   padding: var(--space-s) var(--space-m);
   border-radius: var(--radius);
@@ -206,23 +207,201 @@ main > hr {
   line-height: 1.5;
 }
 
-#menu nav > a:hover,
-#menu nav > a[aria-current="location"] {
+#pageNav > a:hover,
+#pageNav > a[aria-current="location"] {
   background-color: var(--secondary);
   color: light-dark(var(--primary-variant), var(--primary-text));
   text-decoration: none;
 }
 
-#menu nav > hr {
+#pageNav > hr {
   margin: var(--space-m);
+}
+
+/* The site's pages, as a segmented control above this page's contents. */
+#siteNav {
+  flex: none;
+  display: grid;
+  grid-auto-columns: 1fr;
+  grid-auto-flow: column;
+  gap: 2px;
+  margin: 0 0 var(--space-l);
+  padding: 3px;
+  border-radius: calc(var(--radius) + 3px);
+  background-color: var(--secondary);
+}
+
+#siteNav > a {
+  padding: var(--space-s) 0;
+  border-radius: var(--radius);
+  color: var(--muted-foreground);
+  font-size: 0.75rem;
+  font-weight: 500;
+  line-height: 1.5;
+  text-align: center;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+#siteNav > a:hover {
+  color: var(--foreground);
+  text-decoration: none;
+}
+
+#siteNav > a[aria-current="page"] {
+  background-color: var(--background);
+  box-shadow: 0 1px 2px rgb(0 0 0 / 0.08), 0 0 0 1px light-dark(rgb(0 0 0 / 0.04), rgb(255 255 255 / 0.06));
+  color: var(--foreground);
+  font-weight: 600;
 }
 
 #menu > footer {
   flex: none;
+  align-items: center;
   margin: var(--space-m) 0 0;
   padding: var(--space-m) var(--space-m) 0;
   border-top: var(--border);
   font-size: 0.75rem;
+}
+
+#menu > footer > small {
+  margin-inline-start: auto;
+}
+
+/* Moving between pages swaps <main> under a still frame. */
+#menu {
+  view-transition-name: site-menu;
+}
+
+#demoToolbar {
+  view-transition-name: site-toolbar;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.18s;
+}
+
+/* --- The guides, and the Elements' sections from Markdown -------------------- */
+
+#introduction[doc-intro] h1 {
+  margin-bottom: var(--space-l);
+  color: var(--foreground);
+  font-size: clamp(2.25rem, 4.5vw, 3.25rem);
+  line-height: 1.05;
+  letter-spacing: -0.05em;
+}
+
+#introduction[doc-intro] > p {
+  max-width: 60ch;
+  color: var(--muted-foreground);
+  font-size: 1.0625rem;
+}
+
+main > section:is([doc], [doc-intro]) > :where(ul, ol) {
+  max-width: 68ch;
+}
+
+main > section[doc] > :where(h3, h4) {
+  margin-block: 2.25rem var(--space-m);
+  color: var(--foreground);
+  letter-spacing: -0.025em;
+}
+
+main > section[doc] > h3 {
+  font-size: 1.1875rem;
+}
+
+main > section:is([doc], [doc-intro]) :where(p, li, td) a {
+  text-decoration: underline;
+  text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+  text-underline-offset: 0.2em;
+}
+
+main > section:is([doc], [doc-intro]) :where(p, li, td) a:hover {
+  text-decoration-color: currentColor;
+}
+
+/* Code samples: a quiet card with a copy button, added by the site script. */
+main > section:is([doc], [doc-intro]) pre {
+  margin-block: var(--space-m) var(--space-l);
+  border: var(--border);
+  background-color: var(--card);
+}
+
+main > section:is([doc], [doc-intro]) pre > code {
+  padding: 1rem 1.125rem;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-size: 0.8125rem;
+  line-height: 1.7;
+}
+
+[code-block] {
+  position: relative;
+}
+
+[code-block] > pre {
+  margin-block: var(--space-m) var(--space-l);
+}
+
+[code-block] > [mini-button] {
+  top: var(--space-s);
+  right: var(--space-s);
+  transform: none;
+  opacity: 0;
+}
+
+[code-block]:is(:hover, :focus-within) > [mini-button],
+[code-block] > [mini-button].copied {
+  opacity: 1;
+}
+
+@media (hover: none) {
+  [code-block] > [mini-button] {
+    opacity: 1;
+  }
+}
+
+/* Reference tables: bordered, compact, the first column a name. */
+main > section[doc] > [responsive] {
+  margin-block: var(--space-m) var(--space-l);
+  border: var(--border);
+  border-radius: var(--radius);
+}
+
+main > section[doc] > [responsive] > table {
+  margin: 0;
+  font-size: 0.875rem;
+}
+
+main > section[doc] > [responsive] :where(th, td) {
+  padding: var(--space-s) var(--space-m);
+  vertical-align: top;
+}
+
+main > section[doc] > [responsive] thead th {
+  background-color: var(--card);
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+main > section[doc] > [responsive] tbody tr:last-child {
+  border-bottom: 0;
+}
+
+main > section[doc] > [responsive] td:first-child {
+  white-space: nowrap;
+}
+
+/* A live example sits on the page as it would in an app; a little room keeps
+   it apart from the prose and the code around it. */
+main > section[doc] > :is(label, bx-dropdown, bx-context-menu, bx-tabs, bx-data-table, bx-tree, [row], div:not([responsive], [code-block])) {
+  margin-block: var(--space-l);
 }
 
 #menuToggle,
@@ -253,6 +432,14 @@ main > hr {
   border-bottom: var(--border);
   background: var(--background);
   z-index: 2;
+}
+
+/* The tagline gives way first on a narrow phone, rather than wrapping. */
+#demoToolbar > small {
+  min-width: 0;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 #demoToolbar > a {
@@ -500,11 +687,16 @@ main > hr {
     width: 320px;
   }
 
-  #menu nav > a {
+  #pageNav > a,
+  #siteNav > a {
     display: flex;
     align-items: center;
     min-height: 44px;
     font-size: 0.875rem;
+  }
+
+  #siteNav > a {
+    justify-content: center;
   }
 
   #menu::backdrop {

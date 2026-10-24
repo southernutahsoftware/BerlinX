@@ -16,13 +16,14 @@
 // icon; collapsed, every link shows its name as a tooltip.
 //
 // At 600px wide and below (BerlinX's phone breakpoint) the sidebar leaves the
-// layout: a menu button stands in its place and opens it as a drawer from the
-// start edge. Tapping outside, Escape or choosing a link closes it.
+// layout: a menu button stands in its place and opens it as a drawer from its
+// own edge. Tapping outside, Escape or choosing a link closes it.
 //
-// Attributes: collapsed (set or read to change it), persist="name" to remember
-// the choice in this browser, shortcut="b" for Ctrl+B or ⌘B, which opens the
-// drawer on a phone. A `toggle` event fires when the person collapses or expands
-// it.
+// Attributes: side="end" for a sidebar on the end edge (the right in a
+// left-to-right page; put it after the content), collapsed (set or read to
+// change it), persist="name" to remember the choice in this browser,
+// shortcut="b" for Ctrl+B or ⌘B, which opens the drawer on a phone. A `toggle`
+// event fires when the person collapses or expands it.
 
 import { c, useEffect, useHost, useRef, useUpdate } from "atomico";
 import { useLabels } from "./use-labels.js";
@@ -169,6 +170,7 @@ function sidebar({ collapsed, persist, shortcut }) {
 
 export const Sidebar = c(sidebar, {
   props: {
+    side: { type: String, reflect: true },
     collapsed: { type: Boolean, reflect: true },
     persist: { type: String },
     shortcut: { type: String },

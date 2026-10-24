@@ -1,81 +1,112 @@
 <!doctype html>
-<!-- Generated from docs/guide.md by npm run build. Edit the Markdown instead. -->
+<!-- Generated from docs/guide.md, in the frame of index.html, by npm run build. Edit those instead. -->
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>BerlinX Usage guide</title>
+    <title>BerlinX — Usage guide</title>
+    <meta name="description" content="How to use BerlinX: installation, the attribute vocabulary, layout, components, theming and the Material skin." />
     <meta name="color-scheme" content="light dark" />
     <script>
+      // Apply a saved theme before first paint, so a dark page never flashes light.
       try {
         const theme = localStorage.getItem("berlinx-theme");
         if (theme === "light" || theme === "dark") document.documentElement.setAttribute("theme", theme);
       } catch {}
     </script>
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="icon.ico" sizes="any" />
     <link rel="stylesheet" href="dist/berlinx.min.css" />
+    <link rel="stylesheet" href="dist/berlinx-elements.min.css" />
+    <!-- The optional Material skin, switched by the palette button. -->
     <link id="skin" rel="stylesheet" href="dist/berlinx-material.min.css" disabled />
     <script>
       try { if (localStorage.getItem("berlinx-skin") === "material") document.getElementById("skin").disabled = false; } catch {}
     </script>
+    <link rel="stylesheet" href="css/demo-style.css" />
+    <script defer src="assets/site.js"></script>
     <!-- Lucide SVG paths: https://lucide.dev · license: docs/LUCIDE-LICENSE.txt -->
-    <style>
-      @font-face { font-family: Inter; src: url("assets/fonts/InterVariable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
-      body { padding: var(--space-l); }
-      body > header { margin-bottom: var(--space-l); }
-      body > header > a { font-weight: 700; font-size: 1.25rem; text-decoration: none; color: var(--foreground); }
-      body > header nav { margin-left: auto; }
-      body > header nav a[aria-current] { color: var(--foreground); font-weight: 600; }
-      @media (max-width: 600px) { body > header nav { order: 1; width: 100%; } }
-      main :where(p, li, td) a { text-decoration: underline; }
-      [data-theme-toggle][aria-pressed="true"] > [data-icon="moon"],
-      [data-theme-toggle][aria-pressed="false"] > [data-icon="sun"] { display: none; }
-    </style>
   </head>
+
   <body>
-    <header row justify="between" items="center" gap-m>
+    <a id="skipLink" href="#main" tabindex="0">Skip to content</a>
+    <header id="demoToolbar" row nowrap gap-m items="center">
+    <button id="menuToggle" icon secondary popovertarget="menu" aria-label="Open menu" aria-controls="menu">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h16" /></svg>
+    </button>
       <a href="index.html">Berlin<span primary>X</span></a>
-      <nav aria-label="Documentation" row gap-m><a href="index.html">Components</a><a href="guide.html" aria-current="page">Usage guide</a><a href="elements.html">Elements</a><a href="cheatsheet.html">Cheatsheet</a></nav>
+      <small id="pageLabel" muted>Usage guide</small>
       <button data-skin-toggle icon ghost aria-pressed="false" aria-label="Material skin">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg>
+        <svg data-icon="palette" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg>
       </button>
       <button data-theme-toggle icon ghost aria-pressed="false" aria-label="Dark theme">
-        <svg data-icon="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
-        <svg data-icon="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>
+        <svg data-icon="moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
+        <svg data-icon="sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
       </button>
     </header>
-    <main>
-<h1 id="berlinx-usage-guide">BerlinX usage guide</h1>
-<details>
-<summary>Contents</summary>
-<nav aria-label="Contents" col gap-xs>
-<a href="#install">Install</a>
-<a href="#attribute-vocabulary">Attribute vocabulary</a>
-<a href="#tags">Tags</a>
-<a href="#responsive-tables">Responsive tables</a>
-<a href="#layout">Layout</a>
-<a href="#control-density-and-feedback">Control density and feedback</a>
-<a href="#popovers">Popovers</a>
-<a href="#row-actions">Row actions</a>
-<a href="#semantic-elements">Semantic elements</a>
-<a href="#more-components">More components</a>
-<a href="#light-and-dark-themes">Light and dark themes</a>
-<a href="#theming">Theming</a>
-<a href="#material-skin">Material skin</a>
-<a href="#accessibility">Accessibility</a>
-<a href="#elements">Elements</a>
-<a href="#browser-support">Browser support</a>
-<a href="#development">Development</a>
-<a href="#license">License</a>
-</nav>
-</details>
+
+    <aside id="menu" aria-label="Documentation">
+      <header row nowrap justify="between" items="center" gap>
+        <a id="menuBrand" href="index.html" aria-label="BerlinX home">Berlin<span primary>X</span></a>
+        <div row nowrap gap-xs items="center">
+          <button data-skin-toggle icon ghost aria-pressed="false" aria-label="Material skin">
+            <svg data-icon="palette" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg>
+          </button>
+          <button data-theme-toggle icon ghost aria-pressed="false" aria-label="Dark theme">
+            <svg data-icon="moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
+            <svg data-icon="sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
+          </button>
+        <button id="menuClose" icon ghost popovertarget="menu" popovertargetaction="hide" aria-label="Close menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+        </button>
+        </div>
+      </header>
+      <nav id="siteNav" aria-label="Site">
+        <a href="index.html">Components</a>
+        <a href="guide.html" aria-current="page">Guide</a>
+        <a href="cheatsheet.html">Cheatsheet</a>
+      </nav>
+        <nav id="pageNav" aria-label="On this page">
+          <small>Usage guide</small>
+          <a href="#introduction">Overview</a>
+          <a href="#install">Install</a>
+          <a href="#attribute-vocabulary">Attribute vocabulary</a>
+          <a href="#tags">Tags</a>
+          <a href="#responsive-tables">Responsive tables</a>
+          <a href="#layout">Layout</a>
+          <a href="#control-density-and-feedback">Control density and feedback</a>
+          <a href="#popovers">Popovers</a>
+          <a href="#row-actions">Row actions</a>
+          <a href="#semantic-elements">Semantic elements</a>
+          <a href="#more-components">More components</a>
+          <a href="#light-and-dark-themes">Light and dark themes</a>
+          <a href="#theming">Theming</a>
+          <a href="#material-skin">Material skin</a>
+          <a href="#accessibility">Accessibility</a>
+          <a href="#elements">Elements</a>
+          <a href="#browser-support">Browser support</a>
+          <a href="#development">Development</a>
+          <a href="#license">License</a>
+        </nav>
+      <footer row gap-m><a href="https://github.com/southernutahsoftware/BerlinX">GitHub</a><a href="https://www.npmjs.com/package/berlinx">npm</a><small muted>v1.3.0</small></footer>
+    </aside>
+
+    <main id="main" tabindex="-1">
+      <section id="introduction" doc-intro>
+        <div id="introMeta" row gap-m items="center"><span>Usage guide</span><span badge outline>v1.3.0</span></div>
+        <h1>BerlinX usage guide</h1>
 <p>A powerful semantic CSS library. Write plain HTML; opt into variants with
 attributes. No classes, no build step, no JavaScript.</p>
 <pre><code tabindex="0" class="language-html">&lt;button destructive&gt;Delete&lt;/button&gt;
 &lt;nav breadcrumb&gt;&lt;a href=&quot;/&quot;&gt;Home&lt;/a&gt;&lt;a href=&quot;/docs&quot;&gt;Docs&lt;/a&gt;&lt;/nav&gt;
 &lt;aside&gt;&lt;header&gt;…&lt;/header&gt;&lt;nav&gt;…&lt;/nav&gt;&lt;footer&gt;…&lt;/footer&gt;&lt;/aside&gt;
 </code></pre>
-<h2 id="install">Install</h2>
+      </section>
+
+      <hr />
+
+      <section id="install" doc>
+<h2>Install</h2>
 <p>Download <code>dist/berlinx.min.css</code>, then link it locally:</p>
 <pre><code tabindex="0" class="language-html">&lt;link
   rel=&quot;stylesheet&quot;
@@ -90,7 +121,7 @@ attributes. No classes, no build step, no JavaScript.</p>
 </code></pre>
 <p>Bundlers can also import the files directly, as <code>berlinx/dist/berlinx.min.css</code>.</p>
 <p>From a CDN, pin the exact version so a release can never change under you:</p>
-<pre><code tabindex="0" class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/berlinx@1.2.0/dist/berlinx.min.css&quot; /&gt;
+<pre><code tabindex="0" class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;https://cdn.jsdelivr.net/npm/berlinx@1.3.0/dist/berlinx.min.css&quot; /&gt;
 </code></pre>
 <p>BerlinX asks for <strong>Inter</strong> first and falls back to the system sans stack. It
 does not fetch the font for you — add it yourself if you want it:</p>
@@ -100,7 +131,12 @@ does not fetch the font for you — add it yourself if you want it:</p>
   href=&quot;https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;amp;display=swap&quot;
 /&gt;
 </code></pre>
-<h2 id="attribute-vocabulary">Attribute vocabulary</h2>
+      </section>
+
+      <hr />
+
+      <section id="attribute-vocabulary" doc>
+<h2>Attribute vocabulary</h2>
 <p>Variants are bare attributes. One vocabulary, reused across components. The
 <a href="cheatsheet.html">cheatsheet</a> is the same vocabulary as a lookup table, with every
 value and every theming token on one page.</p>
@@ -279,7 +315,12 @@ the W3C validator reports <code>Attribute X not allowed on element Y</code>. Bro
 handle them correctly — attribute selectors have matched arbitrary attributes
 since CSS2 — but if your CI gates on HTML validation, be aware of it.</p>
 </blockquote>
-<h2 id="tags">Tags</h2>
+      </section>
+
+      <hr />
+
+      <section id="tags" doc>
+<h2>Tags</h2>
 <p><code>tag</code> gives any element the button&#39;s exact appearance — same pill, padding,
 type scale and variants — for labels that are not form controls:</p>
 <pre><code tabindex="0" class="language-html">&lt;span tag&gt;Design&lt;/span&gt;
@@ -301,7 +342,12 @@ label receives a visible focus ring when its control is focused:</p>
   Choose a file
 &lt;/label&gt;
 </code></pre>
-<h2 id="responsive-tables">Responsive tables</h2>
+      </section>
+
+      <hr />
+
+      <section id="responsive-tables" doc>
+<h2>Responsive tables</h2>
 <p>A wide table is the one element that reliably breaks a phone layout. <code>responsive</code>
 gives it its own horizontal scrollbar, so it can never stretch the page. Put it
 on a wrapping element:</p>
@@ -349,7 +395,12 @@ in the modes described above, and browsers drop the table role when they do. If
 the tabular relationship matters to screen-reader users, put it back explicitly
 with <code>role=&quot;table&quot;</code>, <code>role=&quot;row&quot;</code> and <code>role=&quot;cell&quot;</code> — or wrap the table instead,
 which leaves its semantics alone entirely.</p>
-<h2 id="layout">Layout</h2>
+      </section>
+
+      <hr />
+
+      <section id="layout" doc>
+<h2>Layout</h2>
 <p><code>row</code> and <code>col</code> pick the axis, <code>gap</code> sizes the space, <code>justify</code> and <code>items</code>
 place the children. Between them they cover the two shapes every app needs — the
 toolbar and the button row — without a stylesheet of your own:</p>
@@ -395,7 +446,12 @@ replacing the reset:</p>
   --page-padding: 0;
 }
 </code></pre>
-<h2 id="control-density-and-feedback">Control density and feedback</h2>
+      </section>
+
+      <hr />
+
+      <section id="control-density-and-feedback" doc>
+<h2>Control density and feedback</h2>
 <p>Default buttons and text controls have a 2.5rem minimum height (40px at the
 standard text size), with 12px horizontal input padding. Apply <code>density=&quot;compact&quot;</code> to a desktop
 toolbar or <code>density=&quot;comfortable&quot;</code> to a form. The setting inherits through its
@@ -417,7 +473,12 @@ and <code>role=&quot;alert&quot;</code> for urgent errors; CSS alone does not an
 Text inputs without <code>type</code>, and <code>datetime-local</code>, <code>month</code> and <code>week</code> inputs,
 receive the same styling as the other text fields. Ordinary fieldsets can wrap
 on narrow screens; joined <code>fieldset[role=&quot;group&quot;]</code> controls remain on one line.</p>
-<h2 id="popovers">Popovers</h2>
+      </section>
+
+      <hr />
+
+      <section id="popovers" doc>
+<h2>Popovers</h2>
 <p>A popover opens centred above its anchor. <code>placement</code> moves it — <code>top</code> or
 <code>bottom</code>, on its own or with <code>-start</code>/<code>-end</code> to line its edge up with the
 anchor&#39;s:</p>
@@ -435,7 +496,12 @@ than opening off-screen.</p>
 coordinate mismatches. Set <code>placement=&quot;center&quot;</code> to keep a popover centred in the
 viewport on every engine. Use that for a popover opened programmatically without
 an invoker; anchored popovers should be opened by their <code>popovertarget</code> button.</p>
-<h2 id="row-actions">Row actions</h2>
+      </section>
+
+      <hr />
+
+      <section id="row-actions" doc>
+<h2>Row actions</h2>
 <p><code>reveal</code> hides the controls inside a container until it is hovered — the pattern
 every table of records ends up wanting for its edit and delete buttons:</p>
 <pre><code tabindex="0" class="language-html">&lt;tr reveal&gt;
@@ -453,7 +519,12 @@ plain link, such as the record&#39;s name, is content and always stays visible.<
 <p><code>tooltip</code> is a visual affordance only — assistive tech never sees the attribute,
 which is why the <code>aria-label</code> beside it is not optional. Inside a <code>responsive</code>
 scroll container a tooltip can be clipped by the scroll box; use <code>title</code> there.</p>
-<h2 id="semantic-elements">Semantic elements</h2>
+      </section>
+
+      <hr />
+
+      <section id="semantic-elements" doc>
+<h2>Semantic elements</h2>
 <p>Elements are styled directly. A few carry component meaning:</p>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
@@ -509,7 +580,12 @@ scroll container a tooltip can be clipped by the scroll box; use <code>title</co
 </tbody></table></div>
 <p>Because <code>aside</code> and <code>menu</code> are claimed by components, use <code>blockquote</code> for pull
 quotes and <code>ul</code> for plain lists.</p>
-<h2 id="more-components">More components</h2>
+      </section>
+
+      <hr />
+
+      <section id="more-components" doc>
+<h2>More components</h2>
 <p>The demo includes each of these components. The library remains CSS-only;
 native controls provide selection and validation, and application state supplies
 page numbers, completed steps and notification counts.</p>
@@ -680,7 +756,12 @@ tablist with hidden panels and a roving keyboard focus model.</p>
 Set <code>--slide-size</code> to override the default 85% width. It never autoplays, and
 reduced motion disables its smooth scrolling. Keep slide contents reachable and
 give the focusable scroll region an accessible name.</p>
-<h2 id="light-and-dark-themes">Light and dark themes</h2>
+      </section>
+
+      <hr />
+
+      <section id="light-and-dark-themes" doc>
+<h2>Light and dark themes</h2>
 <p>BerlinX ships both, and follows the reader&#39;s system setting by default. Pin one
 for the whole page on <code>&lt;html&gt;</code>, or theme a single region — a dark sidebar in a
 light app, a light card on a dark page:</p>
@@ -702,7 +783,12 @@ way to keep both themes, or give a plain value to use it in both:</p>
 light values only, add <code>theme=&quot;light&quot;</code> to <code>&lt;html&gt;</code> so a reader in dark mode does
 not get your light surfaces with dark-theme text. Engines without <code>light-dark()</code>
 (Chrome/Edge before 123, Safari before 17.5) always get the light theme.</p>
-<h2 id="theming">Theming</h2>
+      </section>
+
+      <hr />
+
+      <section id="theming" doc>
+<h2>Theming</h2>
 <p>Headings use relative sizes and unitless leading, so they follow the reader&#39;s
 chosen text size. Body leading is <code>--line-height: 1.65</code>. The default page has
 24px padding, reduced to 16px below 600px; <code>--page-padding</code> overrides both.
@@ -759,7 +845,12 @@ setting <code>--primary</code> alone recolours links in both themes. <code>--acc
 <strong>fill</strong> colour: <code>#ffbf00</code> as text on white is 1.65:1. <code>--success</code> and
 <code>--warning</code> colour the edge of <code>notice=&quot;success|warning&quot;</code> and the meter&#39;s
 levels; <code>--input</code> is the background of text fields.</p>
-<h2 id="material-skin">Material skin</h2>
+      </section>
+
+      <hr />
+
+      <section id="material-skin" doc>
+<h2>Material skin</h2>
 <p>An optional skin makes BerlinX look like Material Design 3 without changing
 your markup. It follows Material closely rather than to the letter. Load it
 <strong>last</strong>, after BerlinX and, if you use them, the Elements styles:</p>
@@ -800,8 +891,8 @@ your markup. It follows Material closely rather than to the letter. Load it
 <td>filled, in the error colour</td>
 </tr>
 <tr>
-<td><code>[tag]</code></td>
-<td>chip</td>
+<td><code>&lt;span tag&gt;</code></td>
+<td>chip; a tag on a link, button, <code>summary</code> or <code>label</code> keeps the button&#39;s shape</td>
 </tr>
 <tr>
 <td><code>&lt;article&gt;</code></td>
@@ -842,7 +933,12 @@ and <code>--md-surface-container-*</code> tones, <code>--md-outline</code>, <cod
 <code>-xl</code> the corners, and <code>--md-field-height</code> is the text field height, which
 <code>density</code> adjusts. The skin asks for <strong>Roboto</strong> and, like BerlinX, does not
 fetch it.</p>
-<h2 id="accessibility">Accessibility</h2>
+      </section>
+
+      <hr />
+
+      <section id="accessibility" doc>
+<h2>Accessibility</h2>
 <ul>
 <li>Every default text and fill pairing meets WCAG AA in both themes — 4.5:1 for
 text, 3:1 for fills and focus rings — including hover states.
@@ -866,7 +962,12 @@ them back, and a pointer that cannot hover never triggers the hiding at all.</li
 transitions. A loading spinner keeps turning at a slower 1.4 seconds per
 revolution so ongoing work does not look frozen.</li>
 </ul>
-<h2 id="elements">Elements</h2>
+      </section>
+
+      <hr />
+
+      <section id="elements" doc>
+<h2>Elements</h2>
 <p>Some controls have no HTML element: a combobox, a searchable select, a multi-select, menus, a command
 palette, tabs, a data table, a date picker, a tree. BerlinX Elements adds them as
 optional custom elements, rendered in the light DOM and drawn from the same
@@ -875,8 +976,13 @@ tokens, so your theme reaches them like anything else:</p>
 </code></pre>
 <pre><code tabindex="0" class="language-js">import &quot;berlinx/elements&quot;;
 </code></pre>
-<p>See <a href="elements.html">the Elements guide</a> for each one.</p>
-<h2 id="browser-support">Browser support</h2>
+<p>See <a href="index.html#elements">the Elements guide</a> for each one.</p>
+      </section>
+
+      <hr />
+
+      <section id="browser-support" doc>
+<h2>Browser support</h2>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
 <tr>
@@ -925,43 +1031,42 @@ is drawn by an <code>::after</code> on each <code>&lt;a&gt;</code>, so <code>att
 <code>attr()</code> syntax that can cross that boundary is not portable yet, and it cannot
 be feature-detected either, because <code>CSS.supports()</code> reports <code>true</code> for any
 custom-property value. An inherited custom property works everywhere.</p>
-<h2 id="development">Development</h2>
+      </section>
+
+      <hr />
+
+      <section id="development" doc>
+<h2>Development</h2>
 <pre><code tabindex="0" class="language-sh">npm install
 npm run build    # dist/ stylesheets and elements, and the HTML guides
 npm test         # element tests in Chromium, Firefox and WebKit
 npm run deploy   # build, then publish the demo site to Cloudflare
 </code></pre>
 <p>Edit <code>css/</code> and <code>elements/</code>; <code>dist/</code> is generated from them. The stylesheets
-are minified with Lightning CSS and <code>dist/elements/</code> is bundled with esbuild. The guides are written in <code>docs/*.md</code> and rendered to
-<code>guide.html</code>, <code>elements.html</code> and <code>cheatsheet.html</code> by the same build.
-<code>index.html</code> is the demo — open it directly, no server needed.</p>
-<h2 id="license">License</h2>
-<p><a href="https://github.com/southernutahsoftware/BerlinX/blob/main/LICENSE">MIT</a> © Southern Utah Software</p>
+are minified with Lightning CSS and <code>dist/elements/</code> is bundled with esbuild.</p>
+<p><code>index.html</code> is the demo site: the components, then the Elements, whose sections
+the build writes from <code>docs/elements.md</code>. The build renders <code>docs/guide.md</code> and
+<code>docs/cheatsheet.md</code> into <code>guide.html</code> and <code>cheatsheet.html</code>, in the same frame,
+and <code>assets/site.js</code> moves between the three pages without reloading. Open
+<code>index.html</code> directly to see the components; the Elements&#39; live examples need it
+served, as by <code>node tests/serve.js</code>.</p>
+      </section>
 
+      <hr />
+
+      <section id="license" doc>
+<h2>License</h2>
+<p><a href="https://github.com/southernutahsoftware/BerlinX/blob/main/LICENSE">MIT</a> © Southern Utah Software</p>
+      </section>
+
+      <hr />
+      <footer>
+        <small>
+          Inspired by <a href="https://ui.shadcn.com/">shadcn/ui</a> and
+          <a href="https://picocss.com">Pico</a>
+          · Icons by <a href="https://lucide.dev">Lucide</a> (<a href="docs/LUCIDE-LICENSE.txt">license</a>)
+        </small>
+      </footer>
     </main>
-    <footer><small muted>BerlinX v1.2.0 · MIT License</small></footer>
-    <script>
-      const toggle = document.querySelector("[data-theme-toggle]");
-      const systemDark = matchMedia("(prefers-color-scheme: dark)");
-      const isDark = () => (document.documentElement.getAttribute("theme") || (systemDark.matches ? "dark" : "light")) === "dark";
-      const sync = () => toggle.setAttribute("aria-pressed", String(isDark()));
-      toggle.addEventListener("click", () => {
-        const theme = isDark() ? "light" : "dark";
-        document.documentElement.setAttribute("theme", theme);
-        try { localStorage.setItem("berlinx-theme", theme); } catch {}
-        sync();
-      });
-      systemDark.addEventListener("change", sync);
-      sync();
-      const skin = document.getElementById("skin");
-      const skinToggle = document.querySelector("[data-skin-toggle]");
-      const syncSkin = () => skinToggle.setAttribute("aria-pressed", String(!skin.disabled));
-      skinToggle.addEventListener("click", () => {
-        skin.disabled = !skin.disabled;
-        try { localStorage.setItem("berlinx-skin", skin.disabled ? "" : "material"); } catch {}
-        syncSkin();
-      });
-      syncSkin();
-    </script>
   </body>
 </html>

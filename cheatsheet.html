@@ -1,76 +1,107 @@
 <!doctype html>
-<!-- Generated from docs/cheatsheet.md by npm run build. Edit the Markdown instead. -->
+<!-- Generated from docs/cheatsheet.md, in the frame of index.html, by npm run build. Edit those instead. -->
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>BerlinX Cheatsheet</title>
+    <title>BerlinX — Cheatsheet</title>
+    <meta name="description" content="Every BerlinX attribute, value and custom property on one page." />
     <meta name="color-scheme" content="light dark" />
     <script>
+      // Apply a saved theme before first paint, so a dark page never flashes light.
       try {
         const theme = localStorage.getItem("berlinx-theme");
         if (theme === "light" || theme === "dark") document.documentElement.setAttribute("theme", theme);
       } catch {}
     </script>
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="icon" href="icon.ico" sizes="any" />
     <link rel="stylesheet" href="dist/berlinx.min.css" />
+    <link rel="stylesheet" href="dist/berlinx-elements.min.css" />
+    <!-- The optional Material skin, switched by the palette button. -->
     <link id="skin" rel="stylesheet" href="dist/berlinx-material.min.css" disabled />
     <script>
       try { if (localStorage.getItem("berlinx-skin") === "material") document.getElementById("skin").disabled = false; } catch {}
     </script>
+    <link rel="stylesheet" href="css/demo-style.css" />
+    <script defer src="assets/site.js"></script>
     <!-- Lucide SVG paths: https://lucide.dev · license: docs/LUCIDE-LICENSE.txt -->
-    <style>
-      @font-face { font-family: Inter; src: url("assets/fonts/InterVariable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
-      body { padding: var(--space-l); }
-      body > header { margin-bottom: var(--space-l); }
-      body > header > a { font-weight: 700; font-size: 1.25rem; text-decoration: none; color: var(--foreground); }
-      body > header nav { margin-left: auto; }
-      body > header nav a[aria-current] { color: var(--foreground); font-weight: 600; }
-      @media (max-width: 600px) { body > header nav { order: 1; width: 100%; } }
-      main :where(p, li, td) a { text-decoration: underline; }
-      [data-theme-toggle][aria-pressed="true"] > [data-icon="moon"],
-      [data-theme-toggle][aria-pressed="false"] > [data-icon="sun"] { display: none; }
-    </style>
   </head>
+
   <body>
-    <header row justify="between" items="center" gap-m>
+    <a id="skipLink" href="#main" tabindex="0">Skip to content</a>
+    <header id="demoToolbar" row nowrap gap-m items="center">
+    <button id="menuToggle" icon secondary popovertarget="menu" aria-label="Open menu" aria-controls="menu">
+      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 5h16" /><path d="M4 12h16" /><path d="M4 19h16" /></svg>
+    </button>
       <a href="index.html">Berlin<span primary>X</span></a>
-      <nav aria-label="Documentation" row gap-m><a href="index.html">Components</a><a href="guide.html">Usage guide</a><a href="elements.html">Elements</a><a href="cheatsheet.html" aria-current="page">Cheatsheet</a></nav>
+      <small id="pageLabel" muted>Cheatsheet</small>
       <button data-skin-toggle icon ghost aria-pressed="false" aria-label="Material skin">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg>
+        <svg data-icon="palette" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg>
       </button>
       <button data-theme-toggle icon ghost aria-pressed="false" aria-label="Dark theme">
-        <svg data-icon="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
-        <svg data-icon="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>
+        <svg data-icon="moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
+        <svg data-icon="sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
       </button>
     </header>
-    <main>
-<h1 id="berlinx-cheatsheet">BerlinX cheatsheet</h1>
-<details>
-<summary>Contents</summary>
-<nav aria-label="Contents" col gap-xs>
-<a href="#layout">Layout</a>
-<a href="#buttons-and-tags">Buttons and tags</a>
-<a href="#forms">Forms</a>
-<a href="#choices-validation-and-descriptions">Choices, validation and descriptions</a>
-<a href="#lists-navigation-and-identity">Lists, navigation and identity</a>
-<a href="#tables">Tables</a>
-<a href="#overlays">Overlays</a>
-<a href="#state-and-feedback">State and feedback</a>
-<a href="#themes">Themes</a>
-<a href="#text">Text</a>
-<a href="#elements-that-are-already-components">Elements that are already components</a>
-<a href="#elements">Elements</a>
-<a href="#theming-tokens">Theming tokens</a>
-<a href="#gotchas">Gotchas</a>
-</nav>
-</details>
+
+    <aside id="menu" aria-label="Documentation">
+      <header row nowrap justify="between" items="center" gap>
+        <a id="menuBrand" href="index.html" aria-label="BerlinX home">Berlin<span primary>X</span></a>
+        <div row nowrap gap-xs items="center">
+          <button data-skin-toggle icon ghost aria-pressed="false" aria-label="Material skin">
+            <svg data-icon="palette" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg>
+          </button>
+          <button data-theme-toggle icon ghost aria-pressed="false" aria-label="Dark theme">
+            <svg data-icon="moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
+            <svg data-icon="sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
+          </button>
+        <button id="menuClose" icon ghost popovertarget="menu" popovertargetaction="hide" aria-label="Close menu">
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg>
+        </button>
+        </div>
+      </header>
+      <nav id="siteNav" aria-label="Site">
+        <a href="index.html">Components</a>
+        <a href="guide.html">Guide</a>
+        <a href="cheatsheet.html" aria-current="page">Cheatsheet</a>
+      </nav>
+        <nav id="pageNav" aria-label="On this page">
+          <small>Cheatsheet</small>
+          <a href="#introduction">Overview</a>
+          <a href="#layout">Layout</a>
+          <a href="#buttons-and-tags">Buttons and tags</a>
+          <a href="#forms">Forms</a>
+          <a href="#choices-validation-and-descriptions">Choices, validation and descriptions</a>
+          <a href="#lists-navigation-and-identity">Lists, navigation and identity</a>
+          <a href="#tables">Tables</a>
+          <a href="#overlays">Overlays</a>
+          <a href="#state-and-feedback">State and feedback</a>
+          <a href="#themes">Themes</a>
+          <a href="#text">Text</a>
+          <a href="#elements-that-are-already-components">Elements that are already components</a>
+          <a href="#elements">Elements</a>
+          <a href="#theming-tokens">Theming tokens</a>
+          <a href="#gotchas">Gotchas</a>
+        </nav>
+      <footer row gap-m><a href="https://github.com/southernutahsoftware/BerlinX">GitHub</a><a href="https://www.npmjs.com/package/berlinx">npm</a><small muted>v1.3.0</small></footer>
+    </aside>
+
+    <main id="main" tabindex="-1">
+      <section id="introduction" doc-intro>
+        <div id="introMeta" row gap-m items="center"><span>Cheatsheet</span><span badge outline>v1.3.0</span></div>
+        <h1>BerlinX cheatsheet</h1>
 <p>Every attribute, value and custom property on one page. The <a href="guide.html">usage guide</a>
 explains the reasoning; this is the lookup table.</p>
 <p>Rules of thumb: variants are <strong>bare attributes</strong>, never classes. Anything taking
 a value uses one of a fixed set — there are no arbitrary values. Base rules are
 wrapped in <code>:where()</code>, so any CSS of your own wins without <code>!important</code>.</p>
-<h2 id="layout">Layout</h2>
+      </section>
+
+      <hr />
+
+      <section id="layout" doc>
+<h2>Layout</h2>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
 <tr>
@@ -168,7 +199,12 @@ shrink-wraps, which leaves its own <code>justify</code> nothing to distribute. A
 a <code>row</code></strong> — the flex <code>gap</code> already spaces them. Inside a <code>col</code>, prose margins
 are left alone.</li>
 </ul>
-<h2 id="buttons-and-tags">Buttons and tags</h2>
+      </section>
+
+      <hr />
+
+      <section id="buttons-and-tags" doc>
+<h2>Buttons and tags</h2>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
 <tr>
@@ -229,7 +265,12 @@ are left alone.</li>
 <code>&lt;span tag&gt;</code> is inert, so it never pretends to be clickable. A <code>label tag</code>
 can wrap a native file input; use <code>visually-hidden</code> on the input to keep it
 keyboard accessible, and its focus ring appears on the label.</p>
-<h2 id="forms">Forms</h2>
+      </section>
+
+      <hr />
+
+      <section id="forms" doc>
+<h2>Forms</h2>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
 <tr>
@@ -281,7 +322,12 @@ keyboard accessible, and its focus ring appears on the label.</p>
 <code>submit</code> <code>reset</code> <code>button</code> — plus <code>select</code> and <code>textarea</code>. No attribute needed.
 Inputs without <code>type</code>, plus <code>datetime-local</code>, <code>month</code> and <code>week</code>, are also styled.
 Ordinary fieldsets wrap when needed; a joined control group stays on one line.</p>
-<h2 id="choices-validation-and-descriptions">Choices, validation and descriptions</h2>
+      </section>
+
+      <hr />
+
+      <section id="choices-validation-and-descriptions" doc>
+<h2>Choices, validation and descriptions</h2>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
 <tr>
@@ -326,7 +372,12 @@ Ordinary fieldsets wrap when needed; a joined control group stays on one line.</
 Native keyboard selection and form reset still work. <code>aria-invalid</code> is supplied
 by your application; CSS cannot set ARIA state. Unsupported <code>:user-invalid</code>
 engines retain native browser validation and explicit ARIA error styling.</p>
-<h2 id="lists-navigation-and-identity">Lists, navigation and identity</h2>
+      </section>
+
+      <hr />
+
+      <section id="lists-navigation-and-identity" doc>
+<h2>Lists, navigation and identity</h2>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
 <tr>
@@ -384,7 +435,12 @@ need image alt text or named initials unless equivalent text is already present.
 Tab navigation retains link semantics; it is not an interactive ARIA tablist.
 Your application supplies pagination, counts and step state. For a gallery,
 provide <code>tabindex=&quot;0&quot;</code>, a region name, and optional fragment links to slide IDs.</p>
-<h2 id="tables">Tables</h2>
+      </section>
+
+      <hr />
+
+      <section id="tables" doc>
+<h2>Tables</h2>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
 <tr>
@@ -430,7 +486,12 @@ provide <code>tabindex=&quot;0&quot;</code>, a region name, and optional fragmen
 itself the attribute has to switch the table&#39;s own <code>display</code>, which shrink-wraps
 the columns and drops the table role. A cell with no <code>data-label</code> prints only its
 content — right for a <code>&lt;th scope=&quot;row&quot;&gt;</code> and for an actions cell.</p>
-<h2 id="overlays">Overlays</h2>
+      </section>
+
+      <hr />
+
+      <section id="overlays" doc>
+<h2>Overlays</h2>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
 <tr>
@@ -466,7 +527,12 @@ while closed&quot; rule so a bare <code>display: flex</code> cannot leave the th
 Anchored placement is progressive enhancement: without CSS anchor positioning a
 popover centres in the viewport and directional <code>placement</code> values do nothing.
 <code>placement=&quot;center&quot;</code> always centres it; use this when opening without an invoker.</p>
-<h2 id="state-and-feedback">State and feedback</h2>
+      </section>
+
+      <hr />
+
+      <section id="state-and-feedback" doc>
+<h2>State and feedback</h2>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
 <tr>
@@ -506,7 +572,12 @@ popover centres in the viewport and directional <code>placement</code> values do
 <p><code>tooltip</code> never reaches assistive tech, which is why <code>aria-label</code> beside it is
 not optional. Inside a <code>responsive</code> scroll container a tooltip can be clipped —
 use <code>title</code> there instead.</p>
-<h2 id="themes">Themes</h2>
+      </section>
+
+      <hr />
+
+      <section id="themes" doc>
+<h2>Themes</h2>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
 <tr>
@@ -536,7 +607,12 @@ use <code>title</code> there instead.</p>
 </code></pre>
 <p>Colour tokens hold both values: <code>--background: light-dark(#fff, #09090b)</code>.
 Override them the same way. Print is always light.</p>
-<h2 id="text">Text</h2>
+      </section>
+
+      <hr />
+
+      <section id="text" doc>
+<h2>Text</h2>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
 <tr>
@@ -600,7 +676,12 @@ Override them the same way. Print is always light.</p>
 &lt;p subheader&gt;Issued 2026-08-11&lt;/p&gt;
 &lt;nav breadcrumb&gt;&lt;a href=&quot;/&quot;&gt;Home&lt;/a&gt;&lt;a href=&quot;/clients&quot;&gt;Clients&lt;/a&gt;&lt;/nav&gt;
 </code></pre>
-<h2 id="elements-that-are-already-components">Elements that are already components</h2>
+      </section>
+
+      <hr />
+
+      <section id="elements-that-are-already-components" doc>
+<h2>Elements that are already components</h2>
 <p>No attribute required.</p>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
@@ -656,9 +737,14 @@ Override them the same way. Print is always light.</p>
 </tbody></table></div>
 <p><code>aside</code> and <code>menu</code> are claimed by components — use <code>blockquote</code> for pull quotes
 and <code>ul</code> for plain lists.</p>
-<h2 id="elements">Elements</h2>
+      </section>
+
+      <hr />
+
+      <section id="elements" doc>
+<h2>Elements</h2>
 <p>Optional custom elements: <code>berlinx/elements.min.css</code> and
-<code>import &quot;berlinx/elements&quot;</code>. Details in the <a href="elements.html">Elements guide</a>.</p>
+<code>import &quot;berlinx/elements&quot;</code>. Details in the <a href="index.html#elements">Elements guide</a>.</p>
 <div responsive tabindex="0" role="region" aria-label="Table"><table>
 <thead>
 <tr>
@@ -729,7 +815,12 @@ and <code>ul</code> for plain lists.</p>
 </tbody></table></div>
 <p>Menus and listboxes are styled by role, so <code>[popover][role=&quot;menu&quot;]</code> with
 <code>role=&quot;menuitem&quot;</code> buttons looks the same without the elements.</p>
-<h2 id="theming-tokens">Theming tokens</h2>
+      </section>
+
+      <hr />
+
+      <section id="theming-tokens" doc>
+<h2>Theming tokens</h2>
 <p>Every one is a custom property on <code>:root</code>. Override the ones you want; the rest
 follow.</p>
 <p><strong>Surfaces and text</strong></p>
@@ -945,7 +1036,12 @@ without touching the roles above:</p>
   --button-border: transparent;
 }
 </code></pre>
-<h2 id="gotchas">Gotchas</h2>
+      </section>
+
+      <hr />
+
+      <section id="gotchas" doc>
+<h2>Gotchas</h2>
 <ul>
 <li><strong><code>icon</code> without <code>aria-label</code></strong> is an unlabelled button. <code>tooltip</code> does not
 count — it is drawn in CSS and assistive tech never sees it.</li>
@@ -967,31 +1063,16 @@ applies it in dark mode too. Use <code>light-dark(light, dark)</code>, or add
 <code>:where()</code>, <code>color-mix()</code> and <code>oklch()</code> are all load-bearing. The dark theme
 needs <code>light-dark()</code> (Chrome/Edge 123+, Safari 17.5+); older engines stay light.</li>
 </ul>
+      </section>
 
+      <hr />
+      <footer>
+        <small>
+          Inspired by <a href="https://ui.shadcn.com/">shadcn/ui</a> and
+          <a href="https://picocss.com">Pico</a>
+          · Icons by <a href="https://lucide.dev">Lucide</a> (<a href="docs/LUCIDE-LICENSE.txt">license</a>)
+        </small>
+      </footer>
     </main>
-    <footer><small muted>BerlinX v1.2.0 · MIT License</small></footer>
-    <script>
-      const toggle = document.querySelector("[data-theme-toggle]");
-      const systemDark = matchMedia("(prefers-color-scheme: dark)");
-      const isDark = () => (document.documentElement.getAttribute("theme") || (systemDark.matches ? "dark" : "light")) === "dark";
-      const sync = () => toggle.setAttribute("aria-pressed", String(isDark()));
-      toggle.addEventListener("click", () => {
-        const theme = isDark() ? "light" : "dark";
-        document.documentElement.setAttribute("theme", theme);
-        try { localStorage.setItem("berlinx-theme", theme); } catch {}
-        sync();
-      });
-      systemDark.addEventListener("change", sync);
-      sync();
-      const skin = document.getElementById("skin");
-      const skinToggle = document.querySelector("[data-skin-toggle]");
-      const syncSkin = () => skinToggle.setAttribute("aria-pressed", String(!skin.disabled));
-      skinToggle.addEventListener("click", () => {
-        skin.disabled = !skin.disabled;
-        try { localStorage.setItem("berlinx-skin", skin.disabled ? "" : "material"); } catch {}
-        syncSkin();
-      });
-      syncSkin();
-    </script>
   </body>
 </html>

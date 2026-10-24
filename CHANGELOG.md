@@ -3,7 +3,7 @@
 All notable changes to BerlinX are documented here. This project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## 1.3.0
 
 - Material skin: `dist/berlinx-material.css` (`berlinx/material.css`), loaded
   after BerlinX and the Elements styles, gives every component and element a
@@ -13,6 +13,12 @@ All notable changes to BerlinX are documented here. This project follows
   Text fields are filled; `fields="outlined"` on any element outlines the
   fields inside it.
 - The demo site and guides have a palette button that switches the skin on.
+- The demo site is one page: the Elements' live examples sit on the demo after
+  the components, and the usage guide and cheatsheet share its frame. Moving
+  between the three happens in place, with history and scroll positions kept.
+  Old `elements.html` links forward to the right section.
+- `<bx-sidebar side="end">` puts the sidebar on the end edge, the right in a
+  left-to-right page. Its collapse button, chevron and phone drawer follow.
 
 ## 1.2.0
 

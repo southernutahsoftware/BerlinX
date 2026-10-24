@@ -71,6 +71,8 @@ export declare class Select extends HTMLElement {
 }
 
 export declare class Sidebar extends HTMLElement {
+  /** The edge it sits on: "start" (the default) or "end". */
+  side?: "start" | "end";
   collapsed?: boolean;
   persist?: string;
   shortcut?: string;

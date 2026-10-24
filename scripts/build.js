@@ -5,8 +5,8 @@
 // 2. dist/elements/ from elements/: one ES module per element, plus index.js
 //    with all of them. Atomico is bundled into a shared chunk, so the files run
 //    straight from a CDN as well as through a bundler.
-// 3. guide.html, elements.html and cheatsheet.html from docs/*.md, styled with
-//    BerlinX itself.
+// 3. The demo site: the Elements' sections of index.html from docs/elements.md,
+//    then guide.html and cheatsheet.html from docs/*.md in index.html's frame.
 
 const fs = require("node:fs");
 const path = require("node:path");
@@ -82,169 +82,141 @@ for (const file of elements) {
   const exports = index.includes(`class ${className} `) ? `export { ${className} } from "./index.js";` : "export {};";
   write(`dist/elements/${name}.d.ts`, `${exports}\n`);
 }
-// --- Guides ------------------------------------------------------------------
+// --- Demo site ---------------------------------------------------------------
 
-// The Elements page runs its live examples, and wires its demo buttons here.
-const elementsDemo = `
-      import { confirm, toast } from "./dist/elements/index.js";
-      const demos = {
-        toast: () => toast({ title: "Invoice sent", message: "Ada will get it in a minute.", variant: "success" }),
-        "toast-undo": () => toast({ message: "Client archived", action: { label: "Undo", onClick: () => toast("Client restored") } }),
-        "toast-error": () => toast({ title: "Payment failed", message: "The card was declined.", variant: "error" }),
-        confirm: async () => (await confirm({ title: "Send invoice #1024?", message: "Ada will get it by email.", confirm: "Send" })) && toast("Invoice sent"),
-        command: () => document.querySelector("#demo-command").show(),
-        "command-new": () => toast("New invoice started"),
-        "command-export": () => toast("Exported 6 invoices"),
-        "confirm-delete": async () =>
-          (await confirm({ title: "Delete invoice #1024?", message: "This cannot be undone.", confirm: "Delete", destructive: true })) && toast("Invoice deleted"),
-      };
-      document.addEventListener("click", event => demos[event.target.closest("[data-demo]")?.dataset.demo]?.());
+// index.html is the demo, and the frame for the rest of the site. Two regions of
+// it are written here: the Elements, from docs/elements.md, live examples and
+// all, and their links in the menu. The guide and the cheatsheet are then that
+// same frame, toolbar and menu, around their own Markdown, so assets/site.js can
+// move between the three in place. elements.html only forwards old links.
 
-      // A fake server for the remote examples: 48 clients, answered after a delay.
-      const first = ["Ada", "Alan", "Barbara", "Claude", "Donald", "Edsger", "Frances", "Grace", "Hedy", "John", "Katherine", "Linus"];
-      const last = ["Hopper", "Kay", "Knuth", "Lamport", "Liskov", "Lovelace", "Shannon", "Turing"];
-      const cities = ["Berlin", "Lisbon", "Oslo", "Vienna", "Zürich"];
-      const money = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD", maximumFractionDigits: 0 });
-      const clients = Array.from({ length: 48 }, (_, i) => ({
-        id: i + 1,
-        client: \`\${first[i % 12]} \${last[(i + Math.floor(i / 12)) % 8]}\`,
-        city: cities[(i * 3) % cities.length],
-        invoices: (i * 7) % 23 + 1,
-        total: ((i * 7919) % 40000) + 500,
-      }));
-      const wait = (signal, ms = 350) =>
-        new Promise((resolve, reject) => {
-          const timer = setTimeout(resolve, ms);
-          signal.addEventListener("abort", () => (clearTimeout(timer), reject(signal.reason)));
-        });
-      const matching = query => clients.filter(c => !query || \`\${c.client} \${c.city}\`.toLowerCase().includes(query.toLowerCase()));
-
-      document.querySelector("#demo-remote").load = async ({ page, pageSize, sort, order, query, signal }) => {
-        await wait(signal);
-        let rows = matching(query);
-        if (sort) rows = [...rows].sort((a, b) => (a[sort] > b[sort] ? 1 : a[sort] < b[sort] ? -1 : 0) * (order === "desc" ? -1 : 1));
-        const from = (page - 1) * pageSize;
-        return { rows: rows.slice(from, from + pageSize).map(c => ({ ...c, total: money.format(c.total) })), total: rows.length };
-      };
-      document.querySelector("#demo-client").load = async (query, { signal }) => {
-        await wait(signal, 250);
-        return matching(query).slice(0, 8).map(c => ({ value: String(c.id), label: c.client }));
-      };`;
-
-const pages = [
-  { source: "docs/guide.md", out: "guide.html", title: "Usage guide" },
-  { source: "docs/elements.md", out: "elements.html", title: "Elements", styles: ["dist/berlinx-elements.min.css"], script: elementsDemo },
-  { source: "docs/cheatsheet.md", out: "cheatsheet.html", title: "Cheatsheet" },
+const docs = [
+  { source: "docs/elements.md", out: "index.html" },
+  { source: "docs/guide.md", out: "guide.html", title: "Usage guide", label: "Guide", description: "How to use BerlinX: installation, the attribute vocabulary, layout, components, theming and the Material skin." },
+  { source: "docs/cheatsheet.md", out: "cheatsheet.html", title: "Cheatsheet", label: "Cheatsheet", description: "Every BerlinX attribute, value and custom property on one page." },
 ];
 const github = "https://github.com/southernutahsoftware/BerlinX/blob/main/";
+const slug = text => text.replace(/<[^>]+>|&\w+;/g, "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+const plain = html => html.replace(/<[^>]+>/g, "");
+// A replacement the frame must take exactly once, or the build stops.
+const once = (text, pattern, replacement) => {
+  const count = text.match(new RegExp(pattern.source, `${pattern.flags.replace("g", "")}g`))?.length ?? 0;
+  if (count !== 1) throw new Error(`Expected one match for ${pattern}, found ${count}`);
+  return text.replace(pattern, replacement);
+};
 
-// Links between the guides point at their pages; any other repository file
-// points at GitHub, since the demo site only serves the demo.
-function link(href) {
-  if (/^([a-z]+:|#)/.test(href)) return href;
-  const [file, hash = ""] = href.split("#");
-  const target = path.posix.join("docs", file);
-  const page = pages.find(p => p.source === target);
-  return page ? page.out + (hash && `#${hash}`) : github + path.posix.normalize(target) + (hash && `#${hash}`);
+const ELEMENTS = /(<!-- elements:start -->)[\s\S]*?(\n *<!-- elements:end -->)/;
+const ELEMENTS_NAV = /(<!-- elements-nav:start -->)[\s\S]*?(\n *<!-- elements-nav:end -->)/;
+let demo = read("index.html");
+
+// The Elements share a page with the components, so a heading that would take
+// an id the page already has, such as Select or Tabs, gets "-element" added.
+const taken = new Set([...demo.replace(ELEMENTS, "$1$2").matchAll(/\sid="([^"]+)"/g)].map(match => match[1]));
+
+for (const doc of docs) {
+  doc.html = marked.parse(read(doc.source));
+  doc.ids = new Map();
+  const used = doc.out === "index.html" ? taken : new Set();
+  for (const [, , text] of doc.html.matchAll(/<h([1-4])>([\s\S]*?)<\/h\1>/g)) {
+    const base = slug(text);
+    let id = used.has(base) ? `${base}-element` : base;
+    for (let n = 2; used.has(id); n++) id = `${base}-${n}`;
+    used.add(id);
+    if (!doc.ids.has(base)) doc.ids.set(base, id);
+  }
 }
 
-const slug = text => text.replace(/<[^>]+>|&\w+;/g, "").toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+// Links between the docs point at their pages, and their sections' ids there;
+// any other repository file points at GitHub, since the site only serves the demo.
+function link(href, from) {
+  if (/^[a-z]+:/.test(href)) return href;
+  if (href.startsWith("#")) return `#${from.ids.get(href.slice(1)) ?? href.slice(1)}`;
+  const [file, hash = ""] = href.split("#");
+  const target = path.posix.normalize(path.posix.join("docs", file));
+  const doc = docs.find(d => d.source === target);
+  if (!doc) return github + target + (hash && `#${hash}`);
+  // The Elements open at their overview, not the top of the demo.
+  const section = hash ? doc.ids.get(hash) ?? hash : doc === docs[0] && "elements";
+  return (doc === from ? "" : doc.out) + (section ? `#${section}` : "");
+}
 
-for (const page of pages) {
-  const contents = [];
-  const body = marked.parse(read(page.source))
-    .replace(/<h([1-4])>([\s\S]*?)<\/h\1>/g, (_, level, text) => {
-      const id = slug(text);
-      if (level === "2") contents.push(`<a href="#${id}">${text.replace(/<[^>]+>/g, "")}</a>`);
-      return `<h${level} id="${id}">${text}</h${level}>`;
-    })
+// A doc in sections: the part before the first <h2> is its introduction, and
+// each <h2> opens a <section> that carries its id, as the demo's own do.
+function sections(doc) {
+  const ids = [...doc.ids.values()];
+  let next = 0;
+  const html = doc.html
+    .replace(/<h([1-4])>([\s\S]*?)<\/h\1>/g, (_, level, text) => `<h${level} id="${ids[next++]}">${text}</h${level}>`)
     // Wide tables and code scroll on their own; keyboard users can reach them.
     .replace(/<table>/g, '<div responsive tabindex="0" role="region" aria-label="Table"><table>')
     .replace(/<\/table>/g, "</table></div>")
     .replace(/<pre><code/g, '<pre><code tabindex="0"')
-    .replace(/href="([^"]+)"/g, (_, href) => `href="${link(href)}"`)
-    .replace(/(<\/h1>\n)/, `$1<details>\n<summary>Contents</summary>\n<nav aria-label="Contents" col gap-xs>\n${contents.join("\n")}\n</nav>\n</details>\n`);
+    .replace(/href="([^"]+)"/g, (_, href) => `href="${link(href, doc)}"`)
+    .trim();
+  const [intro, ...parts] = html.split(/\n?(?=<h2 id=")/);
+  const [, title = "", lead = intro] = intro.match(/^<h1 id="[^"]*">([\s\S]*?)<\/h1>\n?([\s\S]*)$/) ?? [];
+  return {
+    title,
+    lead: lead.trim(),
+    sections: parts.map(part => {
+      const [, id, heading, body] = part.match(/^<h2 id="([^"]+)">([\s\S]*?)<\/h2>\n?([\s\S]*)$/);
+      return { id, heading, html: `      <section id="${id}" doc>\n<h2>${heading}</h2>\n${body.trim()}\n      </section>` };
+    }),
+  };
+}
+const navLinks = list => list.map(s => `          <a href="#${s.id}">${plain(s.heading)}</a>`).join("\n");
+const rule = "\n\n      <hr />\n\n";
 
-  const nav = [{ out: "index.html", title: "Components" }, ...pages]
-    .map(p => `<a href="${p.out}"${p === page ? ' aria-current="page"' : ""}>${p.title}</a>`).join("");
+// The Elements, in the demo.
+const elementDocs = sections(docs[0]);
+const overview = `      <section id="elements" doc>\n<h2>${elementDocs.title}</h2>\n${elementDocs.lead}\n      </section>`;
+demo = once(demo, ELEMENTS, (_, start, end) => `${start}\n${[overview, ...elementDocs.sections.map(s => s.html)].join(rule)}${rule.trimEnd()}${end}`);
+demo = once(demo, ELEMENTS_NAV, (_, start, end) =>
+  `${start}\n          <small>Elements</small>\n          <a href="#elements">Overview</a>\n${navLinks(elementDocs.sections)}${end}`);
+write("index.html", demo);
 
-  write(page.out, `<!doctype html>
-<!-- Generated from ${page.source} by npm run build. Edit the Markdown instead. -->
+// The guide and the cheatsheet, in the same frame.
+const footer = demo.match(/\n {6}<footer>[\s\S]*?<\/footer>\n/)[0];
+for (const doc of docs.slice(1)) {
+  const { title, lead, sections: parts } = sections(doc);
+  const intro = `      <section id="introduction" doc-intro>
+        <div id="introMeta" row gap-m items="center"><span>${doc.title}</span><span badge outline>v${pkg.version}</span></div>
+        <h1>${title}</h1>
+${lead}
+      </section>`;
+  let page = demo;
+  page = once(page, /<!doctype html>\n/, `<!doctype html>\n<!-- Generated from ${doc.source}, in the frame of index.html, by npm run build. Edit those instead. -->\n`);
+  page = once(page, /<title>[^<]*<\/title>/, `<title>BerlinX — ${doc.title}</title>`);
+  page = once(page, /(<meta name="description" content=")[^"]*/, `$1${doc.description}`);
+  page = once(page, /(<small id="pageLabel" muted>)[^<]*/, `$1${doc.title}`);
+  page = once(page, /(<nav id="siteNav"[^>]*>)([\s\S]*?)(<\/nav>)/, (_, open, links, close) =>
+    open + links.replace(/ aria-current="page"/g, "").replace(`href="${doc.out}"`, `href="${doc.out}" aria-current="page"`) + close);
+  page = once(page, /(<nav id="pageNav"[^>]*>\n)[\s\S]*?(\n *<\/nav>)/, (_, open, close) =>
+    `${open}          <small>${doc.title}</small>\n          <a href="#introduction">Overview</a>\n${navLinks(parts)}${close}`);
+  page = once(page, /(<main id="main" tabindex="-1">\n)[\s\S]*(\n {4}<\/main>)/, (_, open, close) =>
+    `${open}${[intro, ...parts.map(s => s.html)].join(rule)}${rule.trimEnd()}\n${footer.replace(/^\n|\n$/g, "")}${close}`);
+  write(doc.out, page);
+}
+
+// elements.html was the Elements' own page. Links to it still land on the right
+// section, now on the demo, under the id it has there.
+const moved = Object.fromEntries([...docs[0].ids].filter(([from, to]) => from !== to));
+write("elements.html", `<!doctype html>
+<!-- Generated by npm run build. The Elements are on the demo page; this forwards links to their old page. -->
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>BerlinX ${page.title}</title>
-    <meta name="color-scheme" content="light dark" />
+    <title>BerlinX Elements</title>
+    <link rel="canonical" href="index.html#elements" />
     <script>
-      try {
-        const theme = localStorage.getItem("berlinx-theme");
-        if (theme === "light" || theme === "dark") document.documentElement.setAttribute("theme", theme);
-      } catch {}
+      const moved = ${JSON.stringify(moved)};
+      const id = decodeURIComponent(location.hash.slice(1));
+      location.replace("index.html#" + (moved[id] ?? (id || "elements")));
     </script>
-    <link rel="icon" href="icon.svg" type="image/svg+xml" />
-    <link rel="stylesheet" href="dist/berlinx.min.css" />${(page.styles ?? []).map(href => `
-    <link rel="stylesheet" href="${href}" />`).join("")}
-    <link id="skin" rel="stylesheet" href="dist/berlinx-material.min.css" disabled />
-    <script>
-      try { if (localStorage.getItem("berlinx-skin") === "material") document.getElementById("skin").disabled = false; } catch {}
-    </script>
-    <!-- Lucide SVG paths: https://lucide.dev · license: docs/LUCIDE-LICENSE.txt -->
-    <style>
-      @font-face { font-family: Inter; src: url("assets/fonts/InterVariable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
-      body { padding: var(--space-l); }
-      body > header { margin-bottom: var(--space-l); }
-      body > header > a { font-weight: 700; font-size: 1.25rem; text-decoration: none; color: var(--foreground); }
-      body > header nav { margin-left: auto; }
-      body > header nav a[aria-current] { color: var(--foreground); font-weight: 600; }
-      @media (max-width: 600px) { body > header nav { order: 1; width: 100%; } }
-      main :where(p, li, td) a { text-decoration: underline; }
-      [data-theme-toggle][aria-pressed="true"] > [data-icon="moon"],
-      [data-theme-toggle][aria-pressed="false"] > [data-icon="sun"] { display: none; }
-    </style>
+    <meta http-equiv="refresh" content="0; url=index.html#elements" />
   </head>
   <body>
-    <header row justify="between" items="center" gap-m>
-      <a href="index.html">Berlin<span primary>X</span></a>
-      <nav aria-label="Documentation" row gap-m>${nav}</nav>
-      <button data-skin-toggle icon ghost aria-pressed="false" aria-label="Material skin">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg>
-      </button>
-      <button data-theme-toggle icon ghost aria-pressed="false" aria-label="Dark theme">
-        <svg data-icon="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
-        <svg data-icon="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>
-      </button>
-    </header>
-    <main>
-${body}
-    </main>
-    <footer><small muted>BerlinX v${pkg.version} · MIT License</small></footer>${page.script ? `
-    <script type="module">${page.script}
-    </script>` : ""}
-    <script>
-      const toggle = document.querySelector("[data-theme-toggle]");
-      const systemDark = matchMedia("(prefers-color-scheme: dark)");
-      const isDark = () => (document.documentElement.getAttribute("theme") || (systemDark.matches ? "dark" : "light")) === "dark";
-      const sync = () => toggle.setAttribute("aria-pressed", String(isDark()));
-      toggle.addEventListener("click", () => {
-        const theme = isDark() ? "light" : "dark";
-        document.documentElement.setAttribute("theme", theme);
-        try { localStorage.setItem("berlinx-theme", theme); } catch {}
-        sync();
-      });
-      systemDark.addEventListener("change", sync);
-      sync();
-      const skin = document.getElementById("skin");
-      const skinToggle = document.querySelector("[data-skin-toggle]");
-      const syncSkin = () => skinToggle.setAttribute("aria-pressed", String(!skin.disabled));
-      skinToggle.addEventListener("click", () => {
-        skin.disabled = !skin.disabled;
-        try { localStorage.setItem("berlinx-skin", skin.disabled ? "" : "material"); } catch {}
-        syncSkin();
-      });
-      syncSkin();
-    </script>
+    <p><a href="index.html#elements">The Elements are on the demo page.</a></p>
   </body>
 </html>
 `);
-}

@@ -8,7 +8,9 @@ const types = { ".html": "text/html", ".css": "text/css", ".js": "text/javascrip
 
 http
   .createServer((request, response) => {
-    const file = path.join(root, decodeURIComponent(new URL(request.url, "http://x").pathname));
+    let file = path.join(root, decodeURIComponent(new URL(request.url, "http://x").pathname));
+    // A folder serves its index.html, as the demo site's host does.
+    if (fs.existsSync(file) && fs.statSync(file).isDirectory()) file = path.join(file, "index.html");
     if (!file.startsWith(root) || !fs.existsSync(file) || fs.statSync(file).isDirectory()) {
       response.writeHead(404).end();
       return;

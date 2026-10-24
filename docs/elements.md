@@ -47,9 +47,9 @@ import { toast, confirm, setLabels } from "berlinx/elements";
 From a CDN:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.2.0/dist/berlinx.min.css" />
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.2.0/dist/berlinx-elements.min.css" />
-<script type="module" src="https://cdn.jsdelivr.net/npm/berlinx@1.2.0/dist/elements/index.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.3.0/dist/berlinx.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.3.0/dist/berlinx-elements.min.css" />
+<script type="module" src="https://cdn.jsdelivr.net/npm/berlinx@1.3.0/dist/elements/index.js"></script>
 ```
 
 The stylesheet is about 3.5 KB gzipped. The scripts share the 4 KB
@@ -609,7 +609,7 @@ collapses and expands it; collapsed, each link shows its name as a tooltip. Give
 every link in its `<nav>` a leading icon.
 
 At 600px wide and below the sidebar leaves the layout and a menu button takes
-its place, opening it as a drawer from the start edge. Tapping outside,
+its place, opening it as a drawer from the sidebar's own edge. Tapping outside,
 <kbd>Esc</kbd> or choosing a link closes the drawer and returns focus to the
 button.
 
@@ -627,6 +627,7 @@ button.
 
 | Attribute | Effect |
 | --- | --- |
+| `side="end"` | Put it on the end edge: the right in a left-to-right page, the left in a right-to-left one. Write it after the content it sits beside. The default is `start` |
 | `collapsed` | Set it, or read it, to collapse the sidebar. A `toggle` event fires when the person collapses or expands it |
 | `persist="name"` | Remember the choice in this browser, under that name |
 | `shortcut` | A key used with <kbd>Ctrl</kbd> or <kbd>⌘</kbd> to toggle it, such as `b`; on a phone it opens the drawer |

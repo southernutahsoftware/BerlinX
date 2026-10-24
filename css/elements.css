@@ -1,4 +1,4 @@
-/*! BerlinX Elements v1.1.0 | MIT License | github.com/southernutahsoftware/BerlinX */
+/*! BerlinX Elements v1.3.0 | MIT License | github.com/southernutahsoftware/BerlinX */
 
 /* ==========================================================================
    BerlinX Elements — styles for the optional custom elements.
@@ -722,7 +722,7 @@ bx-sidebar[collapsed]:not([bx-drawer]) > aside :is(nav > small, header, footer) 
   visibility: hidden;
 }
 
-/* On a phone the aside is a popover: a drawer from the start edge over a dimmed
+/* On a phone the aside is a popover: a drawer from its own edge over a dimmed
    page, opened by the menu button left in its place. It is pinned to the
    viewport, not anchored to the button as other popovers are, and fixed:
    BerlinX makes every <aside> position: relative. */
@@ -754,6 +754,19 @@ bx-sidebar[bx-drawer] > aside:popover-open:dir(rtl) {
   animation-name: berlinx-slide-left;
 }
 
+/* side="end": the drawer runs down the end edge and slides in from it. */
+bx-sidebar[side="end"][bx-drawer] > aside {
+  inset-inline: auto 0;
+}
+
+bx-sidebar[side="end"][bx-drawer] > aside:popover-open {
+  animation-name: berlinx-slide-left;
+}
+
+bx-sidebar[side="end"][bx-drawer] > aside:popover-open:dir(rtl) {
+  animation-name: berlinx-slide-right;
+}
+
 bx-sidebar[bx-drawer] > aside::backdrop {
   background-color: rgb(0 0 0 / 0.5);
 }
@@ -776,16 +789,27 @@ bx-sidebar > [bx-collapse] {
   padding: 0;
 }
 
+/* On the end side it sits astride the inner edge, the start of the aside. */
+bx-sidebar[side="end"] > [bx-collapse] {
+  inset-inline: calc(-1 * var(--space-m)) auto;
+}
+
+/* The chevron, drawn pointing left, points the way the edge will move: toward
+   the sidebar's own side to collapse, away from it to expand. The right-to-left
+   rules stand apart, so an engine without :dir() still gets the rest. */
 bx-sidebar > [bx-collapse] > svg {
   transition: scale 0.2s ease;
 }
 
-bx-sidebar[collapsed] > [bx-collapse] > svg,
+bx-sidebar:is([collapsed]:not([side="end"]), [side="end"]:not([collapsed])) > [bx-collapse] > svg {
+  scale: -1 1;
+}
+
 bx-sidebar:dir(rtl) > [bx-collapse] > svg {
   scale: -1 1;
 }
 
-bx-sidebar[collapsed]:dir(rtl) > [bx-collapse] > svg {
+bx-sidebar:dir(rtl):is([collapsed]:not([side="end"]), [side="end"]:not([collapsed])) > [bx-collapse] > svg {
   scale: 1;
 }
 

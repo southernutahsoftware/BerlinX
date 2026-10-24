@@ -75,9 +75,9 @@ for (const skin of [null, "material"]) {
 
 for (const skin of [null, "material"]) {
   for (const scheme of ["light", "dark"]) {
-    test(`the Elements guide, ${scheme}${skin ? `, ${skin}` : ""}`, async ({ page }) => {
+    test(`the demo site, ${scheme}${skin ? `, ${skin}` : ""}`, async ({ page }) => {
       await page.emulateMedia({ colorScheme: scheme, reducedMotion: "reduce" });
-      await page.goto("/elements.html");
+      await page.goto("/");
       if (skin) await page.evaluate(() => (document.getElementById("skin").disabled = false));
       await page.waitForFunction(() => document.querySelector("[bx-sort]"));
       const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();

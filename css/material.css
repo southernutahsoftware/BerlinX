@@ -1,4 +1,4 @@
-/*! BerlinX Material v1.2.0 | MIT License | github.com/southernutahsoftware/BerlinX */
+/*! BerlinX Material v1.3.0 | MIT License | github.com/southernutahsoftware/BerlinX */
 
 /* ==========================================================================
    BerlinX Material — an optional skin in the manner of Material Design 3.
@@ -683,14 +683,17 @@ label[tag]:has(:focus-visible) {
   border-radius: var(--radius-pill);
 }
 
-/* Tags are chips: a smaller box with Material's small corner. */
-[tag] {
+/* A tag that labels something is a chip: a smaller box with Material's small
+   corner. A tag that is a link, button, summary or label stands in for a
+   button, such as a "Get started" link or a file input's label, so it keeps
+   the button's shape, as BerlinX promises. */
+[tag]:not(a, button, summary, label) {
   min-height: 2rem;
   padding: 0 var(--space-m);
   border-radius: var(--md-shape-s);
 }
 
-[tag][outline] {
+[tag][outline]:not(a, button, summary, label) {
   --button-fg: var(--md-on-surface-variant);
 }
 
@@ -827,7 +830,7 @@ dialog[toast],
 
   min-width: min(21.5rem, calc(100vw - 2 * var(--space-m)));
   max-width: min(42rem, calc(100vw - 2 * var(--space-m)));
-  padding: var(--space-xs) var(--space-s) var(--space-xs) var(--space-m);
+  padding: var(--space-s) var(--space-s) var(--space-s) var(--space-m);
   border: 0;
   border-radius: var(--md-shape-xs);
   background-color: var(--md-inverse-surface);
@@ -856,6 +859,13 @@ dialog[toast] :where(small, p) {
 dialog[toast] > [row] {
   align-items: center;
   min-height: 2.5rem;
+}
+
+/* The text keeps its own breathing room, so two lines make Material's 68px
+   snackbar rather than touching the edges. */
+dialog[toast] > [row] > :not(button),
+[bx-toaster] > [notice] > div {
+  padding-block: 0.5rem;
 }
 
 /* --- Empty state and rich lists ------------------------------------------ */
@@ -1057,6 +1067,15 @@ ol[steps] > li::before {
 
 :where(td, th) {
   padding: var(--space-m) var(--space-m);
+}
+
+/* In a stacked card the label sits above its value in the smaller label style,
+   so it stays quieter than both the value and the row header that titles the
+   card. It only has content on a phone, so it needs no query of its own. */
+table[responsive="stack"] :where([data-label])::before {
+  font-size: 0.75rem;
+  font-weight: 500;
+  letter-spacing: 0.04em;
 }
 
 :where(tr) {
@@ -1313,7 +1332,8 @@ bx-multi-select [badge] > button {
   font-weight: 500;
 }
 
-[calendar] td > button[in-range] {
+/* The ends are in the range too; they keep BerlinX's primary fill. */
+[calendar] td > button[in-range]:not([range-start], [range-end]) {
   --button-bg: var(--md-secondary-container);
   --button-fg: var(--md-on-secondary-container);
   --button-bg-hover: color-mix(in srgb, var(--md-on-secondary-container) 8%, var(--md-secondary-container));
@@ -1325,6 +1345,12 @@ bx-multi-select [badge] > button {
 }
 
 /* --- Data table ---------------------------------------------------------- */
+/* The Elements make the select checkbox a block, to drop the inline gap below
+   it; the skin centres its tick as a grid item, so it stays a grid. */
+:is(th, td)[bx-select] > input {
+  display: grid;
+}
+
 th > [bx-sort] {
   --button-bg-hover: color-mix(in srgb, var(--md-on-surface) 8%, transparent);
   --button-bg-active: color-mix(in srgb, var(--md-on-surface) 12%, transparent);
@@ -1442,6 +1468,14 @@ bx-sidebar[bx-drawer] > aside {
   border-radius: 0;
   border-start-end-radius: var(--md-shape-l);
   border-end-end-radius: var(--md-shape-l);
+}
+
+/* On the end side the rounded corners face the page the other way. */
+bx-sidebar[side="end"] > aside,
+bx-sidebar[side="end"][bx-drawer] > aside {
+  border-radius: 0;
+  border-start-start-radius: var(--md-shape-l);
+  border-end-start-radius: var(--md-shape-l);
 }
 
 bx-sidebar[bx-drawer] > aside {

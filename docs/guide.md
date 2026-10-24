@@ -36,7 +36,7 @@ Bundlers can also import the files directly, as `berlinx/dist/berlinx.min.css`.
 From a CDN, pin the exact version so a release can never change under you:
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.2.0/dist/berlinx.min.css" />
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/berlinx@1.3.0/dist/berlinx.min.css" />
 ```
 
 BerlinX asks for **Inter** first and falls back to the system sans stack. It
@@ -600,7 +600,7 @@ The variants you already use map onto Material's:
 | `<button outline>` | outlined button |
 | `<button ghost>` | text button; with `icon`, a standard icon button |
 | `<button destructive>` | filled, in the error colour |
-| `[tag]` | chip |
+| `<span tag>` | chip; a tag on a link, button, `summary` or `label` keeps the button's shape |
 | `<article>` | elevated card |
 | `dialog[toast]`, `toast()` | snackbar |
 
@@ -725,9 +725,14 @@ npm run deploy   # build, then publish the demo site to Cloudflare
 ```
 
 Edit `css/` and `elements/`; `dist/` is generated from them. The stylesheets
-are minified with Lightning CSS and `dist/elements/` is bundled with esbuild. The guides are written in `docs/*.md` and rendered to
-`guide.html`, `elements.html` and `cheatsheet.html` by the same build.
-`index.html` is the demo — open it directly, no server needed.
+are minified with Lightning CSS and `dist/elements/` is bundled with esbuild.
+
+`index.html` is the demo site: the components, then the Elements, whose sections
+the build writes from `docs/elements.md`. The build renders `docs/guide.md` and
+`docs/cheatsheet.md` into `guide.html` and `cheatsheet.html`, in the same frame,
+and `assets/site.js` moves between the three pages without reloading. Open
+`index.html` directly to see the components; the Elements' live examples need it
+served, as by `node tests/serve.js`.
 
 ## License
 
