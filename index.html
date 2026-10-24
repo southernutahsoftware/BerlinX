@@ -17,10 +17,24 @@
     <link rel="icon" href="icon.ico" sizes="any" />
     <link rel="stylesheet" href="dist/berlinx.min.css" />
     <link rel="stylesheet" href="dist/berlinx-elements.min.css" />
-    <!-- The optional Material skin, switched by the palette button. -->
-    <link id="skin" rel="stylesheet" href="dist/berlinx-material.min.css" disabled />
     <script>
-      try { if (localStorage.getItem("berlinx-skin") === "material") document.getElementById("skin").disabled = false; } catch {}
+      {
+        let material = false;
+        try { material = localStorage.getItem("berlinx-skin") === "material"; } catch {}
+        // The optional Material skin, switched by the palette button. It is
+        // written into the markup as the page is read, so when it is on it
+        // holds the first paint as any stylesheet in the head does, and the
+        // regular look never flashes; when it is off it is disabled and not
+        // fetched. An element added from script would not hold the paint in
+        // Firefox.
+        document.write(`<link id="skin" rel="stylesheet" href="dist/berlinx-material.min.css"${material ? "" : " disabled"} />`);
+        // Fetch the font this look opens in at once, so its text never swaps
+        // fonts after the first paint: Inter, or Roboto for the Material skin.
+        const font = document.createElement("link");
+        Object.assign(font, { rel: "preload", as: "font", type: "font/woff2", crossOrigin: "anonymous" });
+        font.href = material ? "assets/fonts/RobotoVariable-latin.woff2" : "assets/fonts/InterVariable.woff2";
+        document.currentScript.before(font);
+      }
     </script>
     <link rel="stylesheet" href="css/demo-style.css" />
     <script defer src="assets/site.js"></script>
