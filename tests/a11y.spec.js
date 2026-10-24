@@ -1,4 +1,5 @@
-// axe-core scans of every element, closed and open, in both themes.
+// axe-core scans of every element, closed and open, in both themes, with and
+// without the Material skin.
 const { test, expect } = require("@playwright/test");
 const { default: AxeBuilder } = require("@axe-core/playwright");
 
@@ -54,26 +55,33 @@ const states = {
     }),
 };
 
-for (const scheme of ["light", "dark"]) {
-  for (const [name, open] of Object.entries(states)) {
-    test(`${name}, ${scheme}`, async ({ page }) => {
+// Each state is scanned plain and again with the Material skin loaded over it.
+for (const skin of [null, "material"]) {
+  for (const scheme of ["light", "dark"]) {
+    for (const [name, open] of Object.entries(states)) {
+      test(`${name}, ${scheme}${skin ? `, ${skin}` : ""}`, async ({ page }) => {
+        await page.emulateMedia({ colorScheme: scheme, reducedMotion: "reduce" });
+        await page.goto("/tests/elements.html");
+        if (skin) await page.addStyleTag({ url: `/dist/berlinx-${skin}.css` });
+        await page.waitForFunction(() => document.querySelector("[bx-sort]"));
+        await open(page);
+        await page.waitForTimeout(250);
+        const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
+        expect(violations.map(v => `${v.id}: ${v.nodes.map(n => n.target.join(" ")).join(", ")}`)).toEqual([]);
+      });
+    }
+  }
+}
+
+for (const skin of [null, "material"]) {
+  for (const scheme of ["light", "dark"]) {
+    test(`the Elements guide, ${scheme}${skin ? `, ${skin}` : ""}`, async ({ page }) => {
       await page.emulateMedia({ colorScheme: scheme, reducedMotion: "reduce" });
-      await page.goto("/tests/elements.html");
+      await page.goto("/elements.html");
+      if (skin) await page.evaluate(() => (document.getElementById("skin").disabled = false));
       await page.waitForFunction(() => document.querySelector("[bx-sort]"));
-      await open(page);
-      await page.waitForTimeout(250);
       const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
       expect(violations.map(v => `${v.id}: ${v.nodes.map(n => n.target.join(" ")).join(", ")}`)).toEqual([]);
     });
   }
-}
-
-for (const scheme of ["light", "dark"]) {
-  test(`the Elements guide, ${scheme}`, async ({ page }) => {
-    await page.emulateMedia({ colorScheme: scheme, reducedMotion: "reduce" });
-    await page.goto("/elements.html");
-    await page.waitForFunction(() => document.querySelector("[bx-sort]"));
-    const { violations } = await new AxeBuilder({ page }).withTags(["wcag2a", "wcag2aa", "wcag21aa", "wcag22aa"]).analyze();
-    expect(violations.map(v => `${v.id}: ${v.nodes.map(n => n.target.join(" ")).join(", ")}`)).toEqual([]);
-  });
 }

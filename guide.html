@@ -14,6 +14,10 @@
     </script>
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="dist/berlinx.min.css" />
+    <link id="skin" rel="stylesheet" href="dist/berlinx-material.min.css" disabled />
+    <script>
+      try { if (localStorage.getItem("berlinx-skin") === "material") document.getElementById("skin").disabled = false; } catch {}
+    </script>
     <!-- Lucide SVG paths: https://lucide.dev · license: docs/LUCIDE-LICENSE.txt -->
     <style>
       @font-face { font-family: Inter; src: url("assets/fonts/InterVariable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
@@ -32,6 +36,9 @@
     <header row justify="between" items="center" gap-m>
       <a href="index.html">Berlin<span primary>X</span></a>
       <nav aria-label="Documentation" row gap-m><a href="index.html">Components</a><a href="guide.html" aria-current="page">Usage guide</a><a href="elements.html">Elements</a><a href="cheatsheet.html">Cheatsheet</a></nav>
+      <button data-skin-toggle icon ghost aria-pressed="false" aria-label="Material skin">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg>
+      </button>
       <button data-theme-toggle icon ghost aria-pressed="false" aria-label="Dark theme">
         <svg data-icon="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
         <svg data-icon="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>
@@ -54,6 +61,7 @@
 <a href="#more-components">More components</a>
 <a href="#light-and-dark-themes">Light and dark themes</a>
 <a href="#theming">Theming</a>
+<a href="#material-skin">Material skin</a>
 <a href="#accessibility">Accessibility</a>
 <a href="#elements">Elements</a>
 <a href="#browser-support">Browser support</a>
@@ -751,6 +759,89 @@ setting <code>--primary</code> alone recolours links in both themes. <code>--acc
 <strong>fill</strong> colour: <code>#ffbf00</code> as text on white is 1.65:1. <code>--success</code> and
 <code>--warning</code> colour the edge of <code>notice=&quot;success|warning&quot;</code> and the meter&#39;s
 levels; <code>--input</code> is the background of text fields.</p>
+<h2 id="material-skin">Material skin</h2>
+<p>An optional skin makes BerlinX look like Material Design 3 without changing
+your markup. It follows Material closely rather than to the letter. Load it
+<strong>last</strong>, after BerlinX and, if you use them, the Elements styles:</p>
+<pre><code tabindex="0" class="language-html">&lt;link rel=&quot;stylesheet&quot; href=&quot;./berlinx.min.css&quot; /&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;./berlinx-elements.min.css&quot; /&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;./berlinx-material.min.css&quot; /&gt;
+</code></pre>
+<pre><code tabindex="0" class="language-css">@import &quot;berlinx/min&quot;;
+@import &quot;berlinx/elements.min.css&quot;;
+@import &quot;berlinx/material.min.css&quot;;
+</code></pre>
+<p>The variants you already use map onto Material&#39;s:</p>
+<div responsive tabindex="0" role="region" aria-label="Table"><table>
+<thead>
+<tr>
+<th>Markup</th>
+<th>Material</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>&lt;button&gt;</code></td>
+<td>filled button</td>
+</tr>
+<tr>
+<td><code>&lt;button secondary&gt;</code></td>
+<td>tonal button</td>
+</tr>
+<tr>
+<td><code>&lt;button outline&gt;</code></td>
+<td>outlined button</td>
+</tr>
+<tr>
+<td><code>&lt;button ghost&gt;</code></td>
+<td>text button; with <code>icon</code>, a standard icon button</td>
+</tr>
+<tr>
+<td><code>&lt;button destructive&gt;</code></td>
+<td>filled, in the error colour</td>
+</tr>
+<tr>
+<td><code>[tag]</code></td>
+<td>chip</td>
+</tr>
+<tr>
+<td><code>&lt;article&gt;</code></td>
+<td>elevated card</td>
+</tr>
+<tr>
+<td><code>dialog[toast]</code>, <code>toast()</code></td>
+<td>snackbar</td>
+</tr>
+</tbody></table></div>
+<p>Text fields are filled and 56px tall: a tinted container with rounded
+corners and no border until focus, which draws it in the primary colour, or an
+error, which draws it in red. For outlined fields, set <code>fields=&quot;outlined&quot;</code>
+on any element, <code>&lt;html&gt;</code> for the whole page; <code>fields=&quot;filled&quot;</code> switches a
+region back. The date picker, select and multi-select follow it. Snackbars use
+the inverse surface, with every action a text button and an error&#39;s title in
+the error tone. Checkboxes, radios and switches are redrawn with hover halos. Menus, tabs, the
+sidebar and the date picker take Material&#39;s shapes and colours. Interactive
+controls get state layers: the label colour over the fill at 8% on hover and
+12% on press. They also ripple when pressed. Everything is CSS: the ripple is a
+background gradient driven by two <code>@property</code> values, so it needs no script.
+In an engine without <code>@property</code> support, a press shows a tint with no spread.</p>
+<p>The skin restates BerlinX rules with the same selectors, so it wins by coming
+later, and your own rules still beat both. It changes BerlinX tokens, and
+<code>fields</code> is its only attribute, so a page can drop it again at any time. To recolour
+it, set the Material roles it draws from, in both schemes:</p>
+<pre><code tabindex="0" class="language-css">:root {
+  --md-primary: light-dark(#006a6a, #4cdada);
+  --md-on-primary: light-dark(#fff, #003737);
+  --md-secondary-container: light-dark(#cce8e7, #324b4b);
+  --md-on-secondary-container: light-dark(#051f1f, #cce8e7);
+}
+</code></pre>
+<p>The roles are <code>--md-primary</code>, <code>--md-on-primary</code>, <code>--md-primary-container</code>, the
+<code>--md-secondary-*</code>, <code>--md-tertiary-*</code> and <code>--md-error-*</code> pairs, the <code>--md-surface</code>
+and <code>--md-surface-container-*</code> tones, <code>--md-outline</code>, <code>--md-outline-variant</code> and
+<code>--md-inverse-*</code>. <code>--md-elevation-1</code> to <code>-3</code> are the shadows, <code>--md-shape-xs</code> to
+<code>-xl</code> the corners, and <code>--md-field-height</code> is the text field height, which
+<code>density</code> adjusts. The skin asks for <strong>Roboto</strong> and, like BerlinX, does not
+fetch it.</p>
 <h2 id="accessibility">Accessibility</h2>
 <ul>
 <li>Every default text and fill pairing meets WCAG AA in both themes — 4.5:1 for
@@ -862,6 +953,15 @@ are minified with Lightning CSS and <code>dist/elements/</code> is bundled with 
       });
       systemDark.addEventListener("change", sync);
       sync();
+      const skin = document.getElementById("skin");
+      const skinToggle = document.querySelector("[data-skin-toggle]");
+      const syncSkin = () => skinToggle.setAttribute("aria-pressed", String(!skin.disabled));
+      skinToggle.addEventListener("click", () => {
+        skin.disabled = !skin.disabled;
+        try { localStorage.setItem("berlinx-skin", skin.disabled ? "" : "material"); } catch {}
+        syncSkin();
+      });
+      syncSkin();
     </script>
   </body>
 </html>

@@ -573,6 +573,72 @@ setting `--primary` alone recolours links in both themes. `--accent` is a
 `--warning` colour the edge of `notice="success|warning"` and the meter's
 levels; `--input` is the background of text fields.
 
+## Material skin
+
+An optional skin makes BerlinX look like Material Design 3 without changing
+your markup. It follows Material closely rather than to the letter. Load it
+**last**, after BerlinX and, if you use them, the Elements styles:
+
+```html
+<link rel="stylesheet" href="./berlinx.min.css" />
+<link rel="stylesheet" href="./berlinx-elements.min.css" />
+<link rel="stylesheet" href="./berlinx-material.min.css" />
+```
+
+```css
+@import "berlinx/min";
+@import "berlinx/elements.min.css";
+@import "berlinx/material.min.css";
+```
+
+The variants you already use map onto Material's:
+
+| Markup | Material |
+| --- | --- |
+| `<button>` | filled button |
+| `<button secondary>` | tonal button |
+| `<button outline>` | outlined button |
+| `<button ghost>` | text button; with `icon`, a standard icon button |
+| `<button destructive>` | filled, in the error colour |
+| `[tag]` | chip |
+| `<article>` | elevated card |
+| `dialog[toast]`, `toast()` | snackbar |
+
+Text fields are filled and 56px tall: a tinted container with rounded
+corners and no border until focus, which draws it in the primary colour, or an
+error, which draws it in red. For outlined fields, set `fields="outlined"`
+on any element, `<html>` for the whole page; `fields="filled"` switches a
+region back. The date picker, select and multi-select follow it. Snackbars use
+the inverse surface, with every action a text button and an error's title in
+the error tone. Checkboxes, radios and switches are redrawn with hover halos. Menus, tabs, the
+sidebar and the date picker take Material's shapes and colours. Interactive
+controls get state layers: the label colour over the fill at 8% on hover and
+12% on press. They also ripple when pressed. Everything is CSS: the ripple is a
+background gradient driven by two `@property` values, so it needs no script.
+In an engine without `@property` support, a press shows a tint with no spread.
+
+The skin restates BerlinX rules with the same selectors, so it wins by coming
+later, and your own rules still beat both. It changes BerlinX tokens, and
+`fields` is its only attribute, so a page can drop it again at any time. To recolour
+it, set the Material roles it draws from, in both schemes:
+
+```css
+:root {
+  --md-primary: light-dark(#006a6a, #4cdada);
+  --md-on-primary: light-dark(#fff, #003737);
+  --md-secondary-container: light-dark(#cce8e7, #324b4b);
+  --md-on-secondary-container: light-dark(#051f1f, #cce8e7);
+}
+```
+
+The roles are `--md-primary`, `--md-on-primary`, `--md-primary-container`, the
+`--md-secondary-*`, `--md-tertiary-*` and `--md-error-*` pairs, the `--md-surface`
+and `--md-surface-container-*` tones, `--md-outline`, `--md-outline-variant` and
+`--md-inverse-*`. `--md-elevation-1` to `-3` are the shadows, `--md-shape-xs` to
+`-xl` the corners, and `--md-field-height` is the text field height, which
+`density` adjusts. The skin asks for **Roboto** and, like BerlinX, does not
+fetch it.
+
 ## Accessibility
 
 - Every default text and fill pairing meets WCAG AA in both themes — 4.5:1 for

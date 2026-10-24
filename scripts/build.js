@@ -1,7 +1,7 @@
 // npm run build
 //
-// 1. dist/berlinx(.min).css from css/berlinx.css, and dist/berlinx-elements(.min).css
-//    from css/elements.css.
+// 1. dist/berlinx(.min).css from css/berlinx.css, dist/berlinx-elements(.min).css
+//    from css/elements.css, and dist/berlinx-material(.min).css from css/material.css.
 // 2. dist/elements/ from elements/: one ES module per element, plus index.js
 //    with all of them. Atomico is bundled into a shared chunk, so the files run
 //    straight from a CDN as well as through a bundler.
@@ -25,8 +25,8 @@ const write = (file, content) => {
 
 // --- Stylesheets -------------------------------------------------------------
 
-for (const [source, out] of [["css/berlinx.css", "berlinx"], ["css/elements.css", "berlinx-elements"]]) {
-  const css = read(source).replace(/^\/\*! BerlinX (Elements )?v\S+/, (_, elements = "") => `/*! BerlinX ${elements}v${pkg.version}`);
+for (const [source, out] of [["css/berlinx.css", "berlinx"], ["css/elements.css", "berlinx-elements"], ["css/material.css", "berlinx-material"]]) {
+  const css = read(source).replace(/^\/\*! BerlinX ((?:Elements |Material )?)v\S+/, (_, name) => `/*! BerlinX ${name}v${pkg.version}`);
   write(`dist/${out}.css`, css);
   write(`dist/${out}.min.css`, `${transform({ filename: `${out}.css`, code: Buffer.from(css), minify: true }).code.toString().trim()}\n`);
 }
@@ -185,6 +185,10 @@ for (const page of pages) {
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
     <link rel="stylesheet" href="dist/berlinx.min.css" />${(page.styles ?? []).map(href => `
     <link rel="stylesheet" href="${href}" />`).join("")}
+    <link id="skin" rel="stylesheet" href="dist/berlinx-material.min.css" disabled />
+    <script>
+      try { if (localStorage.getItem("berlinx-skin") === "material") document.getElementById("skin").disabled = false; } catch {}
+    </script>
     <!-- Lucide SVG paths: https://lucide.dev · license: docs/LUCIDE-LICENSE.txt -->
     <style>
       @font-face { font-family: Inter; src: url("assets/fonts/InterVariable.woff2") format("woff2"); font-weight: 100 900; font-display: swap; }
@@ -203,6 +207,9 @@ for (const page of pages) {
     <header row justify="between" items="center" gap-m>
       <a href="index.html">Berlin<span primary>X</span></a>
       <nav aria-label="Documentation" row gap-m>${nav}</nav>
+      <button data-skin-toggle icon ghost aria-pressed="false" aria-label="Material skin">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg>
+      </button>
       <button data-theme-toggle icon ghost aria-pressed="false" aria-label="Dark theme">
         <svg data-icon="moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
         <svg data-icon="sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="4" /><path d="M12 2v2M12 20v2m-7.07-17.07 1.41 1.41m11.32 11.32 1.41 1.41M2 12h2m16 0h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" /></svg>
@@ -227,6 +234,15 @@ ${body}
       });
       systemDark.addEventListener("change", sync);
       sync();
+      const skin = document.getElementById("skin");
+      const skinToggle = document.querySelector("[data-skin-toggle]");
+      const syncSkin = () => skinToggle.setAttribute("aria-pressed", String(!skin.disabled));
+      skinToggle.addEventListener("click", () => {
+        skin.disabled = !skin.disabled;
+        try { localStorage.setItem("berlinx-skin", skin.disabled ? "" : "material"); } catch {}
+        syncSkin();
+      });
+      syncSkin();
     </script>
   </body>
 </html>

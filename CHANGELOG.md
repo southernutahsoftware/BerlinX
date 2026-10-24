@@ -3,6 +3,17 @@
 All notable changes to BerlinX are documented here. This project follows
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## Unreleased
+
+- Material skin: `dist/berlinx-material.css` (`berlinx/material.css`), loaded
+  after BerlinX and the Elements styles, gives every component and element a
+  Material Design 3 look with no change to the markup. The existing variants
+  become filled, tonal, outlined and text buttons. It adds state layers and a
+  CSS-only ripple, and its colours come from `--md-*` roles in both schemes.
+  Text fields are filled; `fields="outlined"` on any element outlines the
+  fields inside it.
+- The demo site and guides have a palette button that switches the skin on.
+
 ## 1.2.0
 
 - `<bx-data-table src>`, or a `load` function, hands sorting, filtering and

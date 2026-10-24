@@ -235,7 +235,7 @@ main > hr {
   flex: none;
 }
 
-#demoToolbar > [data-theme-toggle] {
+#demoToolbar > [data-skin-toggle] {
   margin-inline-start: auto;
 }
 
@@ -480,6 +480,7 @@ main > hr {
 
   #menuToggle,
   #menuClose,
+  [data-skin-toggle],
   [data-theme-toggle] {
     display: inline-flex;
     min-width: 44px;

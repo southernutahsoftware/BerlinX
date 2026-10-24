@@ -114,6 +114,10 @@ every label translatable. See the
 }
 ```
 
+Prefer Material Design? Load `berlinx/material.css` after BerlinX for a
+Material 3 look, with tonal buttons, filled or outlined fields and a CSS-only
+ripple, and no change to your markup. See [Material skin](docs/guide.md#material-skin).
+
 ## Learn more
 
 - [**Usage guide**](docs/guide.md): installation, layout, components and theming.

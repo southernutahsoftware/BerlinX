@@ -16,6 +16,11 @@
     <link rel="icon" href="icon.svg" type="image/svg+xml" />
     <link rel="icon" href="icon.ico" sizes="any" />
     <link rel="stylesheet" href="dist/berlinx.min.css" />
+    <!-- The optional Material skin, switched by the palette button. -->
+    <link id="skin" rel="stylesheet" href="dist/berlinx-material.min.css" disabled />
+    <script>
+      try { if (localStorage.getItem("berlinx-skin") === "material") document.getElementById("skin").disabled = false; } catch {}
+    </script>
     <link rel="stylesheet" href="css/demo-style.css" />
     <!-- Lucide SVG paths: https://lucide.dev · license: docs/LUCIDE-LICENSE.txt -->
   </head>
@@ -28,6 +33,9 @@
     </button>
       <a href="#introduction">Berlin<span primary>X</span></a>
       <small muted>Component guide</small>
+      <button data-skin-toggle icon ghost aria-pressed="false" aria-label="Material skin">
+        <svg data-icon="palette" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg>
+      </button>
       <button data-theme-toggle icon ghost aria-pressed="false" aria-label="Dark theme">
         <svg data-icon="moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
         <svg data-icon="sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
@@ -38,6 +46,9 @@
       <header row nowrap justify="between" items="center" gap>
         <a id="menuBrand" href="#introduction" aria-label="BerlinX home">Berlin<span primary>X</span></a>
         <div row nowrap gap-xs items="center">
+          <button data-skin-toggle icon ghost aria-pressed="false" aria-label="Material skin">
+            <svg data-icon="palette" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z" /><circle cx="13.5" cy="6.5" r=".5" fill="currentColor" /><circle cx="17.5" cy="10.5" r=".5" fill="currentColor" /><circle cx="6.5" cy="12.5" r=".5" fill="currentColor" /><circle cx="8.5" cy="7.5" r=".5" fill="currentColor" /></svg>
+          </button>
           <button data-theme-toggle icon ghost aria-pressed="false" aria-label="Dark theme">
             <svg data-icon="moon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z" /></svg>
             <svg data-icon="sun" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="4" /><path d="M12 2v2" /><path d="M12 20v2" /><path d="m4.93 4.93 1.41 1.41" /><path d="m17.66 17.66 1.41 1.41" /><path d="M2 12h2" /><path d="M20 12h2" /><path d="m6.34 17.66-1.41 1.41" /><path d="m19.07 4.93-1.41 1.41" /></svg>
@@ -1113,20 +1124,22 @@
 
       <section id="validation">
         <h2>Field validation</h2>
-        <form id="validationForm" validation>
-          <div field>
-            <label for="validationEmail">Email address</label>
-            <input id="validationEmail" type="email" name="email" autocomplete="email" required aria-describedby="emailHint emailError" placeholder="you@example.com" />
-            <small id="emailHint" hint>We will send your receipt here.</small>
-            <small id="emailError" error>Enter an email address, such as name@example.com.</small>
+        <div col gap-l items="stretch">
+          <form id="validationForm" validation>
+            <div field>
+              <label for="validationEmail">Email address</label>
+              <input id="validationEmail" type="email" name="email" autocomplete="email" required aria-describedby="emailHint emailError" placeholder="you@example.com" />
+              <small id="emailHint" hint>We will send your receipt here.</small>
+              <small id="emailError" error>Enter an email address, such as name@example.com.</small>
+            </div>
+            <div row gap><button type="submit">Check email</button><button type="reset" secondary>Reset</button></div>
+            <p id="validationResult" notice="success" role="status" hidden>Email looks good.</p>
+          </form>
+          <div field validation>
+            <label for="usernameExample">An explicit error state</label>
+            <input id="usernameExample" value="ada" readonly aria-invalid="true" aria-describedby="usernameError" />
+            <small id="usernameError" error>This username is already taken.</small>
           </div>
-          <div row gap><button type="submit">Check email</button><button type="reset" secondary>Reset</button></div>
-          <p id="validationResult" notice="success" role="status" hidden>Email looks good.</p>
-        </form>
-        <div field validation>
-          <label for="usernameExample">An explicit error state</label>
-          <input id="usernameExample" value="ada" readonly aria-invalid="true" aria-describedby="usernameError" />
-          <small id="usernameError" error>This username is already taken.</small>
         </div>
         <p><small><code>field</code> groups a label, control and descriptions. In a <code>validation</code> form, native <code>:user-invalid</code> reveals the error after interaction; <code>aria-invalid="true"</code> supports errors supplied by your application. Keep descriptions connected with <code>aria-describedby</code>.</small></p>
       </section>
@@ -1419,6 +1432,17 @@
       }));
       systemDark.addEventListener("change", syncThemeToggles);
       syncThemeToggles();
+
+      // The Material skin is one more stylesheet, enabled or not.
+      const skin = document.getElementById("skin");
+      const skinToggles = document.querySelectorAll("[data-skin-toggle]");
+      const syncSkinToggles = () => skinToggles.forEach(button => button.setAttribute("aria-pressed", String(!skin.disabled)));
+      skinToggles.forEach(button => button.addEventListener("click", () => {
+        skin.disabled = !skin.disabled;
+        try { localStorage.setItem("berlinx-skin", skin.disabled ? "" : "material"); } catch {}
+        syncSkinToggles();
+      }));
+      syncSkinToggles();
 
       function markCurrentSection() {
         const target = document.getElementById(location.hash.slice(1));
